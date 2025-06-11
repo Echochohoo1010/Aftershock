@@ -212,7 +212,7 @@ function MetaballSurface() {
         vertexShader={metaballVertexShader}
         fragmentShader={metaballFragmentShader}
         uniforms={uniforms}
-        transparent
+        transparent={false}
         side={THREE.DoubleSide}
       />
     </mesh>
@@ -300,7 +300,7 @@ function FloatingMetaballs() {
 
 export default function Metaballs3D() {
   return (
-    <div className="w-full h-full bg-white">
+    <div className="w-full h-full ">
       <Canvas
         camera={{ position: [0, 0, 6.5], fov: 50 }}
         style={{ background: "white" }}

@@ -59,7 +59,7 @@ export default function Home() {
 
           {/* 3D Metaballs Visualization */}
           <div className="lg:w-2/5 h-96 lg:h-[500px] mt-8 lg:mt-0">
-            <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg border border-gray-200">
+            <div className="relative w-full h-full rounded-lg overflow-hidden  ">
               <Metaballs3D />
 
               {/* Overlay text explaining the visualization */}

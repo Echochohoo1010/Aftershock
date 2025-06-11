@@ -25,29 +25,48 @@ const policyScenarios = [
   },
   {
     id: "ai_research",
-    title: "AI Research Funding & Safety",
+    title: "Academic Citations Measure the Impact of New Ideas",
     description:
-      "Analyze the causal relationships between AI research funding, safety measures, and innovation outcomes",
-    variables: ["research_funding", "safety_regulations", "innovation_speed", "public_safety", "economic_growth"],
+      "Analyze how AI research funding, government support, and talent immigration contribute to innovation, productivity, and the academic impact of new ideas, using citations as a key metric.",
+    variables: [
+      "research_funding",
+      "innovation_speed",
+      "academic_citations",
+      "economic_growth",
+      "govt_rd_funding",
+      "productivity_growth",
+      "talent_immigration",
+    ],
     relationships: [
+      { from: "govt_rd_funding", to: "research_funding", strength: 0.8, type: "positive" },
       { from: "research_funding", to: "innovation_speed", strength: 0.9, type: "positive" },
-      { from: "safety_regulations", to: "innovation_speed", strength: -0.4, type: "negative" },
-      { from: "safety_regulations", to: "public_safety", strength: 0.8, type: "positive" },
-      { from: "innovation_speed", to: "economic_growth", strength: 0.6, type: "positive" },
-      { from: "public_safety", to: "research_funding", strength: 0.3, type: "positive" },
+      { from: "innovation_speed", to: "academic_citations", strength: 0.7, type: "positive" },
+      { from: "innovation_speed", to: "productivity_growth", strength: 0.6, type: "positive" },
+      { from: "talent_immigration", to: "innovation_speed", strength: 0.8, type: "positive" },
+      { from: "talent_immigration", to: "productivity_growth", strength: 0.7, type: "positive" },
+      { from: "productivity_growth", to: "economic_growth", strength: 0.9, type: "positive" },
     ],
   },
   {
-    id: "climate_tech",
-    title: "Climate Technology Policy",
-    description: "Model the effects of climate technology policies on innovation, adoption, and environmental outcomes",
-    variables: ["carbon_pricing", "tech_subsidies", "innovation_rate", "adoption_speed", "emissions_reduction"],
+    id: "talent_productivity",
+    title: "Talent Immigration and Productivity Growth",
+    description:
+      "Examine how international talent migration contributes to national productivity, innovation, and long-term economic performance. Explore the role of research funding and policy in amplifying these effects.",
+    variables: [
+      "talent_immigration",
+      "innovation_capacity",
+      "productivity_growth",
+      "economic_growth",
+      "govt_rd_funding",
+      "academic_citations",
+    ],
     relationships: [
-      { from: "carbon_pricing", to: "innovation_rate", strength: 0.7, type: "positive" },
-      { from: "tech_subsidies", to: "adoption_speed", strength: 0.8, type: "positive" },
-      { from: "innovation_rate", to: "adoption_speed", strength: 0.6, type: "positive" },
-      { from: "adoption_speed", to: "emissions_reduction", strength: 0.9, type: "positive" },
-      { from: "carbon_pricing", to: "adoption_speed", strength: 0.5, type: "positive" },
+      { from: "talent_immigration", to: "innovation_capacity", strength: 0.8, type: "positive" },
+      { from: "innovation_capacity", to: "productivity_growth", strength: 0.7, type: "positive" },
+      { from: "productivity_growth", to: "economic_growth", strength: 0.9, type: "positive" },
+      { from: "govt_rd_funding", to: "innovation_capacity", strength: 0.75, type: "positive" },
+      { from: "talent_immigration", to: "productivity_growth", strength: 0.6, type: "positive" },
+      { from: "innovation_capacity", to: "academic_citations", strength: 0.65, type: "positive" },
     ],
   },
 ]
@@ -56,9 +75,13 @@ export default function ExplorePage() {
   const [selectedScenario, setSelectedScenario] = useState(policyScenarios[0])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [customQuery, setCustomQuery] = useState("")
+  const [highlightedNode, setHighlightedNode] = useState<string | null>(null)
+  const [highlightedRelationship, setHighlightedRelationship] = useState<{ from: string; to: string } | null>(null)
 
   const handleScenarioSelect = (scenario: (typeof policyScenarios)[0]) => {
     setSelectedScenario(scenario)
+    setHighlightedNode(null)
+    setHighlightedRelationship(null)
   }
 
   const handleAnalyze = async () => {
@@ -66,6 +89,16 @@ export default function ExplorePage() {
     // Simulate analysis delay
     await new Promise((resolve) => setTimeout(resolve, 2000))
     setIsAnalyzing(false)
+  }
+
+  const handleHighlightNode = (variable: string | null) => {
+    setHighlightedNode(variable)
+    setHighlightedRelationship(null)
+  }
+
+  const handleHighlightRelationship = (from: string, to: string) => {
+    setHighlightedRelationship({ from, to })
+    setHighlightedNode(null)
   }
 
   return (
@@ -127,7 +160,12 @@ export default function ExplorePage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CausalGraph variables={selectedScenario.variables} relationships={selectedScenario.relationships} />
+              <CausalGraph
+                variables={selectedScenario.variables}
+                relationships={selectedScenario.relationships}
+                highlightedNode={highlightedNode}
+                highlightedRelationship={highlightedRelationship}
+              />
             </CardContent>
           </Card>
 
@@ -138,7 +176,11 @@ export default function ExplorePage() {
               <CardDescription>Chat with our AI to explore policy implications and generate scenarios</CardDescription>
             </CardHeader>
             <CardContent>
-              <ScenarioChat scenario={selectedScenario} />
+              <ScenarioChat
+                scenario={selectedScenario}
+                onHighlightNode={handleHighlightNode}
+                onHighlightRelationship={handleHighlightRelationship}
+              />
             </CardContent>
           </Card>
         </div>
