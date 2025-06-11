@@ -1,13 +1,24 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import dynamic from "next/dynamic"
+
+// Dynamically import the 3D component to avoid SSR issues
+const Metaballs3D = dynamic(() => import("@/components/metaballs-3d"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-white flex items-center justify-center">
+      <div className="animate-pulse text-gray-400">Loading 3D visualization...</div>
+    </div>
+  ),
+})
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative flex flex-col justify-center px-4 pt-32 pb-16 md:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="md:w-2/3 z-10">
+        <div className="flex flex-col lg:flex-row lg:items-center">
+          <div className="lg:w-3/5 z-10">
             <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-tight mb-4">Exploratory Policy</h1>
             <h2 className="font-heading text-2xl text-gray-500 font-semibold tracking-tight mb-8">
               Causal Scenario Planning
@@ -42,6 +53,22 @@ export default function Home() {
                   Our Research
                 </Button>
               </Link>
+            </div>
+          </div>
+
+          {/* 3D Metaballs Visualization */}
+          <div className="lg:w-2/5 h-96 lg:h-[500px] mt-8 lg:mt-0">
+            <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg border border-gray-200">
+              <Metaballs3D />
+
+              {/* Overlay text explaining the visualization */}
+              <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm p-3 rounded-lg shadow-sm max-w-xs">
+                <p className="text-xs text-white font-heading">
+                  <strong>Policy Blending Visualization:</strong> White spheres represent individual policy components
+                  that create organic blending zones, demonstrating how separate policies can merge and influence each
+                  other in complex systems.
+                </p>
+              </div>
             </div>
           </div>
         </div>

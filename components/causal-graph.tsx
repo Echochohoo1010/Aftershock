@@ -53,16 +53,42 @@ export default function CausalGraph({ variables, relationships }: CausalGraphPro
   return (
     <div className="w-full h-80 border border-gray-200 rounded-lg bg-gray-50">
       <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 400 300">
-        {/* Arrow markers */}
+       {/* Arrow markers */}
         <defs>
-          <marker id="arrowhead-positive" markerWidth="4" markerHeight="4" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 4 3.5, 0 7" fill="rgb(34, 197, 94)" />
+          <marker
+            id="arrowhead-positive"
+            markerWidth="10"
+            markerHeight="10"
+            refX="9"
+            refY="5"
+            orient="auto"
+            markerUnits="userSpaceOnUse"
+          >
+            <path d="M0,0 L9,5 L0,10 Q2,5 0,0" fill="rgb(34, 197, 94)" />
           </marker>
-          <marker id="arrowhead-negative" markerWidth="4" markerHeight="4" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 4 3.5, 0 7" fill="rgb(239, 68, 68)" />
+
+          <marker
+            id="arrowhead-negative"
+            markerWidth="10"
+            markerHeight="10"
+            refX="9"
+            refY="5"
+            orient="auto"
+            markerUnits="userSpaceOnUse"
+          >
+            <path d="M0,0 L9,5 L0,10 Q2,5 0,0" fill="rgb(239, 68, 68)" />
           </marker>
-          <marker id="arrowhead-complex" markerWidth="4" markerHeight="4" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 4 3.5, 0 7" fill="rgb(168, 85, 247)" />
+
+          <marker
+            id="arrowhead-complex"
+            markerWidth="10"
+            markerHeight="10"
+            refX="9"
+            refY="5"
+            orient="auto"
+            markerUnits="userSpaceOnUse"
+          >
+            <path d="M0,0 L9,5 L0,10 Q2,5 0,0" fill="rgb(168, 85, 247)" />
           </marker>
         </defs>
 
@@ -72,13 +98,27 @@ export default function CausalGraph({ variables, relationships }: CausalGraphPro
           const toPos = nodePositions[rel.to]
           if (!fromPos || !toPos) return null
 
+
+
+          const r = 20 // fixed radius for all nodes
+
+          const dx = toPos.x - fromPos.x
+          const dy = toPos.y - fromPos.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+
+          const offsetX = (dx / dist) * r
+          const offsetY = (dy / dist) * r
+
+          const adjustedToX = toPos.x - offsetX
+          const adjustedToY = toPos.y - offsetY
+
           return (
             <line
               key={index}
               x1={fromPos.x}
               y1={fromPos.y}
-              x2={toPos.x}
-              y2={toPos.y}
+            x2={adjustedToX}
+    y2={adjustedToY}
               stroke={getEdgeColor(rel.type, rel.strength)}
               strokeWidth={Math.abs(rel.strength) * 2 + 1}
               markerEnd={getArrowMarker(rel.type)}
@@ -94,25 +134,26 @@ export default function CausalGraph({ variables, relationships }: CausalGraphPro
           const isSelected = selectedNode === variable
           return (
             <g key={variable}>
+            <text
+                x={pos.x - 4}
+                y={pos.y - 24}
+                textAnchor="middle"
+                className="text-xs w-fit font-medium pointer-events-none"
+                fill={isSelected ? "#666" : "#000"}
+              >
+                {variable.replace("_", " ").split()}
+              </text>
               <circle
                 cx={pos.x}
                 cy={pos.y}
                 r={isSelected ? 25 : 20}
                 fill={isSelected ? "#000" : "#fff"}
                 stroke="#000"
-                strokeWidth="2"
+                strokeWidth="1.4"
                 className="cursor-pointer transition-all"
                 onClick={() => setSelectedNode(isSelected ? null : variable)}
               />
-              <text
-                x={pos.x}
-                y={pos.y + 4}
-                textAnchor="middle"
-                className="text-xs font-medium pointer-events-none"
-                fill={isSelected ? "#fff" : "#000"}
-              >
-                {variable.replace("_", " ").slice(0, 8)}
-              </text>
+              
             </g>
           )
         })}
@@ -142,6 +183,8 @@ export default function CausalGraph({ variables, relationships }: CausalGraphPro
           )}
         </div>
       </div>
+
+
     </div>
   )
 }
