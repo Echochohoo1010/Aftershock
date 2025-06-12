@@ -131,6 +131,8 @@ const handleUpdateChat = (analysis: string, variables: string[], relationships: 
   setChatKey((prev) => prev + 1) // Force chat to reset with new analysis
 }
 
+ 
+
   return (
     <div className="min-h-screen pt-24 px-4 md:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
