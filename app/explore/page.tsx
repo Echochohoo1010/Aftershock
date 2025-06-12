@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import CausalGraph from "@/components/causal-graph"
 import ScenarioChat from "@/components/scenario-chat"
+import CustomPolicyAnalyst from "@/components/custom-policy-analyst"
 
 const policyScenarios = [
   {
@@ -73,15 +74,25 @@ const policyScenarios = [
 
 export default function ExplorePage() {
   const [selectedScenario, setSelectedScenario] = useState(policyScenarios[0])
+  const [currentGraph, setCurrentGraph] = useState({
+    variables: policyScenarios[0].variables,
+    relationships: policyScenarios[0].relationships,
+  })
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [customQuery, setCustomQuery] = useState("")
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null)
   const [highlightedRelationship, setHighlightedRelationship] = useState<{ from: string; to: string } | null>(null)
+  const [chatKey, setChatKey] = useState(0) // Force chat re-render when graph changes
 
   const handleScenarioSelect = (scenario: (typeof policyScenarios)[0]) => {
     setSelectedScenario(scenario)
+    setCurrentGraph({
+      variables: scenario.variables,
+      relationships: scenario.relationships,
+    })
     setHighlightedNode(null)
     setHighlightedRelationship(null)
+    setChatKey((prev) => prev + 1) // Reset chat state
   }
 
   const handleAnalyze = async () => {
@@ -100,6 +111,25 @@ export default function ExplorePage() {
     setHighlightedRelationship({ from, to })
     setHighlightedNode(null)
   }
+
+  const handleGenerateGraph = (variables: string[], relationships: any[]) => {
+    setCurrentGraph({ variables, relationships })
+    setHighlightedNode(null)
+    setHighlightedRelationship(null)
+  }
+
+const handleUpdateChat = (analysis: string, variables: string[], relationships: any[]) => {
+  const customScenario = {
+    id: "custom",
+    title: "Custom Policy Analysis",
+    description: "Generated causal pathway analysis",
+    variables,
+    relationships,
+  }
+  setSelectedScenario(customScenario)
+  setCurrentGraph({ variables, relationships }) // update graph too
+  setChatKey((prev) => prev + 1) // Force chat to reset with new analysis
+}
 
   return (
     <div className="min-h-screen pt-24 px-4 md:px-6 lg:px-8">
@@ -149,6 +179,11 @@ export default function ExplorePage() {
           </div>
         </div>
 
+        {/* Custom Policy Analyst */}
+        <div className="mb-8">
+          <CustomPolicyAnalyst onGenerateGraph={handleGenerateGraph} onUpdateChat={handleUpdateChat} />
+        </div>
+
         {/* Main Analysis Interface */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Causal Graph Visualization */}
@@ -161,8 +196,8 @@ export default function ExplorePage() {
             </CardHeader>
             <CardContent>
               <CausalGraph
-                variables={selectedScenario.variables}
-                relationships={selectedScenario.relationships}
+                variables={currentGraph.variables}
+                relationships={currentGraph.relationships}
                 highlightedNode={highlightedNode}
                 highlightedRelationship={highlightedRelationship}
               />
@@ -177,6 +212,7 @@ export default function ExplorePage() {
             </CardHeader>
             <CardContent>
               <ScenarioChat
+                key={chatKey}
                 scenario={selectedScenario}
                 onHighlightNode={handleHighlightNode}
                 onHighlightRelationship={handleHighlightRelationship}
@@ -185,13 +221,11 @@ export default function ExplorePage() {
           </Card>
         </div>
 
-        {/* Custom Analysis */}
+        {/* Legacy Custom Analysis */}
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle className="font-heading">Custom Policy Analysis</CardTitle>
-            <CardDescription>
-              Describe a policy intervention or ask a specific question about the scenario
-            </CardDescription>
+            <CardTitle className="font-heading">Quick Policy Query</CardTitle>
+            <CardDescription>Ask a specific question about the current scenario</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
