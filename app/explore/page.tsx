@@ -82,7 +82,7 @@ export default function ExplorePage() {
   const [customQuery, setCustomQuery] = useState("")
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null)
   const [highlightedRelationship, setHighlightedRelationship] = useState<{ from: string; to: string } | null>(null)
-  const [chatKey, setChatKey] = useState(0) // Force chat re-render when graph changes
+  const [chatKey, setChatKey] = useState(0)
 
   const handleScenarioSelect = (scenario: (typeof policyScenarios)[0]) => {
     setSelectedScenario(scenario)
@@ -92,12 +92,11 @@ export default function ExplorePage() {
     })
     setHighlightedNode(null)
     setHighlightedRelationship(null)
-    setChatKey((prev) => prev + 1) // Reset chat state
+    setChatKey((prev) => prev + 1)
   }
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true)
-    // Simulate analysis delay
     await new Promise((resolve) => setTimeout(resolve, 2000))
     setIsAnalyzing(false)
   }
@@ -118,20 +117,34 @@ export default function ExplorePage() {
     setHighlightedRelationship(null)
   }
 
-const handleUpdateChat = (analysis: string, variables: string[], relationships: any[]) => {
-  const customScenario = {
-    id: "custom",
-    title: "Custom Policy Analysis",
-    description: "Generated causal pathway analysis",
-    variables,
-    relationships,
+  const handleUpdateChat = (analysis: string, variables: string[], relationships: any[]) => {
+    const customScenario = {
+      id: "custom",
+      title: "Custom Policy Analysis",
+      description: "Generated causal pathway analysis",
+      variables,
+      relationships,
+    }
+    setSelectedScenario(customScenario)
+    setCurrentGraph({ variables, relationships })
+    setChatKey((prev) => prev + 1)
   }
-  setSelectedScenario(customScenario)
-  setCurrentGraph({ variables, relationships }) // update graph too
-  setChatKey((prev) => prev + 1) // Force chat to reset with new analysis
-}
 
- 
+  const handleUpdateGraph = (relationships: Array<{ from: string; to: string; strength: number; type: string }>) => {
+    setCurrentGraph((prev) => ({
+      ...prev,
+      relationships: [
+        ...prev.relationships,
+        ...relationships.map((rel) => ({
+          from: rel.from,
+          to: rel.to,
+          strength: rel.strength,
+          type: rel.type as "positive" | "negative" | "complex",
+        })),
+      ],
+    }))
+    setChatKey((prev) => prev + 1)
+  }
 
   return (
     <div className="min-h-screen pt-24 px-4 md:px-6 lg:px-8">
@@ -218,6 +231,7 @@ const handleUpdateChat = (analysis: string, variables: string[], relationships: 
                 scenario={selectedScenario}
                 onHighlightNode={handleHighlightNode}
                 onHighlightRelationship={handleHighlightRelationship}
+                onUpdateGraph={handleUpdateGraph}
               />
             </CardContent>
           </Card>

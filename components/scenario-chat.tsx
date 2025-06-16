@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,12 +12,7 @@ interface Message {
   role: "user" | "assistant"
   content: string
   timestamp: Date
-  correlations?: Array<{
-    from: string
-    to: string
-    value: number
-    type: "positive" | "negative" | "complex"
-  }>
+  correlations?: Array<{ from: string; to: string; value: number; type: string }>
   variables?: string[]
 }
 
@@ -31,20 +25,27 @@ interface ScenarioChatProps {
   }
   onHighlightNode?: (variable: string | null) => void
   onHighlightRelationship?: (from: string, to: string) => void
+  onUpdateGraph?: (relationships: Array<{ from: string; to: string; strength: number; type: string }>) => void
 }
 
-export default function ScenarioChat({ scenario, onHighlightNode, onHighlightRelationship }: ScenarioChatProps) {
+export default function ScenarioChat({
+  scenario,
+  onHighlightNode,
+  onHighlightRelationship,
+  onUpdateGraph,
+}: ScenarioChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
       role: "assistant",
-      content: `Hello! I'm your AI policy assistant. I can help you explore the ${scenario.title} scenario. You can ask me about:
+      content: `Hi 👋🏼 I'm your AI policy assistant. I can help you explore the ${scenario.title} scenario. You can ask me about:
 
 • Causal relationships between variables
 • Potential policy interventions
 • Unintended consequences
 • Historical precedents
 • Scenario simulations
+• Causal graph insights
 
 What would you like to explore?`,
       timestamp: new Date(),
@@ -63,175 +64,6 @@ What would you like to explore?`,
     scrollToBottom()
   }, [messages])
 
-  // Extract correlations from text
-  const extractCorrelations = (text: string) => {
-    const correlations: Array<{
-      from: string
-      to: string
-      value: number
-      type: "positive" | "negative" | "complex"
-    }> = []
-
-    // Pattern to match correlation descriptions
-    const patterns = [
-      /(\w+(?:_\w+)*)\s*→\s*(\w+(?:_\w+)*)\s*$$(?:strength:|correlation:)?\s*([-]?\d*\.?\d+)$$/gi,
-      /(\w+(?:_\w+)*)\s*to\s*(\w+(?:_\w+)*)\s*:\s*([-]?\d*\.?\d+)/gi,
-      /correlation between\s*(\w+(?:_\w+)*)\s*and\s*(\w+(?:_\w+)*)\s*is\s*([-]?\d*\.?\d+)/gi,
-    ]
-
-    patterns.forEach((pattern) => {
-      let match
-      while ((match = pattern.exec(text)) !== null) {
-        const [, from, to, valueStr] = match
-        const value = Number.parseFloat(valueStr)
-        if (!Number.isNaN(value) && Math.abs(value) <= 1) {
-          correlations.push({
-            from: from.toLowerCase(),
-            to: to.toLowerCase(),
-            value,
-            type: value > 0 ? "positive" : value < 0 ? "negative" : "complex",
-          })
-        }
-      }
-    })
-
-    return correlations
-  }
-
-  // Format text with correlation tags
-  const formatMessageContent = (content: string, correlations?: Array<any>) => {
-    let formattedContent = content
-
-    // Replace correlation patterns with tagged versions
-    const correlationPattern = /([-]?\d*\.?\d+)(?=\s*(?:correlation|strength))/gi
-    formattedContent = formattedContent.replace(correlationPattern, (match) => {
-      const value = Number.parseFloat(match)
-      if (!Number.isNaN(value) && Math.abs(value) <= 1) {
-        const type = value > 0 ? "positive" : value < 0 ? "negative" : "complex"
-        return `<correlation data-value="${value}" data-type="${type}">${match}</correlation>`
-      }
-      return match
-    })
-
-    return formattedContent
-  }
-
-  // Simulate AI responses with rich formatting
-  const generateResponse = async (
-    userMessage: string,
-  ): Promise<{ content: string; correlations?: any[]; variables?: string[] }> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000))
-
-    const lowerMessage = userMessage.toLowerCase()
-
-    if (lowerMessage.includes("vaccination") || lowerMessage.includes("vaccine")) {
-      const content = `Based on the causal model, vaccination policies have complex effects:
-
-**Direct Effects:**
-• Higher vaccination_rate → health_outcomes (strength: **0.8**)
-• innovation_funding → vaccination_rate (strength: **0.6**)
-
-**Indirect Effects:**
-• Vaccination success can increase public_trust, but mandates might decrease it
-• Economic benefits from better health_outcomes can justify increased funding
-
-**Policy Recommendations:**
-1. Combine funding increases with transparent communication
-2. Consider voluntary vs. mandatory approaches based on trust levels
-3. Monitor feedback loops between trust and compliance
-
-The correlation between vaccination_rate and public_trust is **0.3**, indicating a complex relationship.`
-
-      return {
-        content,
-        correlations: extractCorrelations(content),
-        variables: ["vaccination_rate", "health_outcomes", "innovation_funding", "public_trust"],
-      }
-    }
-
-    if (lowerMessage.includes("innovation") || lowerMessage.includes("funding") || lowerMessage.includes("research")) {
-      const content = `Innovation funding creates cascading effects in our model:
-
-**Primary Pathways:**
-• research_funding → innovation_speed (correlation: **0.9**)
-• innovation_speed → academic_citations (strength: **0.7**)
-• talent_immigration → innovation_speed (correlation: **0.8**)
-
-**Economic Impact:**
-• innovation_speed → productivity_growth (strength: **0.6**)
-• productivity_growth → economic_growth (correlation: **0.9**)
-
-**Government Role:**
-• govt_rd_funding → research_funding (strength: **0.8**)
-
-**Strategic Considerations:**
-The correlation between talent_immigration and productivity_growth is **0.7**, showing how skilled migration directly boosts economic performance.
-
-Academic citations serve as a key metric, with innovation_speed to academic_citations showing a **0.7** correlation.`
-
-      return {
-        content,
-        correlations: extractCorrelations(content),
-        variables: [
-          "research_funding",
-          "innovation_speed",
-          "academic_citations",
-          "talent_immigration",
-          "productivity_growth",
-        ],
-      }
-    }
-
-    if (lowerMessage.includes("talent") || lowerMessage.includes("immigration")) {
-      const content = `Talent immigration has significant impacts on innovation and productivity:
-
-**Direct Effects:**
-• talent_immigration → innovation_speed (strength: **0.8**)
-• talent_immigration → productivity_growth (correlation: **0.7**)
-
-**Innovation Pathway:**
-• innovation_speed → academic_citations (strength: **0.7**)
-• academic_citations measure the impact of new ideas
-
-**Economic Multiplier:**
-• productivity_growth → economic_growth (correlation: **0.9**)
-
-The relationship between talent_immigration and innovation_speed shows a **0.8** correlation, indicating that skilled migration is crucial for maintaining competitive advantage in research and development.`
-
-      return {
-        content,
-        correlations: extractCorrelations(content),
-        variables: ["talent_immigration", "innovation_speed", "productivity_growth", "academic_citations"],
-      }
-    }
-
-    // Default response
-    const content = `That's an interesting question about ${scenario.title}. Let me analyze this through our causal framework:
-
-**Relevant Variables:**
-${scenario.variables
-  .slice(0, 3)
-  .map((v) => `• ${v.replace("_", " ")}`)
-  .join("\n")}
-
-**Analysis Approach:**
-1. Identify which variables your question affects directly
-2. Trace causal pathways through the network
-3. Consider feedback loops and unintended consequences
-4. Assess uncertainty and confidence levels
-
-Could you help me understand your question better? Are you interested in:
-- A specific policy intervention?
-- Comparing different approaches?
-- Understanding historical patterns?
-- Predicting future scenarios?`
-
-    return {
-      content,
-      variables: scenario.variables.slice(0, 3),
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
@@ -248,22 +80,50 @@ Could you help me understand your question better? Are you interested in:
     setIsLoading(true)
 
     try {
-      const response = await generateResponse(input.trim())
+      const response = await fetch("/api/reason", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: input.trim(), scenario }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      if (result.error) throw new Error(result.error)
+
+      if (result.correlations?.length > 0 && onUpdateGraph) {
+        onUpdateGraph(result.correlations)
+      }
+
+      if (result.variables?.length > 0 && onHighlightNode) {
+        onHighlightNode(result.variables[0])
+      }
+
+      if (result.correlations?.length > 0 && onHighlightRelationship) {
+        onHighlightRelationship(result.correlations[0].from, result.correlations[0].to)
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response.content,
+        content: result.response || "No response generated.",
         timestamp: new Date(),
-        correlations: response.correlations,
-        variables: response.variables,
+        correlations: result.correlations || [],
+        variables: result.variables || [],
       }
       setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
+      console.error("Error processing query:", error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: "I apologize, but I'm having trouble processing your request right now. Please try again.",
         timestamp: new Date(),
+        correlations: [],
+        variables: [],
       }
       setMessages((prev) => [...prev, errorMessage])
     } finally {
@@ -277,67 +137,57 @@ Could you help me understand your question better? Are you interested in:
     }
   }
 
-  const handleCorrelationClick = (correlation: any) => {
+  const handleCorrelationClick = (from: string, to: string) => {
     if (onHighlightRelationship) {
-      onHighlightRelationship(correlation.from, correlation.to)
+      onHighlightRelationship(from, to)
     }
   }
 
   const renderMessageContent = (message: Message) => {
-    let content = message.content
-
-    // Replace **text** with bold formatting
-    content = content.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-
-    // Replace correlation values with clickable tags
-    if (message.correlations) {
-      message.correlations.forEach((corr) => {
-        const pattern = new RegExp(`\\b${corr.value.toFixed(1)}\\b`, "g")
-        content = content.replace(pattern, (match) => {
-          const colorClass =
+    let content = message.content.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    if (message.correlations && message.correlations.length > 0) {
+      const parts = content.split(/(\b-?\d*\.?\d+\b)/g)
+      return parts.map((part, index) => {
+        const corr = message.correlations!.find((c) => c.value.toFixed(1) === part)
+        if (corr) {
+          const baseClasses = "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border cursor-pointer transition-all duration-200"
+          const colorClasses =
             corr.type === "positive"
-              ? "bg-green-100 text-green-800 border-green-300"
+              ? "bg-green-100 text-green-800 border-green-300 hover:bg-green-200 hover:shadow-md"
               : corr.type === "negative"
-                ? "bg-red-100 text-red-800 border-red-300"
-                : "bg-purple-100 text-purple-800 border-purple-300"
-          return `<span class="correlation-tag ${colorClass}" data-from="${corr.from}" data-to="${corr.to}">${match}</span>`
-        })
+              ? "bg-red-100 text-red-800 border-red-300 hover:bg-red-200 hover:shadow-md"
+              : "bg-purple-100 text-purple-800 border-purple-300 hover:bg-purple-200 hover:shadow-md"
+          return (
+            <button
+              key={index}
+              className={`${baseClasses} ${colorClasses}`}
+              onClick={() => handleCorrelationClick(corr.from, corr.to)}
+              title={`Correlation: ${corr.from} → ${corr.to}`}
+            >
+              {part}
+            </button>
+          )
+        }
+        return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />
       })
     }
-
-    return content
+    return <span dangerouslySetInnerHTML={{ __html: content }} />
   }
 
   return (
-    <div className="flex flex-col h-96">
-      {/* Messages */}
+    <div className="flex flex-col h-96 ">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-            <Card className={`max-w-[80%] p-3 ${message.role === "user" ? "bg-black text-white" : "bg-gray-50"}`}>
-              <div
-                className="text-sm whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: renderMessageContent(message) }}
-                onClick={(e) => {
-                  const target = e.target as HTMLElement
-                  if (target.classList.contains("correlation-tag")) {
-                    const from = target.getAttribute("data-from")
-                    const to = target.getAttribute("data-to")
-                    if (from && to && onHighlightRelationship) {
-                      onHighlightRelationship(from, to)
-                    }
-                  }
-                }}
-              />
-
-              {/* Variable Tags */}
+            <Card className={`max-w-[80%] p-4 ${message.role === "user" ? "bg-black text-white" : "bg-gray-50"} shadow-md`}>
+              <div className="text-sm whitespace-pre-wrap">{renderMessageContent(message)}</div>
               {message.variables && message.variables.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1">
+                <div className="mt-3 flex flex-wrap gap-2">
                   {message.variables.map((variable) => (
                     <Badge
                       key={variable}
                       variant="outline"
-                      className="text-xs cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="text-xs cursor-pointer hover:bg-gray-100 transition-colors px-2 py-1"
                       onClick={() => handleVariableClick(variable)}
                     >
                       {variable.replace("_", " ")}
@@ -345,32 +195,33 @@ Could you help me understand your question better? Are you interested in:
                   ))}
                 </div>
               )}
-
-              {/* Correlation Tags */}
               {message.correlations && message.correlations.length > 0 && (
-                <div className="mt-3 space-y-1">
+                <div className="mt-4 space-y-2">
                   <div className="text-xs text-gray-500 font-medium">Correlations:</div>
-                  <div className="flex flex-wrap gap-1">
-                    {message.correlations.map((corr, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleCorrelationClick(corr)}
-                        className={`text-xs px-2 py-1 rounded border cursor-pointer hover:shadow-sm transition-all ${
-                          corr.type === "positive"
-                            ? "bg-green-100 text-green-800 border-green-300 hover:bg-green-200"
-                            : corr.type === "negative"
-                              ? "bg-red-100 text-red-800 border-red-300 hover:bg-red-200"
-                              : "bg-purple-100 text-purple-800 border-purple-300 hover:bg-purple-200"
-                        }`}
-                      >
-                        {corr.from.replace("_", " ")} → {corr.to.replace("_", " ")}: {corr.value.toFixed(1)}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap gap-2">
+                    {message.correlations.map((corr, index) => {
+                      const baseClasses = "flex items-center px-3 py-1 rounded-full text-sm font-medium border cursor-pointer transition-all duration-200"
+                      const colorClasses =
+                        corr.type === "positive"
+                          ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                          : corr.type === "negative"
+                          ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+                          : "bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
+                      return (
+                        <button
+                          key={index}
+                          className={`${baseClasses} ${colorClasses}`}
+                          onClick={() => handleCorrelationClick(corr.from, corr.to)}
+                          title={`Correlation: ${corr.from} → ${corr.to}`}
+                        >
+                          {corr.from.replace("_", " ")} → {corr.to.replace("_", " ")}: {corr.value.toFixed(1)}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}
-
-              <div className={`text-xs mt-2 ${message.role === "user" ? "text-gray-300" : "text-gray-500"}`}>
+              <div className={`text-xs mt-3 ${message.role === "user" ? "text-gray-300" : "text-gray-500"}`}>
                 {message.timestamp.toLocaleTimeString()}
               </div>
             </Card>
@@ -378,7 +229,7 @@ Could you help me understand your question better? Are you interested in:
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <Card className="bg-gray-50 p-3">
+            <Card className="bg-gray-50 p-4 shadow-md">
               <div className="flex items-center space-x-2">
                 <div className="animate-pulse flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
@@ -392,38 +243,24 @@ Could you help me understand your question better? Are you interested in:
         )}
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="border-t p-4">
+      <form onSubmit={handleSubmit} className="border-t p-4 bg-white">
         <div className="flex space-x-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about policy scenarios, interventions, or causal relationships..."
+            placeholder="Ask about policy scenarios, interventions, causal relationships, or causal graph insights..."
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 rounded-md border-gray-300 focus:ring-2 focus:ring-black"
           />
-          <Button type="submit" disabled={!input.trim() || isLoading} className="bg-black text-white hover:bg-gray-800">
+          <Button
+            type="submit"
+            disabled={!input.trim() || isLoading}
+            className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2 transition-colors"
+          >
             Send
           </Button>
         </div>
       </form>
-
-      <style jsx>{`
-        .correlation-tag {
-          display: inline-block;
-          padding: 2px 6px;
-          border-radius: 4px;
-          border: 1px solid;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-weight: 500;
-        }
-        .correlation-tag:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-      `}</style>
     </div>
   )
 }
