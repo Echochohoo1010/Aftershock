@@ -23,7 +23,7 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
-    --radius: 0.0rem;
+    --radius: 1.2rem;
   }
 }
 
@@ -116,4 +116,68 @@
 
 .category-tag {
   @apply inline-block bg-gray-100 text-gray-700 text-xs font-heading font-medium px-3 py-1 rounded-none;
+}
+/* Chain Reaction Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Simulator Layout Styles */
+.simulator-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .simulator-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.simulator-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.simulator-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+}
+
+.simulator-content {
+  flex: 1;
+  overflow: auto;
 }

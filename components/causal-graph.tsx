@@ -40,7 +40,8 @@ export default function CausalGraph({
   }, [relationships])
 
   useEffect(() => {
-    // Initialize node positions in a circle
+    // Initialize node positions in a fixed circle layout
+    // This ensures the graph doesn't move or reposition nodes unexpectedly
     const centerX = 200
     const centerY = 200
     const radius = Math.min(120, 480 / variables.length)
@@ -48,14 +49,20 @@ export default function CausalGraph({
 
     const positions: Record<string, { x: number; y: number }> = {}
     variables.forEach((variable, index) => {
+      // Use a consistent ordering to prevent layout shifts
       const angle = index * angleStep
       positions[variable] = {
         x: centerX + radius * Math.cos(angle),
         y: centerY + radius * Math.sin(angle),
       }
     })
-    setNodePositions(positions)
-  }, [variables])
+
+    // Only set positions if they haven't been set before
+    // This prevents the graph from re-arranging when data changes
+    if (Object.keys(nodePositions).length === 0) {
+      setNodePositions(positions)
+    }
+  }, [variables, nodePositions])
 
   // Auto-highlight from chat
   useEffect(() => {
@@ -321,13 +328,12 @@ export default function CausalGraph({
               </div>
               <div className="text-xs text-green-500">+1</div>
               <div
-                className={`text-xs font-mono px-2 py-1 rounded ${
-                  selectedRelationship.strength > 0
+                className={`text-xs font-mono px-2 py-1 rounded ${selectedRelationship.strength > 0
                     ? "bg-green-100 text-green-800"
                     : selectedRelationship.strength < 0
                       ? "bg-red-100 text-red-800"
                       : "bg-gray-100 text-gray-800"
-                }`}
+                  }`}
               >
                 {selectedRelationship.strength.toFixed(1)}
               </div>

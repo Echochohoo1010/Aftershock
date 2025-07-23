@@ -2,374 +2,573 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Sparkles, RotateCcw } from "lucide-react"
+import CausalGraph from "@/components/causal-graph"
+import ChainReactionPanel from "@/components/chain-reaction-panel"
+import ScenarioChat from "@/components/scenario-chat"
+import { Share2, Shapes } from "lucide-react"
 
-interface GeneratedRelationship {
-  from: string
-  to: string
-  strength: number
-  type: "positive" | "negative" | "complex"
-  explanation: string
+// Default economic policy causal graph
+const defaultVariables = [
+  "economic_growth",
+  "inflation",
+  "unemployment",
+  "public_debt",
+  "consumer_spending",
+  "business_investment"
+]
+
+const defaultRelationships = [
+  { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
+  { from: "economic_growth", to: "inflation", strength: 0.5, type: "positive" },
+  { from: "inflation", to: "consumer_spending", strength: -0.4, type: "negative" },
+  { from: "unemployment", to: "consumer_spending", strength: -0.6, type: "negative" },
+  { from: "consumer_spending", to: "business_investment", strength: 0.6, type: "positive" },
+  { from: "business_investment", to: "economic_growth", strength: 0.7, type: "positive" },
+  { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" }
+]
+
+// Predefined responses for different event types
+const eventResponses = {
+  "Policy Implementation": [
+    "The policy implementation phase establishes the foundation for all subsequent effects. Key parameters have been calibrated based on historical precedents and current economic conditions.",
+    "Initial policy parameters have been configured with attention to both short-term stimulus effects and long-term structural impacts on the economy.",
+    "The implementation strategy includes phased rollout to allow for adaptive management and calibration based on early feedback loops."
+  ],
+  "Stakeholder Response": [
+    "Business sector adaptation shows positive initial reception, with particular enthusiasm from small and medium enterprises that stand to benefit from the policy provisions.",
+    "Key stakeholders are mobilizing resources to align with policy incentives, creating a multiplier effect that amplifies the intended outcomes.",
+    "Early stakeholder engagement indicates strong buy-in from industry leaders, which typically correlates with successful policy diffusion across sectors."
+  ],
+  "Market Adjustment": [
+    "Short-term market volatility is an expected transitional effect as market participants recalibrate expectations and pricing models to account for the new policy landscape.",
+    "The observed market fluctuations are within predicted parameters and should stabilize as information asymmetries are resolved through continued policy communication.",
+    "Market adjustment patterns suggest a temporary reallocation of capital that typically precedes a new equilibrium state aligned with policy objectives."
+  ],
+  "Regulatory Compliance": [
+    "New compliance protocols are being established across affected sectors, with initial adoption rates tracking above baseline projections for similar policy interventions.",
+    "The regulatory framework is adapting to accommodate policy requirements while minimizing administrative burden on implementing organizations.",
+    "Compliance mechanisms show early signs of effectiveness, with key performance indicators suggesting strong alignment between policy intent and operational execution."
+  ],
+  "Economic Impact": [
+    "GDP growth projections have been updated to reflect the policy's stimulative effects, with particular strength in sectors directly targeted by the intervention.",
+    "Macroeconomic indicators are responding positively, with multiplier effects beginning to manifest across supply chains and adjacent economic sectors.",
+    "The economic impact assessment shows promising early results, with leading indicators suggesting sustained growth potential beyond the initial implementation phase."
+  ],
+  "Social Response": [
+    "Public opinion shifts indicate heightened awareness and engagement with the policy objectives, though sentiment remains mixed across different demographic segments.",
+    "Social media analysis reveals increasing discussion volume around policy impacts, with sentiment trending toward cautious optimism in key stakeholder communities.",
+    "Community response patterns suggest the emergence of advocacy networks that could amplify policy effectiveness through grassroots implementation support."
+  ],
+  "Resource Allocation": [
+    "Budget redistribution processes are underway, with fiscal resources being realigned to support policy priorities while maintaining overall fiscal discipline.",
+    "Resource allocation mechanisms are functioning as designed, directing capital and operational support to areas with highest impact potential.",
+    "The resource deployment strategy is balancing immediate implementation needs with long-term sustainability considerations to ensure durable policy outcomes."
+  ],
+  "Long-term Effects": [
+    "Sustainable development indicators are showing improvement, suggesting the policy is successfully addressing structural challenges without creating new externalities.",
+    "Long-horizon projections indicate positive trajectory for key outcome metrics, with particular strength in areas related to system resilience and adaptive capacity.",
+    "The policy appears to be establishing virtuous cycles that could generate self-reinforcing positive outcomes beyond the direct intervention period."
+  ]
+};
+
+// Default responses for any event type not specifically covered
+const defaultResponses = [
+  "This event represents a critical juncture in the policy implementation process, with implications for both immediate outcomes and long-term system dynamics.",
+  "The observed effects align with theoretical models of policy diffusion and impact, suggesting the intervention is functioning as designed.",
+  "This development indicates the policy is engaging with target systems as intended, though continued monitoring is essential to track secondary and tertiary effects."
+];
+
+// Pre-filled case studies with custom causal graphs
+const caseStudies = [
+  {
+    id: "fiscal-stimulus",
+    title: "Fiscal Stimulus Package",
+    description: "A comprehensive fiscal stimulus package aimed at boosting economic growth through increased government spending on infrastructure projects, tax cuts for middle-income households, and targeted support for small businesses affected by economic downturns.",
+    icon: "💰",
+    variables: [
+      "government_spending",
+      "economic_growth",
+      "unemployment",
+      "public_debt",
+      "consumer_confidence",
+      "business_investment",
+      "inflation"
+    ],
+    relationships: [
+      { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" },
+      { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" },
+      { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" },
+      { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
+      { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" },
+      { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" },
+      { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" },
+      { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" },
+      { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" },
+      { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" }
+    ]
+  },
+  {
+    id: "carbon-tax",
+    title: "Carbon Tax Implementation",
+    description: "A progressive carbon tax policy designed to reduce greenhouse gas emissions by placing a price on carbon dioxide emissions. The policy includes rebates for low-income households and investments in renewable energy infrastructure to ease the transition.",
+    icon: "🌿",
+    variables: [
+      "carbon_emissions",
+      "energy_prices",
+      "renewable_investment",
+      "consumer_spending",
+      "innovation",
+      "economic_growth",
+      "government_revenue"
+    ],
+    relationships: [
+      { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" },
+      { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" },
+      { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" },
+      { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" },
+      { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" },
+      { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" },
+      { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" },
+      { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" },
+      { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" },
+      { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" }
+    ]
+  },
+  {
+    id: "education-reform",
+    title: "Education Reform Initiative",
+    description: "A nationwide education reform program focusing on modernizing curriculum, increasing teacher compensation, expanding early childhood education access, and implementing technology-enhanced learning methods to improve educational outcomes.",
+    icon: "📚",
+    variables: [
+      "education_funding",
+      "teacher_quality",
+      "student_outcomes",
+      "workforce_skills",
+      "economic_productivity",
+      "income_inequality",
+      "innovation_capacity"
+    ],
+    relationships: [
+      { from: "education_funding", to: "teacher_quality", strength: 0.7, type: "positive" },
+      { from: "teacher_quality", to: "student_outcomes", strength: 0.8, type: "positive" },
+      { from: "student_outcomes", to: "workforce_skills", strength: 0.7, type: "positive" },
+      { from: "workforce_skills", to: "economic_productivity", strength: 0.6, type: "positive" },
+      { from: "economic_productivity", to: "income_inequality", strength: -0.4, type: "negative" },
+      { from: "student_outcomes", to: "innovation_capacity", strength: 0.5, type: "positive" },
+      { from: "innovation_capacity", to: "economic_productivity", strength: 0.7, type: "positive" },
+      { from: "income_inequality", to: "student_outcomes", strength: -0.5, type: "negative" },
+      { from: "education_funding", to: "innovation_capacity", strength: 0.4, type: "positive" },
+      { from: "workforce_skills", to: "income_inequality", strength: -0.6, type: "negative" }
+    ]
+  },
+  {
+    id: "healthcare-access",
+    title: "Universal Healthcare Access",
+    description: "A policy proposal to expand healthcare access through a combination of public insurance options, subsidies for private insurance, price controls on prescription medications, and investments in preventative care and rural healthcare facilities.",
+    icon: "🏥",
+    variables: [
+      "healthcare_coverage",
+      "healthcare_costs",
+      "public_health",
+      "labor_productivity",
+      "government_spending",
+      "personal_bankruptcy",
+      "economic_growth"
+    ],
+    relationships: [
+      { from: "healthcare_coverage", to: "public_health", strength: 0.8, type: "positive" },
+      { from: "healthcare_coverage", to: "healthcare_costs", strength: -0.5, type: "negative" },
+      { from: "healthcare_costs", to: "personal_bankruptcy", strength: 0.6, type: "positive" },
+      { from: "public_health", to: "labor_productivity", strength: 0.7, type: "positive" },
+      { from: "labor_productivity", to: "economic_growth", strength: 0.6, type: "positive" },
+      { from: "government_spending", to: "healthcare_coverage", strength: 0.8, type: "positive" },
+      { from: "government_spending", to: "economic_growth", strength: -0.3, type: "negative" },
+      { from: "personal_bankruptcy", to: "economic_growth", strength: -0.4, type: "negative" },
+      { from: "healthcare_costs", to: "government_spending", strength: 0.5, type: "positive" },
+      { from: "public_health", to: "healthcare_costs", strength: -0.4, type: "negative" }
+    ]
+  }
+]
+
+// Interface for chain reaction events
+interface ReactionEvent {
+  id: string
+  title: string
+  description: string
+  type: "positive" | "negative" | "neutral" | "alert"
+  timestamp: Date
+  magnitude: number
 }
 
-interface CustomPolicyAnalystProps {
-  onGenerateGraph: (variables: string[], relationships: GeneratedRelationship[]) => void
-  onUpdateChat: (analysis: string, variables: string[], relationships: GeneratedRelationship[]) => void
-}
+export default function CustomPolicyAnalyst() {
+  const [policyTitle, setPolicyTitle] = useState("")
+  const [policyDescription, setPolicyDescription] = useState("")
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [highlightedNode, setHighlightedNode] = useState<string | null>(null)
+  const [highlightedRelationship, setHighlightedRelationship] = useState<{ from: string; to: string } | null>(null)
+  const [variables, setVariables] = useState(defaultVariables)
+  const [relationships, setRelationships] = useState(defaultRelationships)
+  const [showCaseStudies, setShowCaseStudies] = useState(false)
+  const [activeTab, setActiveTab] = useState<"explore1" | "explore2">("explore1")
+  const [selectedEvent, setSelectedEvent] = useState<ReactionEvent | null>(null)
+  const [quickTags, setQuickTags] = useState<string[]>([])
 
-export default function CustomPolicyAnalyst({ onGenerateGraph, onUpdateChat }: CustomPolicyAnalystProps) {
-  const [variableA, setVariableA] = useState("")
-  const [variableB, setVariableB] = useState("")
-  const [context, setContext] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedGraph, setGeneratedGraph] = useState<{
-    variables: string[]
-    relationships: GeneratedRelationship[]
-    analysis: string
-  } | null>(null)
+  const handleSubmit = () => {
+    if (policyTitle.trim() && policyDescription.trim()) {
+      setIsSubmitted(true)
+      setShowCaseStudies(false)
 
-  const generateCausalGraph = async () => {
-    if (!variableA.trim() || !variableB.trim()) return
-
-    setIsGenerating(true)
-
-    // Simulate AI analysis delay
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Generate intermediate variables and relationships
-    const cleanVarA = variableA.trim().toLowerCase().replace(/\s+/g, "_")
-    const cleanVarB = variableB.trim().toLowerCase().replace(/\s+/g, "_")
-
-    // Generate 2-3 intermediate variables based on context
-    const intermediateVars = generateIntermediateVariables(cleanVarA, cleanVarB, context)
-    const allVariables = [cleanVarA, ...intermediateVars, cleanVarB]
-
-    // Generate 3-5 causal relationships
-    const relationships = generateCausalRelationships(allVariables, cleanVarA, cleanVarB)
-
-    // Generate analysis text
-    const analysis = generateAnalysisText(cleanVarA, cleanVarB, relationships, context)
-
-    const result = {
-      variables: allVariables,
-      relationships,
-      analysis,
-    }
-
-    setGeneratedGraph(result)
-    setIsGenerating(false)
-  }
-
-  const generateIntermediateVariables = (varA: string, varB: string, context: string): string[] => {
-    // Context-aware intermediate variable generation
-    const contextLower = context.toLowerCase()
-
-    if (contextLower.includes("innovation") || contextLower.includes("research")) {
-      return ["research_funding", "innovation_capacity", "knowledge_transfer"]
-    }
-
-    if (contextLower.includes("economic") || contextLower.includes("growth")) {
-      return ["investment_levels", "market_confidence", "productivity_gains"]
-    }
-
-    if (contextLower.includes("policy") || contextLower.includes("regulation")) {
-      return ["regulatory_framework", "compliance_costs", "stakeholder_engagement"]
-    }
-
-    if (contextLower.includes("social") || contextLower.includes("public")) {
-      return ["public_awareness", "social_acceptance", "behavioral_change"]
-    }
-
-    if (contextLower.includes("technology") || contextLower.includes("digital")) {
-      return ["tech_adoption", "digital_infrastructure", "skill_development"]
-    }
-
-    // Default intermediate variables
-    return ["institutional_capacity", "resource_allocation", "implementation_effectiveness"]
-  }
-
-  const generateCausalRelationships = (
-    variables: string[],
-    startVar: string,
-    endVar: string,
-  ): GeneratedRelationship[] => {
-    const relationships: GeneratedRelationship[] = []
-
-    // Create a path from A to B through intermediate variables
-    for (let i = 0; i < variables.length - 1; i++) {
-      const from = variables[i]
-      const to = variables[i + 1]
-
-      // Generate realistic correlation strengths
-      const strength = 0.4 + Math.random() * 0.5 // Between 0.4 and 0.9
-      const type = strength > 0.7 ? "positive" : strength > 0.5 ? "complex" : "positive"
-
-      relationships.push({
-        from,
-        to,
-        strength: Number.parseFloat(strength.toFixed(1)),
-        type,
-        explanation: generateRelationshipExplanation(from, to, strength),
-      })
-    }
-
-    // Add 1-2 additional cross-relationships for complexity
-    if (variables.length >= 4) {
-      // Add a relationship that skips one intermediate variable
-      const skipRelationship = {
-        from: variables[0],
-        to: variables[2],
-        strength: Number.parseFloat((0.3 + Math.random() * 0.4).toFixed(1)),
-        type: "complex" as const,
-        explanation: `Direct influence pathway between ${variables[0].replace("_", " ")} and ${variables[2].replace("_", " ")}`,
-      }
-      relationships.push(skipRelationship)
-
-      // Add a feedback loop if we have enough variables
-      if (variables.length >= 5) {
-        const feedbackRelationship = {
-          from: variables[variables.length - 2],
-          to: variables[1],
-          strength: Number.parseFloat((0.2 + Math.random() * 0.3).toFixed(1)),
-          type: "positive" as const,
-          explanation: `Feedback effect from ${variables[variables.length - 2].replace("_", " ")} back to ${variables[1].replace("_", " ")}`,
-        }
-        relationships.push(feedbackRelationship)
-      }
-    }
-
-    return relationships
-  }
-
-  const generateRelationshipExplanation = (from: string, to: string, strength: number): string => {
-    const fromClean = from.replace("_", " ")
-    const toClean = to.replace("_", " ")
-
-    if (strength > 0.7) {
-      return `Strong positive relationship: ${fromClean} significantly enhances ${toClean}`
-    }
-    if (strength > 0.5) {
-      return `Moderate relationship: ${fromClean} influences ${toClean} through multiple pathways`
-    }
-    return `Weak but meaningful connection: ${fromClean} has indirect effects on ${toClean}`
-  }
-
-  const generateAnalysisText = (
-    varA: string,
-    varB: string,
-    relationships: GeneratedRelationship[],
-    context: string,
-  ): string => {
-    const varAClean = varA.replace("_", " ")
-    const varBClean = varB.replace("_", " ")
-
-    return `## Causal Analysis: ${varAClean} → ${varBClean}
-
-**Context:** ${context || "General policy analysis"}
-
-**Generated Causal Pathway:**
-${relationships
-  .map(
-    (rel) =>
-      `• **${rel.from.replace("_", " ")}** → **${rel.to.replace("_", " ")}** (${rel.strength}): ${rel.explanation}`,
-  )
-  .join("\n")}
-
-**Key Insights:**
-1. **Direct Effects**: The primary pathway shows ${relationships.length} intermediate steps
-2. **Strength Analysis**: Average correlation strength is ${(relationships.reduce((sum, rel) => sum + rel.strength, 0) / relationships.length).toFixed(2)}
-3. **Policy Implications**: This pathway suggests that interventions targeting ${varAClean} will affect ${varBClean} through multiple mechanisms
-
-**Recommendations:**
-- Monitor intermediate variables for early indicators of change
-- Consider multi-pronged interventions that address several pathway components
-- Establish feedback mechanisms to track unintended consequences
-
-Click on any correlation value or variable name to highlight it in the graph above.`
-  }
-
-  const handleApplyGraph = () => {
-    if (generatedGraph) {
-      onGenerateGraph(generatedGraph.variables, generatedGraph.relationships)
-      onUpdateChat(generatedGraph.analysis, generatedGraph.variables, generatedGraph.relationships)
+      // Generate quick tags based on variables
+      const tags = variables.slice(0, 5).map(v => v.replace(/_/g, ' '));
+      setQuickTags(tags);
     }
   }
 
   const handleReset = () => {
-    setVariableA("")
-    setVariableB("")
-    setContext("")
-    setGeneratedGraph(null)
+    setPolicyTitle("")
+    setPolicyDescription("")
+    setIsSubmitted(false)
+    setHighlightedNode(null)
+    setHighlightedRelationship(null)
+    setVariables(defaultVariables)
+    setRelationships(defaultRelationships)
+    setSelectedEvent(null)
+    setQuickTags([])
+  }
+
+  const handleHighlightNode = (variable: string | null) => {
+    setHighlightedNode(variable)
+  }
+
+  const handleHighlightRelationship = (from: string, to: string) => {
+    setHighlightedRelationship({ from, to })
+  }
+
+  const handleUpdateGraph = (newRelationships: Array<{ from: string; to: string; strength: number; type: string }>) => {
+    setRelationships(prev => {
+      const updated = [...prev]
+
+      newRelationships.forEach(newRel => {
+        const index = updated.findIndex(rel => rel.from === newRel.from && rel.to === newRel.to)
+        if (index !== -1) {
+          // Ensure the type is one of the allowed values
+          const validType = newRel.type === "positive" || newRel.type === "negative" || newRel.type === "complex"
+            ? newRel.type as "positive" | "negative" | "complex"
+            : "complex";
+
+          updated[index] = {
+            ...updated[index],
+            strength: newRel.strength,
+            type: validType
+          }
+        } else {
+          // Ensure the type is one of the allowed values for new relationships
+          const validType = newRel.type === "positive" || newRel.type === "negative" || newRel.type === "complex"
+            ? newRel.type as "positive" | "negative" | "complex"
+            : "complex";
+
+          updated.push({
+            from: newRel.from,
+            to: newRel.to,
+            strength: newRel.strength,
+            type: validType
+          })
+        }
+      })
+
+      return updated
+    })
+  }
+
+  const selectCaseStudy = (caseStudy: typeof caseStudies[0]) => {
+    setPolicyTitle(caseStudy.title)
+    setPolicyDescription(caseStudy.description)
+    setVariables(caseStudy.variables)
+
+    // Convert relationship types to match CausalGraph component requirements
+    const typedRelationships = caseStudy.relationships.map(rel => ({
+      ...rel,
+      type: rel.type === "positive" || rel.type === "negative" || rel.type === "complex"
+        ? rel.type as "positive" | "negative" | "complex"
+        : "complex"
+    }))
+
+    setRelationships(typedRelationships)
+    setShowCaseStudies(false)
+  }
+
+  const handleEventSelect = (event: ReactionEvent) => {
+    setSelectedEvent(event);
+  }
+
+  // Generate analysis for a chain reaction event
+  const generateEventAnalysis = (event: ReactionEvent) => {
+    // Select a response based on the event title or use default
+    const possibleResponses = eventResponses[event.title as keyof typeof eventResponses] || defaultResponses;
+    const response = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+
+    return `${response} This ${event.type} event has a ${Math.round(event.magnitude)}% impact magnitude, indicating ${event.magnitude > 50 ? 'significant' : 'moderate'} system effects. ${event.description} The policy "${policyTitle}" appears to be ${event.type === 'positive' ? 'effectively addressing' : event.type === 'negative' ? 'facing challenges in' : 'gradually influencing'} this aspect of the system.`;
   }
 
   return (
-    <Card className="w-full">
-     
-      <CardHeader>
-        <CardTitle className="font-heading flex items-center gap-2">
-          <Sparkles className="h-5 w-5" />
-          Custom Policy Analyst
-        </CardTitle>
-        <CardDescription>
-          Enter two variables to generate a causal pathway analysis with intermediate relationships
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2 ">
-
-<div className="grid grid-cols-2 w-full">
-      <div>
-        {/* Input Section */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="variable-a">Variable A (Starting Point)</Label>
-            <Input
-              id="variable-a"
-              placeholder="e.g., Government Funding"
-              value={variableA}
-              onChange={(e) => setVariableA(e.target.value)}
-              disabled={isGenerating}
-            />
+    <div className="container mx-auto p-4 max-w-7xl">
+      {/* Policy Input Form */}
+      <Card className="p-6 mb-8 shadow-md">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-2xl font-bold">Policy Details</h2>
+            <Button
+              variant="outline"
+              onClick={() => setShowCaseStudies(!showCaseStudies)}
+              disabled={isSubmitted}
+            >
+              {showCaseStudies ? "Hide Case Studies" : "Load Case Study"}
+            </Button>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="variable-b">Variable B (Outcome)</Label>
-            <Input
-              id="variable-b"
-              placeholder="e.g., Innovation Rate"
-              value={variableB}
-              onChange={(e) => setVariableB(e.target.value)}
-              disabled={isGenerating}
-            />
-          </div>
-        </div>
 
-        {/* Context Input */}
-        <div className="space-y-2 ">
-          <Label htmlFor="context">Policy Context (Optional)</Label>
-          <Textarea
-            id="context"
-            placeholder="Describe the policy domain, specific context, or constraints that should influence the causal pathway..."
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            disabled={isGenerating}
-            className="min-h-[80px]"
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            onClick={generateCausalGraph}
-            disabled={!variableA.trim() || !variableB.trim() || isGenerating}
-            className="bg-black text-white hover:bg-gray-800 flex-1"
-          >
-            {isGenerating ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Generating Analysis...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Generate Causal Analysis
-              </>
-            )}
-          </Button>
-          <Button onClick={handleReset} variant="outline" disabled={isGenerating}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-        </div>
-
-        </div>
-<div>
-
- 
-
-        {/* Generated Results */}
-        {generatedGraph && (
-          <div className="border-l ml-4 px-6 space-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-heading font-semibold">Generated Causal Pathway</h3>
-              <Button onClick={handleApplyGraph} className="bg-green-600 hover:bg-green-700 text-white">
-                <ArrowRight className="h-4 w-4 mr-2" />
-                Apply to Graph & Chat
-              </Button>
-              <Button
-  variant="outline"
-  onClick={() => navigator.clipboard.writeText(generatedGraph.analysis)}
->
-  Copy Analysis
-</Button>
-
-            </div>
-
-            {/* Variable Flow Visualization */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center justify-center flex-wrap gap-2">
-                {generatedGraph.variables.map((variable, index) => (
-                  <div key={variable} className="flex items-center">
-                    <Badge variant="secondary" className="px-3 py-1">
-                      {variable.replace("_", " ")}
-                    </Badge>
-                    {index < generatedGraph.variables.length - 1 && (
-                      <ArrowRight className="h-4 w-4 mx-2 text-gray-400" />
-                    )}
-                  </div>
-                ))}
+          {showCaseStudies && !isSubmitted && (
+            <div className="mb-6 border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 p-3 border-b">
+                <h3 className="font-medium">Select a Pre-filled Case Study</h3>
+                <p className="text-xs text-gray-500 mt-1">Each case study includes a custom causal graph with relevant variables and relationships</p>
               </div>
-            </div>
-
-            {/* Relationships Summary */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm">Generated Relationships:</h4>
-              <div className="grid gap-2">
-                {generatedGraph.relationships.map((rel, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{rel.from.replace("_", " ")}</span>
-                      <ArrowRight className="h-3 w-3 text-gray-400" />
-                      <span className="font-medium">{rel.to.replace("_", " ")}</span>
+              <div className="divide-y">
+                {caseStudies.map((study) => (
+                  <div
+                    key={study.id}
+                    className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-start gap-3"
+                    onClick={() => selectCaseStudy(study)}
+                  >
+                    <div className="text-2xl">{study.icon}</div>
+                    <div>
+                      <h4 className="font-medium">{study.title}</h4>
+                      <p className="text-sm text-gray-600 line-clamp-2">{study.description}</p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {study.variables.slice(0, 3).map(variable => (
+                          <span key={variable} className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                            {variable.replace(/_/g, ' ')}
+                          </span>
+                        ))}
+                        {study.variables.length > 3 && (
+                          <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                            +{study.variables.length - 3} more
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={
-                        rel.type === "positive"
-                          ? "border-green-300 text-green-700"
-                          : rel.type === "negative"
-                            ? "border-red-300 text-red-700"
-                            : "border-purple-300 text-purple-700"
-                      }
-                    >
-                      {rel.strength}
-                    </Badge>
                   </div>
                 ))}
               </div>
             </div>
+          )}
+
+          <div>
+            <Label htmlFor="policy-title" className="text-lg font-medium">Policy Title</Label>
+            <Input
+              id="policy-title"
+              value={policyTitle}
+              onChange={(e) => setPolicyTitle(e.target.value)}
+              placeholder="Enter policy title"
+              disabled={isSubmitted}
+              className="mt-1"
+            />
           </div>
-        )}
 
-      </div>  </div> 
+          <div>
+            <Label htmlFor="policy-description" className="text-lg font-medium">Policy Description</Label>
+            <Textarea
+              id="policy-description"
+              value={policyDescription}
+              onChange={(e) => setPolicyDescription(e.target.value)}
+              placeholder="Describe your policy proposal in detail"
+              rows={4}
+              disabled={isSubmitted}
+              className="mt-1"
+            />
+          </div>
 
-      
-      </CardContent>
-    </Card>
+          <div className="flex justify-end space-x-2 pt-2">
+            {isSubmitted ? (
+              <Button onClick={handleReset} variant="outline" size="lg">
+                Reset Analysis
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={!policyTitle.trim() || !policyDescription.trim()}
+                size="lg"
+                className="bg-black hover:bg-gray-800 text-white"
+              >
+                Analyze Policy
+              </Button>
+            )}
+          </div>
+        </div>
+      </Card>
+
+      {isSubmitted && (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left column: Active Simulator */}
+            <div>
+              <Card className="overflow-hidden shadow-md">
+                <div className="p-4 my-2 border-b bg-gray-50  justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-bold">
+                      {activeTab === "explore1" ? "Causal Graph" : "Chain Reactions"}
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      {activeTab === "explore1"
+                        ? "Visualize and modify causal relationships between variables"
+                        : "Monitor real-time system responses to policy changes"}
+                    </p>
+                  </div>
+
+                  <div className="flex my-2 border rounded-sm text-sm overflow-hidden w-fit">
+                    <Button
+                      variant={activeTab === "explore1" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActiveTab("explore1")}
+                      className={`rounded-none ${activeTab === "explore1" ? "bg-black text-white" : ""}`}
+                    >
+                      <Shapes className="w-4 h-4 mr-1" />
+                      Explore I
+                    </Button>
+                    <Button
+                      variant={activeTab === "explore2" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActiveTab("explore2")}
+                      className={`rounded-none ${activeTab === "explore2" ? "bg-black text-white" : ""}`}
+                    >
+                      <Share2 className="w-4 h-4" />
+
+                      Explore II
+                    </Button>
+                  </div>
+
+
+                </div>
+
+
+                <div className="h-[480px]">
+
+
+
+
+
+                  {activeTab === "explore1" ? (
+                    <div className="p-4 h-full">
+                      <CausalGraph
+                        variables={variables}
+                        relationships={relationships}
+                        highlightedNode={highlightedNode}
+                        highlightedRelationship={highlightedRelationship}
+                      />
+                    </div>
+                  ) : (
+                    <ChainReactionPanel
+                      isActive={isSubmitted}
+                      policyInput={`${policyTitle}: ${policyDescription}`}
+                      onEventSelect={handleEventSelect}
+                      selectedEventId={selectedEvent?.id}
+                    />
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            {/* Right column: Policy Assistant */}
+            <div>
+              <Card className="overflow-hidden shadow-md h-full">
+                <div className="p-4 border-b bg-gray-50">
+                  <h2 className="text-xl font-bold">Policy Assistant</h2>
+                  <p className="text-sm text-gray-600">
+                    Ask questions about policy impacts and explore scenarios
+                  </p>
+
+                  {/* Quick tags for highlighting */}
+                  {quickTags.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {quickTags.map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-xs cursor-pointer hover:bg-gray-100 transition-colors"
+                          onClick={() => {
+                            // Find the original variable name with underscores
+                            const originalVar = variables.find(v => v.replace(/_/g, ' ') === tag);
+                            if (originalVar) handleHighlightNode(originalVar);
+                          }}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="h-[480px]">
+                  <ScenarioChat
+                    scenario={{
+                      id: "1",
+                      title: policyTitle,
+                      description: policyDescription,
+                      variables: variables,
+                    }}
+                    onHighlightNode={handleHighlightNode}
+                    onHighlightRelationship={handleHighlightRelationship}
+                    onUpdateGraph={handleUpdateGraph}
+                    selectedEvent={selectedEvent}
+                    generateEventAnalysis={generateEventAnalysis}
+                    activeSimulator={activeTab}
+                    onChangeSimulator={setActiveTab}
+                  />
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          {/* Insights Panel */}
+          <Card className="p-6 shadow-md">
+            <h2 className="text-xl font-bold mb-4">Integrated Policy Insights</h2>
+            <p className="text-gray-600 mb-4">
+              This holistic analysis combines causal relationships (Explore I) with temporal chain reactions (Explore II)
+              to provide a comprehensive view of policy impacts across multiple dimensions.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-bold mb-2">Causal Insights</h3>
+                <p className="text-sm text-gray-600">
+                  The causal graph reveals key relationships between {variables.length} variables,
+                  with {relationships.filter(r => Math.abs(r.strength) > 0.6).length} strong connections
+                  that suggest significant policy leverage points.
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-bold mb-2">Temporal Dynamics</h3>
+                <p className="text-sm text-gray-600">
+                  Chain reactions show how policy effects cascade through the system over time,
+                  with initial stakeholder responses leading to broader impacts across multiple domains.
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-bold mb-2">Recommendations</h3>
+                <p className="text-sm text-gray-600">
+                  Consider monitoring {variables[Math.floor(Math.random() * variables.length)].replace(/_/g, ' ')} closely
+                  as it shows potential for significant downstream effects. Long-term outcomes appear
+                  {relationships.filter(r => r.type === "positive").length >
+                    relationships.filter(r => r.type === "negative").length ? " positive" : " mixed"}
+                  based on the causal structure.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
   )
 }

@@ -2,6 +2,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
+import { ArrowBigUpIcon, ArrowUpRight, Feather, ShapesIcon, Share2Icon } from "lucide-react"
 
 // Dynamically import the 3D component to avoid SSR issues
 const Metaballs3D = dynamic(() => import("@/components/metaballs-3d"), {
@@ -104,20 +105,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M12 1v6m0 6v6"></path>
-                  <path d="m21 12-6-3-6 3-6-3"></path>
-                </svg>
+                <ShapesIcon className="w-8 h-8 font-light text-white" />
               </div>
               <h3 className="font-heading text-xl font-semibold mb-2">Causal Graphs</h3>
               <p className="text-gray-600">
@@ -127,18 +115,7 @@ export default function Home() {
 
             <div className="text-center">
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
+                <Feather className="w-8 h-8 font-light text-white" />
               </div>
               <h3 className="font-heading text-xl font-semibold mb-2">AI Chat Assistant</h3>
               <p className="text-gray-600">Natural language conversations about policy scenarios and interventions</p>
@@ -146,19 +123,7 @@ export default function Home() {
 
             <div className="text-center">
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 3v18h18"></path>
-                  <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-                </svg>
+                <Share2Icon className="w-8 h-8 text-white" />
               </div>
               <h3 className="font-heading text-xl font-semibold mb-2">Scenario Simulation</h3>
               <p className="text-gray-600">
@@ -171,19 +136,7 @@ export default function Home() {
             <Link href="/explore">
               <Button className="text-lg px-8 py-4 bg-black text-white hover:bg-gray-800 font-heading">
                 Try the AI Explorer
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="ml-2 h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M7 7h10v10"></path>
-                  <path d="M7 17 17 7"></path>
-                </svg>
+                <ArrowUpRight className="w-10 h-10" />
               </Button>
             </Link>
           </div>
@@ -230,7 +183,7 @@ export default function Home() {
       <section className="py-24 px-4 md:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-12">
-            <h2 className="font-heading text-4xl font-semibold">Latest Research</h2>
+            <h2 className="font-heading text-4xl font-semibold">Latest Research Blogs</h2>
             <Link href="/blog" className="text-lg font-heading underline underline-offset-4 hover:text-gray-600">
               View All Posts
             </Link>
@@ -263,7 +216,7 @@ export default function Home() {
               },
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.id}`}>
-                <article className="blog-card">
+                <article className="rounded-lg">
                   <div className="mb-4">
                     <span className="category-tag">{post.category}</span>
                   </div>
@@ -277,6 +230,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Features Section */}
+      <div className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-12 text-center">Simulator Features</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-bold mb-3">Causal Graph Analysis</h3>
+              <p className="text-gray-600 mb-4">
+                Visualize and modify causal relationships between key variables to understand
+                how changes in one factor affect others throughout the system.
+              </p>
+              <div className="text-sm font-medium text-black">Explore I</div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-bold mb-3">Chain Reaction Simulator</h3>
+              <p className="text-gray-600 mb-4">
+                Monitor real-time system responses to policy changes as they cascade through
+                stakeholders, markets, regulations, and social systems.
+              </p>
+              <div className="text-sm font-medium text-black">Explore II</div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-bold mb-3">AI Policy Assistant</h3>
+              <p className="text-gray-600 mb-4">
+                Interact with our AI assistant to ask questions about policy impacts, explore
+                alternative scenarios, and receive insights on potential outcomes.
+              </p>
+              <div className="text-sm font-medium text-black">Interactive Analysis</div>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Team Section */}
       <section className="py-24 px-4 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

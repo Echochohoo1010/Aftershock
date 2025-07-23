@@ -15,13 +15,13 @@ const noticaText = Noticia_Text({
   subsets: ["latin"],
   variable: "--font-notica",
   display: "swap",
-    weight: ['400', '700'], // optional weights
+  weight: ['400', '700'], // optional weights
 })
 
 export const metadata = {
   title: "Exploratory Policy",
   description: "Developing causal AI tools for policy formulation and analysis",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -30,10 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${noticaText.variable}`}
-    >
+    <html lang="en" className={`${inter.variable} ${noticaText.variable}`}>
       <body className="font-body">
         <ThemeProvider attribute="class" defaultTheme="light">
           <Header />
