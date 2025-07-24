@@ -12,8 +12,8 @@ interface GraphState {
 
 export async function POST(req: NextRequest) {
   try {
-    const { query, scenario } = await req.json()
-    console.log("Received query:", query, "Scenario:", scenario)
+    const { query, scenario, mode = "causal_graph", selectedEvent } = await req.json()
+    console.log("Received query:", query, "Scenario:", scenario, "Mode:", mode, "Selected Event:", selectedEvent)
 
     const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY || "" })
 
@@ -54,15 +54,40 @@ export async function POST(req: NextRequest) {
 
     const reasonNode = async (state: GraphState) => {
       console.log("Entering reason node with state:", state)
-      const response = await generateText({
-        model: google("gemini-2.0-flash"),
-        prompt: `You are an AI policy assistant analyzing the ${scenario.title} scenario. The scenario involves these variables: ${scenario.variables.join(
+
+      let prompt: string;
+
+      if (mode === "chain_reaction" && selectedEvent) {
+        // Chain reaction mode - focus on temporal dynamics and event analysis
+        prompt = `You are an AI policy assistant analyzing chain reactions in the ${scenario.title} scenario. 
+
+CURRENT EVENT: ${selectedEvent.title} (${selectedEvent.type}, ${selectedEvent.magnitude}% impact)
+DESCRIPTION: ${selectedEvent.description}
+VARIABLES: ${scenario.variables.join(", ")}
+
+USER QUESTION: "${state.query}"
+
+Provide a MEDIUM , focused response (1 paragraph max) covering:
+- Key immediate impact of this ${selectedEvent.type} event
+- Most critical variable affected
+- One actionable insight or next step
+- Focus on the details about the selected chain and how it may affect others
+
+Be concise and direct. Focus on what matters most right now.`;
+      } else {
+        // Causal graph mode - focus on structural relationships
+        prompt = `You are an AI policy assistant analyzing the ${scenario.title} scenario. The scenario involves these variables: ${scenario.variables.join(
           ", "
         )}. The user asked: "${state.query}". Provide a concise response addressing the user's query, including:
         - Relevant causal relationships or policy impacts
         - Any correlations (e.g., "variable1 → variable2: 0.8")
         - Causal graph insights
-        Format correlations as "variable1 → variable2: value" and ensure values are between -1 and 1.`,
+        Format correlations as "variable1 → variable2: value" and ensure values are between -1 and 1.`;
+      }
+
+      const response = await generateText({
+        model: google("gemini-2.0-flash"),
+        prompt: prompt,
       })
 
       const correlations = extractCorrelations(response.text)

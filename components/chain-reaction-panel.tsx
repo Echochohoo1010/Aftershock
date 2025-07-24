@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Clock, TrendingUp, TrendingDown, AlertCircle, Pause, Play } from "lucide-react"
+import { Clock, TrendingUp, TrendingDown, AlertCircle, Pause, Play, Volume2, VolumeX } from "lucide-react"
 
 interface ReactionEvent {
     id: string
@@ -19,12 +19,50 @@ interface ChainReactionPanelProps {
     policyInput?: string
     onEventSelect?: (event: ReactionEvent) => void
     selectedEventId?: string
+    onEventsUpdate?: (events: ReactionEvent[]) => void
 }
 
-const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEventId }: ChainReactionPanelProps) => {
+const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEventId, onEventsUpdate }: ChainReactionPanelProps) => {
     const [events, setEvents] = useState<ReactionEvent[]>([])
     const [isPaused, setIsPaused] = useState(false)
     const [eventIndex, setEventIndex] = useState(0)
+    const [soundEnabled, setSoundEnabled] = useState(true)
+
+    // Audio references for different event types
+    const positiveAudioRef = useRef<HTMLAudioElement | null>(null)
+    const negativeAudioRef = useRef<HTMLAudioElement | null>(null)
+    const neutralAudioRef = useRef<HTMLAudioElement | null>(null)
+    const alertAudioRef = useRef<HTMLAudioElement | null>(null)
+
+    // Initialize audio elements (client-side only)
+    useEffect(() => {
+        try {
+            positiveAudioRef.current = new Audio('/sounds/positive.mp3')
+            negativeAudioRef.current = new Audio('/sounds/negative.mp3')
+            neutralAudioRef.current = new Audio('/sounds/neutral.mp3')
+            alertAudioRef.current = new Audio('/sounds/alert.mp3')
+
+            // Set volume for all sounds
+            const audioRefs = [positiveAudioRef.current, negativeAudioRef.current, neutralAudioRef.current, alertAudioRef.current];
+            audioRefs.forEach(audio => {
+                if (audio) {
+                    audio.volume = 0.5; // Set to 50% volume
+                }
+            });
+
+            // Add error handlers for missing sound files
+            audioRefs.forEach(audio => {
+                if (audio) {
+                    audio.addEventListener('error', (e) => {
+                        console.warn('Sound file not found or cannot be played:', e);
+                    });
+                }
+            });
+        } catch (error) {
+            console.error("Error initializing audio:", error);
+            setSoundEnabled(false);
+        }
+    }, [])
 
     // Reset events when policy changes
     useEffect(() => {
@@ -80,6 +118,28 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
                     }, 500);
                 }
 
+                // Play sound based on event type if sound is enabled
+                if (soundEnabled) {
+                    try {
+                        switch (newEvent.type) {
+                            case "positive":
+                                positiveAudioRef.current?.play();
+                                break;
+                            case "negative":
+                                negativeAudioRef.current?.play();
+                                break;
+                            case "alert":
+                                alertAudioRef.current?.play();
+                                break;
+                            case "neutral":
+                                neutralAudioRef.current?.play();
+                                break;
+                        }
+                    } catch (error) {
+                        console.error("Error playing sound:", error);
+                    }
+                }
+
                 return updatedEvents;
             });
 
@@ -90,6 +150,13 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
             clearInterval(timer);
         };
     }, [isActive, policyInput, isPaused, eventIndex, onEventSelect]);
+
+    // Update parent component with events when they change (separate from render)
+    useEffect(() => {
+        if (onEventsUpdate && events.length > 0) {
+            onEventsUpdate(events);
+        }
+    }, [events, onEventsUpdate]);
 
     const getEventIcon = (type: ReactionEvent["type"]) => {
         switch (type) {
@@ -123,15 +190,26 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
             <div className="p-4 border-b bg-white">
                 <div className="flex items-center justify-between mb-2">
                     <h3 className="text-base font-medium">Chain Reactions</h3>
-                    <Button
-                        onClick={() => setIsPaused(!isPaused)}
-                        variant="outline"
-                        size="sm"
-                        disabled={!isActive}
-                    >
-                        {isPaused ? <Play className="w-4 h-4 mr-1" /> : <Pause className="w-4 h-4 mr-1" />}
-                        {isPaused ? "Resume" : "Pause"}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            onClick={() => setSoundEnabled(!soundEnabled)}
+                            variant="ghost"
+                            size="sm"
+                            className="px-2"
+                            title={soundEnabled ? "Mute sounds" : "Enable sounds"}
+                        >
+                            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                        </Button>
+                        <Button
+                            onClick={() => setIsPaused(!isPaused)}
+                            variant="outline"
+                            size="sm"
+                            disabled={!isActive}
+                        >
+                            {isPaused ? <Play className="w-4 h-4 mr-1" /> : <Pause className="w-4 h-4 mr-1" />}
+                            {isPaused ? "Resume" : "Pause"}
+                        </Button>
+                    </div>
                 </div>
                 <p className="text-xs text-gray-500">Real-time system responses to policy changes</p>
             </div>

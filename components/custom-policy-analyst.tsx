@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import CausalGraph from "@/components/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/scenario-chat"
-import { Share2, Shapes } from "lucide-react"
+import { Share2, Shapes, FileText } from "lucide-react"
+import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
 
 // Default economic policy causal graph
 const defaultVariables = [
@@ -217,6 +218,18 @@ export default function CustomPolicyAnalyst() {
   const [activeTab, setActiveTab] = useState<"explore1" | "explore2">("explore1")
   const [selectedEvent, setSelectedEvent] = useState<ReactionEvent | null>(null)
   const [quickTags, setQuickTags] = useState<string[]>([])
+  const [events, setEvents] = useState<ReactionEvent[]>([])
+  const [chatHistory, setChatHistory] = useState<Array<{ role: string, content: string }>>([])
+
+  // Memoize the recommendation text to prevent infinite re-renders
+  const recommendationText = useMemo(() => {
+    if (variables.length === 0) return 'key variables';
+    const randomVariable = variables[Math.floor(Math.random() * variables.length)];
+    const outcomeType = relationships.filter(r => r.type === "positive").length >
+      relationships.filter(r => r.type === "negative").length ? " positive" : " mixed";
+
+    return `Consider monitoring ${randomVariable.replace(/_/g, ' ')} closely as it shows potential for significant downstream effects. Long-term outcomes appear${outcomeType} based on the causal structure.`;
+  }, [variables, relationships]);
 
   const handleSubmit = () => {
     if (policyTitle.trim() && policyDescription.trim()) {
@@ -304,7 +317,28 @@ export default function CustomPolicyAnalyst() {
 
   const handleEventSelect = (event: ReactionEvent) => {
     setSelectedEvent(event);
+    // Add event to our tracked events if not already present
+    setEvents(prev => {
+      const exists = prev.some(e => e.id === event.id);
+      if (!exists) {
+        return [event, ...prev].slice(0, 20); // Keep last 20 events
+      }
+      return prev;
+    });
   }
+
+  // Function to update chat history - memoized to prevent infinite re-renders
+  const updateChatHistory = useCallback((messages: Array<{ role: string, content: string }>) => {
+    setChatHistory(messages.slice(-20)); // Keep last 20 messages
+  }, [])
+
+  const handleEventsUpdate = useCallback((newEvents: ReactionEvent[]) => {
+    setEvents(newEvents);
+  }, [])
+
+  const handleChatUpdate = useCallback((messages: Array<{ role: string, content: string }>) => {
+    setChatHistory(messages);
+  }, [])
 
   // Generate analysis for a chain reaction event
   const generateEventAnalysis = (event: ReactionEvent) => {
@@ -313,6 +347,27 @@ export default function CustomPolicyAnalyst() {
     const response = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
 
     return `${response} This ${event.type} event has a ${Math.round(event.magnitude)}% impact magnitude, indicating ${event.magnitude > 50 ? 'significant' : 'moderate'} system effects. ${event.description} The policy "${policyTitle}" appears to be ${event.type === 'positive' ? 'effectively addressing' : event.type === 'negative' ? 'facing challenges in' : 'gradually influencing'} this aspect of the system.`;
+  }
+
+  // Generate PDF report using @react-pdf/renderer
+  const generatePDFReport = async () => {
+    const reportData: PolicyReportData = {
+      policyTitle,
+      policyDescription,
+      variables,
+      relationships,
+      events,
+      chatHistory,
+      generatedAt: new Date()
+    }
+
+    try {
+      await generatePolicyPDF(reportData)
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      // Fallback to alert if PDF generation fails
+      alert('Error generating PDF report. Please try again.')
+    }
   }
 
   return (
@@ -394,9 +449,20 @@ export default function CustomPolicyAnalyst() {
 
           <div className="flex justify-end space-x-2 pt-2">
             {isSubmitted ? (
-              <Button onClick={handleReset} variant="outline" size="lg">
-                Reset Analysis
-              </Button>
+              <>
+                <Button
+                  onClick={generatePDFReport}
+                  variant="outline"
+                  size="lg"
+                  className="flex items-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Export PDF Report
+                </Button>
+                <Button onClick={handleReset} variant="outline" size="lg">
+                  Reset Analysis
+                </Button>
+              </>
             ) : (
               <Button
                 onClick={handleSubmit}
@@ -476,6 +542,7 @@ export default function CustomPolicyAnalyst() {
                       policyInput={`${policyTitle}: ${policyDescription}`}
                       onEventSelect={handleEventSelect}
                       selectedEventId={selectedEvent?.id}
+                      onEventsUpdate={handleEventsUpdate}
                     />
                   )}
                 </div>
@@ -526,6 +593,7 @@ export default function CustomPolicyAnalyst() {
                     generateEventAnalysis={generateEventAnalysis}
                     activeSimulator={activeTab}
                     onChangeSimulator={setActiveTab}
+                    onChatUpdate={handleChatUpdate}
                   />
                 </div>
               </Card>
@@ -558,11 +626,7 @@ export default function CustomPolicyAnalyst() {
               <div className="p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-bold mb-2">Recommendations</h3>
                 <p className="text-sm text-gray-600">
-                  Consider monitoring {variables[Math.floor(Math.random() * variables.length)].replace(/_/g, ' ')} closely
-                  as it shows potential for significant downstream effects. Long-term outcomes appear
-                  {relationships.filter(r => r.type === "positive").length >
-                    relationships.filter(r => r.type === "negative").length ? " positive" : " mixed"}
-                  based on the causal structure.
+                  {recommendationText}
                 </p>
               </div>
             </div>

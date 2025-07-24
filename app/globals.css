@@ -33,7 +33,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-notica), serif;
+    font-family: var(--font-noticia), serif;
   }
 }
 
@@ -43,7 +43,7 @@
   }
 
   .font-body {
-    font-family: var(--font-notica), serif;
+    font-family: var(--font-noticia), serif;
   }
 }
 

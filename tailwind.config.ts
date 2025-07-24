@@ -60,7 +60,7 @@ const config: Config = {
       },
       fontFamily: {
         heading: ["var(--font-inter)", "sans-serif"],
-        body: ["var(--font-notica)", "serif"],
+        body: ["var(--font-noticia)", "serif"],
       },
       keyframes: {
         "accordion-down": {

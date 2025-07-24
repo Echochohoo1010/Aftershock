@@ -1,12 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
+import { Card, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Shapes, Share2Icon } from "lucide-react"
+import { Feather, Shapes, Share2Icon } from "lucide-react"
 
 interface Message {
   id: string
@@ -41,6 +41,7 @@ interface ScenarioChatProps {
   generateEventAnalysis?: (event: ReactionEvent) => string
   activeSimulator?: "explore1" | "explore2"
   onChangeSimulator?: (simulator: "explore1" | "explore2") => void
+  onChatUpdate?: (messages: Array<{ role: string, content: string }>) => void
 }
 
 export default function ScenarioChat({
@@ -51,7 +52,8 @@ export default function ScenarioChat({
   selectedEvent,
   generateEventAnalysis,
   activeSimulator = "explore1",
-  onChangeSimulator
+  onChangeSimulator,
+  onChatUpdate
 }: ScenarioChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
@@ -59,15 +61,21 @@ export default function ScenarioChat({
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [lastAnalyzedEventId, setLastAnalyzedEventId] = useState<string | null>(null)
   const [initialized, setInitialized] = useState(false)
-  const [lastActiveSimulator, setLastActiveSimulator] = useState<string | null>(null)
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
+  // Update chat history when messages change
   useEffect(() => {
     scrollToBottom()
-  }, [messages])
+    if (onChatUpdate && messages.length > 0) {
+      const chatHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+      onChatUpdate(chatHistory);
+    }
+  }, [messages, onChatUpdate])
 
   // Initialize welcome message only once
   useEffect(() => {
@@ -91,9 +99,8 @@ What would you like to explore?`,
 
       setMessages([welcomeMessage]);
       setInitialized(true);
-      setLastActiveSimulator(activeSimulator);
     }
-  }, [initialized, scenario.title, scenario.variables, activeSimulator]);
+  }, [initialized, scenario.title, scenario.variables]);
 
   // Handle new selected event from chain reaction panel
   useEffect(() => {
@@ -105,7 +112,6 @@ What would you like to explore?`,
     ) {
       // Generate automatic analysis for the selected event
       const analysis = generateEventAnalysis(selectedEvent);
-
       const assistantMessage: Message = {
         id: `event-analysis-${Date.now()}`,
         role: "assistant",
@@ -119,12 +125,9 @@ What would you like to explore?`,
     }
   }, [selectedEvent, lastAnalyzedEventId, activeSimulator, generateEventAnalysis]);
 
-  // Update welcome message when simulator changes - with proper dependency array
+  // Handle simulator mode changes
   useEffect(() => {
-    if (!initialized || activeSimulator === lastActiveSimulator) return;
-
-    // Update the last active simulator to prevent infinite updates
-    setLastActiveSimulator(activeSimulator);
+    if (!initialized) return;
 
     // Add a message about switching modes
     if (activeSimulator === "explore1") {
@@ -147,7 +150,7 @@ What would you like to explore?`,
 
       setMessages(prev => [...prev, switchMessage]);
     }
-  }, [activeSimulator, initialized, scenario.variables, lastActiveSimulator]);
+  }, [activeSimulator, initialized, scenario.variables]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -161,12 +164,13 @@ What would you like to explore?`,
     }
 
     setMessages((prev) => [...prev, userMessage])
+    const currentInput = input.trim()
     setInput("")
     setIsLoading(true)
 
     try {
       // Check for simulator switch commands
-      const lowerInput = input.toLowerCase().trim();
+      const lowerInput = currentInput.toLowerCase();
       if (lowerInput.includes("switch to explore i") ||
         lowerInput.includes("switch to causal graph") ||
         lowerInput.includes("use explore i") ||
@@ -209,62 +213,63 @@ What would you like to explore?`,
         return;
       }
 
-      // If we're in chain reaction mode and have a selected event, generate a response about that event
-      if (activeSimulator === "explore2" && selectedEvent && generateEventAnalysis) {
-        // Simulate a delay for more natural conversation flow
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Generate a response based on the user's question and the selected event
-        const eventAnalysis = generateEventAnalysis(selectedEvent);
-        const response = `Based on your question about the ${selectedEvent.title} event:\n\n${eventAnalysis}\n\nThis ${selectedEvent.type} event with ${Math.round(selectedEvent.magnitude)}% magnitude is a critical point in the policy implementation process that warrants careful monitoring.`;
-
-        const assistantMessage: Message = {
-          id: `event-response-${Date.now()}`,
-          role: "assistant",
-          content: response,
-          timestamp: new Date(),
-          eventId: selectedEvent.id
+      // Use AI for both Explore I and Explore II modes
+      const requestBody = activeSimulator === "explore2" && selectedEvent
+        ? {
+          query: currentInput,
+          scenario,
+          mode: "chain_reaction",
+          selectedEvent: {
+            title: selectedEvent.title,
+            description: selectedEvent.description,
+            type: selectedEvent.type,
+            magnitude: selectedEvent.magnitude,
+            timestamp: selectedEvent.timestamp.toISOString()
+          }
         }
+        : {
+          query: currentInput,
+          scenario,
+          mode: "causal_graph"
+        };
 
-        setMessages((prev) => [...prev, assistantMessage]);
-      } else {
-        // For causal graph mode, use the API
-        const response = await fetch("/api/reason", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: input.trim(), scenario }),
-        })
+      const response = await fetch("/api/reason", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      })
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const result = await response.json()
-
-        if (result.error) throw new Error(result.error)
-
-        if (result.correlations?.length > 0 && onUpdateGraph) {
-          onUpdateGraph(result.correlations)
-        }
-
-        if (result.variables?.length > 0 && onHighlightNode) {
-          onHighlightNode(result.variables[0])
-        }
-
-        if (result.correlations?.length > 0 && onHighlightRelationship) {
-          onHighlightRelationship(result.correlations[0].from, result.correlations[0].to)
-        }
-
-        const assistantMessage: Message = {
-          id: `api-response-${Date.now()}`,
-          role: "assistant",
-          content: result.response || "No response generated.",
-          timestamp: new Date(),
-          correlations: result.correlations || [],
-          variables: result.variables || [],
-        }
-        setMessages((prev) => [...prev, assistantMessage])
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
+
+      const result = await response.json()
+
+      if (result.error) throw new Error(result.error)
+
+      // Handle correlations and graph updates (mainly for causal graph mode)
+      if (result.correlations?.length > 0 && onUpdateGraph && activeSimulator === "explore1") {
+        onUpdateGraph(result.correlations)
+      }
+
+      if (result.variables?.length > 0 && onHighlightNode) {
+        onHighlightNode(result.variables[0])
+      }
+
+      if (result.correlations?.length > 0 && onHighlightRelationship && activeSimulator === "explore1") {
+        onHighlightRelationship(result.correlations[0].from, result.correlations[0].to)
+      }
+
+      const assistantMessage: Message = {
+        id: `api-response-${Date.now()}`,
+        role: "assistant",
+        content: result.response || "No response generated.",
+        timestamp: new Date(),
+        correlations: activeSimulator === "explore1" ? (result.correlations || []) : [],
+        variables: result.variables || [],
+        eventId: activeSimulator === "explore2" && selectedEvent ? selectedEvent.id : undefined,
+      }
+      setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
       console.error("Error processing query:", error)
       const errorMessage: Message = {
@@ -403,70 +408,41 @@ What would you like to explore?`,
                   </Badge>
                 </div>
               )}
-              <div className={`text-xs mt-3 ${message.role === "user" ? "text-gray-300" : "text-gray-500"}`}>
-                {message.timestamp.toLocaleTimeString()}
-              </div>
             </Card>
           </div>
         ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <Card className="bg-gray-50 p-4 shadow-md">
-              <div className="flex items-center space-x-2">
-                <div className="animate-pulse flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                </div>
-                <span className="text-sm text-gray-500">AI is thinking...</span>
-              </div>
-            </Card>
-          </div>
-        )}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSubmit} className="border-t p-4 bg-white">
-        <div className="flex space-x-2">
-          <div className="flex-1 relative">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={getPlaceholderText()}
-              disabled={isLoading}
-              className="pr-20 rounded-md border-gray-300 focus:ring-2 focus:ring-black"
-            />
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
-              <Button
-                type="button"
-                size="sm"
-                variant={activeSimulator === "explore1" ? "default" : "outline"}
-                className={`h-7 w-7 p-0 ${activeSimulator === "explore1" ? "bg-black" : ""}`}
-                onClick={() => onChangeSimulator && onChangeSimulator("explore1")}
-                title="Switch to Explore I: Causal Graph"
-              >
-                <Shapes className="w-4 h-4" />
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={activeSimulator === "explore2" ? "default" : "outline"}
-                className={`h-7 w-7 p-0 ${activeSimulator === "explore2" ? "bg-black" : ""}`}
-                onClick={() => onChangeSimulator && onChangeSimulator("explore2")}
-                title="Switch to Explore II: Chain Reactions"
-              >
-                <Share2Icon className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+
+      {/* Input form */}
+      <CardFooter className="p-4 border-t">
+        <form onSubmit={handleSubmit} className="flex w-full gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={getPlaceholderText()}
+            disabled={isLoading}
+            className="flex-1"
+          />
+          {selectedEvent && (
+            <Badge
+              variant={selectedEvent.type === "positive" ? "default" :
+                selectedEvent.type === "negative" ? "destructive" :
+                  selectedEvent.type === "alert" ? "secondary" : "outline"}
+              className="text-xs"
+            >
+              {selectedEvent.title} Event
+            </Badge>
+          )}
           <Button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2 transition-colors"
+            className="bg-black text-white hover:bg-gray-800"
           >
-            Send
+            {isLoading ? <Feather className="h-6 w-6" /> : "Send"}
           </Button>
-        </div>
-      </form>
+        </form>
+      </CardFooter>
     </div>
   )
 }

@@ -44,7 +44,7 @@ export default function CausalGraph({
     // This ensures the graph doesn't move or reposition nodes unexpectedly
     const centerX = 200
     const centerY = 200
-    const radius = Math.min(120, 480 / variables.length)
+    const radius = Math.min(180, 900 / variables.length) // Increased radius for wider spacing
     const angleStep = (2 * Math.PI) / variables.length
 
     const positions: Record<string, { x: number; y: number }> = {}
@@ -329,10 +329,10 @@ export default function CausalGraph({
               <div className="text-xs text-green-500">+1</div>
               <div
                 className={`text-xs font-mono px-2 py-1 rounded ${selectedRelationship.strength > 0
-                    ? "bg-green-100 text-green-800"
-                    : selectedRelationship.strength < 0
-                      ? "bg-red-100 text-red-800"
-                      : "bg-gray-100 text-gray-800"
+                  ? "bg-green-100 text-green-800"
+                  : selectedRelationship.strength < 0
+                    ? "bg-red-100 text-red-800"
+                    : "bg-gray-100 text-gray-800"
                   }`}
               >
                 {selectedRelationship.strength.toFixed(1)}

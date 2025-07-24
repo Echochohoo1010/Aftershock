@@ -1,0 +1,8 @@
+Please add the following sound files to this directory:
+
+1. positive.mp3 - A pleasant, uplifting sound for positive chain reactions
+2. negative.mp3 - A lower-pitched sound for negative chain reactions
+3. neutral.mp3 - A neutral notification sound for neutral chain reactions
+4. alert.mp3 - An attention-grabbing sound for alert chain reactions
+
+These files will be played when new chain reactions appear in the application.

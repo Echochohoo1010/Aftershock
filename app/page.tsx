@@ -21,13 +21,14 @@ export default function Home() {
       <section className="relative flex flex-col justify-center px-4 pt-32 pb-16 md:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center">
           <div className="lg:w-3/5 z-10">
-            <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-tight mb-4">Exploratory Policy</h1>
-            <h2 className="font-heading text-2xl text-gray-500 font-semibold tracking-tight mb-8">
+            <h2 className="uppercase font-heading text-xl text-zinc-400 font-semibold tracking-tight ">
               Causal Scenario Planning
             </h2>
+            <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-tight mb-4">Exploratory Policy</h1>
+
 
             <p className="text-xl md:text-2xl max-w-3xl mb-12 text-gray-700 leading-relaxed">
-              Developing causal AI tools to formulate and analyze the impacts of policies within complex socio-economic
+              Developing causal AI tools to formulate and analyze the impacts of policies within complex
               systems.
             </p>
 
