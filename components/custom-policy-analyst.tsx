@@ -452,7 +452,7 @@ export default function CustomPolicyAnalyst() {
               <>
                 <Button
                   onClick={generatePDFReport}
-                  variant="outline"
+                  variant="default"
                   size="lg"
                   className="flex items-center gap-2"
                 >
