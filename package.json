@@ -54,6 +54,7 @@
     "react-dom": "^19",
     "react-markdown": "latest",
     "react-native": "latest",
+    "recharts": "2.15.4",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "three": "latest",

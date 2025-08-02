@@ -1,6 +1,6 @@
 import type React from "react"
 import "./globals.css"
-import { Inter, Noticia_Text } from "next/font/google"
+import { IBM_Plex_Sans, IBM_Plex_Serif, Inter, Noticia_Text } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 
@@ -10,7 +10,7 @@ const inter = Inter({
   display: "swap",
 })
 
-const noticiaText = Noticia_Text({
+const noticiaText = IBM_Plex_Sans({
   subsets: ["latin"],
   variable: "--font-noticia",
   display: "swap",

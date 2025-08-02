@@ -28,6 +28,9 @@ export default function Header() {
             <Link href="/explore" className="text-gray-600 hover:text-black transition-colors font-medium">
               Explore
             </Link>
+            <Link href="/story" className="text-gray-600 hover:text-black transition-colors font-medium">
+              Story
+            </Link>
             <Link href="/about" className="text-gray-600 hover:text-black transition-colors">
               About
             </Link>
@@ -87,6 +90,9 @@ export default function Header() {
           <div className="px-4 py-6 space-y-4">
             <Link href="/explore" className="block text-gray-600 hover:text-black transition-colors font-medium" onClick={toggleMenu}>
               Explore
+            </Link>
+            <Link href="/story" className="block text-gray-600 hover:text-black transition-colors font-medium" onClick={toggleMenu}>
+              Story
             </Link>
             <Link href="/about" className="block text-gray-600 hover:text-black transition-colors" onClick={toggleMenu}>
               About
