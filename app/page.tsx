@@ -16,7 +16,7 @@ const Metaballs3D = dynamic(() => import("@/components/metaballs-3d"), {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative flex flex-col justify-center px-4 pt-32 pb-16 md:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center">
@@ -27,7 +27,7 @@ export default function Home() {
             <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-tight mb-4">Exploratory Policy</h1>
 
 
-            <p className="text-xl md:text-2xl max-w-3xl mb-12 text-gray-700 leading-relaxed">
+            <p className="text-xl md:text-2xl max-w-3xl mb-12  leading-relaxed">
               Developing causal AI tools to formulate and analyze the impacts of policies within complex
               systems.
             </p>
@@ -93,11 +93,11 @@ export default function Home() {
       </section>
 
       {/* New AI Tool Showcase */}
-      <section className="py-24 px-4 md:px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-4 md:px-6 lg:px-8 bg-secondary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-heading text-4xl font-semibold mb-6">AI-Powered Policy Exploration</h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl  max-w-3xl mx-auto leading-relaxed">
               Experience our cutting-edge causal AI system that helps policymakers understand complex scenarios,
               visualize causal relationships, and simulate policy interventions before implementation.
             </p>
@@ -109,7 +109,7 @@ export default function Home() {
                 <ShapesIcon className="w-8 h-8 font-light text-white" />
               </div>
               <h3 className="font-heading text-xl font-semibold mb-2">Causal Graphs</h3>
-              <p className="text-gray-600">
+              <p className=" ">
                 Interactive visualizations of causal relationships between policy variables
               </p>
             </div>
@@ -119,7 +119,7 @@ export default function Home() {
                 <Feather className="w-8 h-8 font-light text-white" />
               </div>
               <h3 className="font-heading text-xl font-semibold mb-2">AI Chat Assistant</h3>
-              <p className="text-gray-600">Natural language conversations about policy scenarios and interventions</p>
+              <p className=" ">Natural language conversations about policy scenarios and interventions</p>
             </div>
 
             <div className="text-center">
@@ -127,7 +127,7 @@ export default function Home() {
                 <Share2Icon className="w-8 h-8 text-white" />
               </div>
               <h3 className="font-heading text-xl font-semibold mb-2">Scenario Simulation</h3>
-              <p className="text-gray-600">
+              <p className="">
                 Model policy interventions and explore potential outcomes and consequences
               </p>
             </div>
@@ -156,21 +156,21 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-16">
             <div>
               <h2 className="font-heading text-3xl font-semibold mb-6">The Problem</h2>
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              <p className="text-lg  mb-6 leading-relaxed">
                 Policy systems lack the tools and protocols to anticipate, test, and iteratively improve responses to
                 high-uncertainty, fast-moving technological change.
               </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-lg  leading-relaxed">
                 This leads to reactive governance, misaligned incentives, and increased systemic fragility.
               </p>
             </div>
             <div>
               <h2 className="font-heading text-3xl font-semibold mb-6">Our Approach</h2>
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              <p className="text-lg   mb-6 leading-relaxed">
                 By integrating agent-based modeling, causal inference, and large language models, we provide
                 policymakers with interactive platforms to:
               </p>
-              <ul className="list-disc pl-6 text-lg text-gray-700 space-y-3 leading-relaxed">
+              <ul className="list-disc pl-6 text-lg   space-y-3 leading-relaxed">
                 <li>Explore potential outcomes</li>
                 <li>Identify unintended consequences</li>
                 <li>Enhance decision-making processes</li>
@@ -185,7 +185,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-12">
             <h2 className="font-heading text-4xl font-semibold">Latest Research Blogs</h2>
-            <Link href="/blog" className="text-lg font-heading underline underline-offset-4 hover:text-gray-600">
+            <Link href="/blog" className="text-lg font-heading underline underline-offset-4 hover:">
               View All Posts
             </Link>
           </div>
@@ -217,12 +217,12 @@ export default function Home() {
               },
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.id}`}>
-                <article className="rounded-lg">
+                <article className="rounded-lg p-4 h-64 bg-background ">
                   <div className="mb-4">
-                    <span className="category-tag">{post.category}</span>
+                    <span className="text-xs bg-foreground mx-1 p-1 text-background rounded-[10px]">{post.category}</span>
                   </div>
-                  <h3 className="font-heading text-xl font-semibold mb-3 leading-tight">{post.title}</h3>
-                  <p className="blog-excerpt mb-4">{post.excerpt}</p>
+                  <h3 className="font-heading text-lg font-semibold mb-3 leading-tight">{post.title}</h3>
+                  <p className="blog-excerpt mb-4 overflow-true max-h-24">{post.excerpt}</p>
                   <time className="blog-meta">{post.date}</time>
                 </article>
               </Link>
@@ -237,27 +237,27 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-12 text-center">Simulator Features</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-background p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-bold mb-3">Causal Graph Analysis</h3>
-              <p className="text-gray-600 mb-4">
+              <p className=" mb-4">
                 Visualize and modify causal relationships between key variables to understand
                 how changes in one factor affect others throughout the system.
               </p>
               <div className="text-sm font-medium text-black">Explore I</div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-background  p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-bold mb-3">Chain Reaction Simulator</h3>
-              <p className="text-gray-600 mb-4">
+              <p className=" mb-4">
                 Monitor real-time system responses to policy changes as they cascade through
                 stakeholders, markets, regulations, and social systems.
               </p>
               <div className="text-sm font-medium text-black">Explore II</div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-background  p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-bold mb-3">AI Policy Assistant</h3>
-              <p className="text-gray-600 mb-4">
+              <p className=" mb-4">
                 Interact with our AI assistant to ask questions about policy impacts, explore
                 alternative scenarios, and receive insights on potential outcomes.
               </p>
@@ -279,7 +279,7 @@ export default function Home() {
             ].map((member, index) => (
               <div key={index} className="border-l-4 border-black pl-6 py-2">
                 <h3 className="font-heading text-xl font-semibold">{member.name}</h3>
-                <p className="text-gray-700">{member.role}</p>
+                <p className="">{member.role}</p>
               </div>
             ))}
           </div>
@@ -292,13 +292,13 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-start">
             <div className="mb-8 md:mb-0">
               <h3 className="font-heading text-xl font-semibold mb-2">Exploratory Policy</h3>
-              <p className="text-gray-600 mb-4">Advancing the science of policy through causal AI</p>
+              <p className=" mb-4">Advancing the science of policy through causal AI</p>
               <p className="text-sm text-gray-500">© 2025 All rights reserved</p>
             </div>
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h4 className="font-heading font-semibold mb-3">Research</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <ul className="space-y-2 text-sm ">
                   <li>
                     <Link href="/research" className="hover:text-black">
                       Policy Synthesis
@@ -318,7 +318,7 @@ export default function Home() {
               </div>
               <div>
                 <h4 className="font-heading font-semibold mb-3">Connect</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <ul className="space-y-2 text-sm ">
                   <li>
                     <Link href="#" className="hover:text-black">
                       Twitter

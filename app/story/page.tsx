@@ -115,10 +115,10 @@ export default function StoryPage() {
     const getChoiceConsequence = (choice: Choice): string => {
         const impacts = []
         if (choice.impact.compute) {
-            impacts.push(`Compute: ${choice.impact.compute > 0 ? '+' : ''}${choice.impact.compute}%`)
+            impacts.push(`AI Capacity: ${choice.impact.compute > 0 ? '+' : ''}${choice.impact.compute}%`)
         }
         if (choice.impact.unemployment) {
-            impacts.push(`Unemployment: ${choice.impact.unemployment > 0 ? '+' : ''}${choice.impact.unemployment}%`)
+            impacts.push(`Model Deployment: ${choice.impact.unemployment > 0 ? '+' : ''}${choice.impact.unemployment}%`)
         }
         return impacts.join(', ')
     }
@@ -676,22 +676,22 @@ Format:
                                     <CardContent>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-green-600 ">
+                                                <div className="text-lg font-bold text-green-600 font-sans">
                                                     T+{currentNode.worldState.t}
                                                 </div>
-                                                <div className="text-xs text-gray-600  ">Months</div>
+                                                <div className="text-xs text-gray-600 font-serif">Months <sub>(time elapsed)</sub></div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-emerald-600 ">
+                                                <div className="text-lg font-bold text-emerald-600 font-sans">
                                                     {currentNode.worldState.compute > 0 ? '+' : ''}{currentNode.worldState.compute}%
                                                 </div>
-                                                <div className="text-xs text-gray-600  ">Compute</div>
+                                                <div className="text-xs text-gray-600 font-serif">AI Capacity <sub>(supercomputers & accelerators)</sub></div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-green-700 ">
+                                                <div className="text-lg font-bold text-green-700 font-sans">
                                                     {currentNode.worldState.unemployment > 0 ? '+' : ''}{currentNode.worldState.unemployment}%
                                                 </div>
-                                                <div className="text-xs text-gray-600 ">Unemployment</div>
+                                                <div className="text-xs text-gray-600 font-serif">Model Deployment <sub>(AI models in production)</sub></div>
                                             </div>
                                             <div className="text-center">
                                                 <div className="text-xs font-medium text-gray-900 truncate  ">
