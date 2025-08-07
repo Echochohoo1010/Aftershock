@@ -203,7 +203,7 @@ export default function Home() {
                 id: "agent-based-complex-systems",
                 title: "Agent-Based Models for Complex Systems",
                 excerpt:
-                  "Using computational simulations to test climate policies before implementation in the real world.",
+                  "Using computational simulations to test complex systems policies before implementation in the real world.",
                 date: "August 07, 2025",
                 category: "Case Study",
               },
