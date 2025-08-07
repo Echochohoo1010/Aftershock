@@ -49,17 +49,7 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-.dark {
-  --background: oklch(0.05 0.005 120); /* Very dark */
-  --foreground: oklch(0.98 0.005 120); /* Very light text */
-
-  --card: oklch(0.12 0.01 120);
-  --card-foreground: oklch(0.97 0.005 120);
-
-  --muted-foreground: oklch(0.75 0.015 130); /* Muted but legible */
-
-  --border: oklch(0.2 0.01 120);
-}
+ /*  */
 }
 
 @layer base {
