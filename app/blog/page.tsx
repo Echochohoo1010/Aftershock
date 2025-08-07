@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
 import Link from "next/link"
 
 const blogPosts = [
@@ -15,14 +17,14 @@ const blogPosts = [
   },
   {
     id: "agent-based-climate-policy",
-    title: "Agent-Based Models for Climate Policy Testing",
+    title: "Decision Engines: Agent-Based Simulation for Complex Systems",
     excerpt:
-      "How computational simulations allow us to test climate policies in virtual environments before real-world implementation, reducing risks and improving outcomes.",
+      "Exploring how agent-based simulations can address the limitations of current AI forecasting paradigms by modeling dynamic social responses and stakeholder interactions in complex systems.",
     content: "Full article content would go here...",
-    author: "Jonas Kgomo",
+    author: "Echo Huang",
     date: "2025-01-10",
-    category: "Case Study",
-    readTime: "12 min read",
+    category: "Research",
+    readTime: "25 min read",
     featured: true,
   },
   {
@@ -87,11 +89,10 @@ export default function Blog() {
             {categories.map((category) => (
               <button
                 key={category}
-                className={`px-4 py-2 rounded-none border transition-colors font-heading text-sm ${
-                  category === "All"
-                    ? "bg-black text-white border-black"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-black hover:text-black"
-                }`}
+                className={`px-4 py-2 rounded-none border transition-colors font-heading text-sm ${category === "All"
+                  ? "bg-black text-white border-black"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-black hover:text-black"
+                  }`}
               >
                 {category}
               </button>
@@ -106,12 +107,12 @@ export default function Blog() {
             <div className="grid md:grid-cols-2 gap-8">
               {featuredPosts.map((post) => (
                 <Link key={post.id} href={`/blog/${post.id}`}>
-                  <article className="blog-card h-full flex flex-col">
+                  <article className=" h-full flex flex-col">
                     <div className="mb-4">
-                      <span className="category-tag">{post.category}</span>
+                      <Badge className="">{post.category}</Badge>
                     </div>
                     <h3 className="font-heading text-2xl font-semibold mb-4 leading-tight">{post.title}</h3>
-                    <p className="blog-excerpt mb-6 flex-grow">{post.excerpt}</p>
+                    <p className=" mb-6 flex-grow">{post.excerpt}</p>
                     <div className="flex items-center justify-between text-sm text-gray-500 font-heading">
                       <div className="flex items-center space-x-4">
                         <span>{post.author}</span>
@@ -153,13 +154,13 @@ export default function Blog() {
           <div className="space-y-8">
             {regularPosts.map((post) => (
               <Link key={post.id} href={`/blog/${post.id}`}>
-                <article className="flex flex-col md:flex-row md:items-center py-6 border-b border-gray-100 hover:bg-gray-50 transition-colors -mx-4 px-4">
+                <Card className="flex flex-col md:flex-row md:items-center py-6 border-b border-gray-100 hover:bg-gray-50 transition-colors -mx-4 px-4">
                   <div className="flex-grow">
                     <div className="mb-2">
                       <span className="category-tag">{post.category}</span>
                     </div>
                     <h3 className="font-heading text-xl font-semibold mb-3 leading-tight">{post.title}</h3>
-                    <p className="blog-excerpt mb-4">{post.excerpt}</p>
+                    <p className=" mb-4">{post.excerpt}</p>
                     <div className="flex items-center space-x-6 text-sm text-gray-500 font-heading">
                       <span>{post.author}</span>
                       <div className="flex items-center">
@@ -202,7 +203,7 @@ export default function Blog() {
                       <path d="m12 5 7 7-7 7"></path>
                     </svg>
                   </div>
-                </article>
+                </Card>
               </Link>
             ))}
           </div>

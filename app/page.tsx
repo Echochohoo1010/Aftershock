@@ -200,11 +200,11 @@ export default function Home() {
                 category: "Research",
               },
               {
-                id: "agent-based-climate-policy",
+                id: "agent-based-complex-systems",
                 title: "Agent-Based Models for Climate Policy",
                 excerpt:
                   "Using computational simulations to test climate policies before implementation in the real world.",
-                date: "January 10, 2025",
+                date: "August 07, 2025",
                 category: "Case Study",
               },
               {
