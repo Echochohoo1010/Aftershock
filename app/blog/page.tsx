@@ -16,13 +16,13 @@ const blogPosts = [
     featured: true,
   },
   {
-    id: "agent-based-climate-policy",
+    id: "agent-based-complex-systems",
     title: "Decision Engines: Agent-Based Simulation for Complex Systems",
     excerpt:
       "Exploring how agent-based simulations can address the limitations of current AI forecasting paradigms by modeling dynamic social responses and stakeholder interactions in complex systems.",
     content: "Full article content would go here...",
     author: "Echo Huang",
-    date: "2025-01-10",
+    date: "2025-08-08",
     category: "Research",
     readTime: "25 min read",
     featured: true,
@@ -90,8 +90,8 @@ export default function Blog() {
               <button
                 key={category}
                 className={`px-4 py-2 rounded-none border transition-colors font-heading text-sm ${category === "All"
-                  ? "bg-black text-white border-black"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-black hover:text-black"
+                  ? "bg-black   border-black"
+                  : "bg-white   border-gray-300 hover:border-black hover:text-black"
                   }`}
               >
                 {category}
@@ -113,7 +113,7 @@ export default function Blog() {
                     </div>
                     <h3 className="font-heading text-2xl font-semibold mb-4 leading-tight">{post.title}</h3>
                     <p className=" mb-6 flex-grow">{post.excerpt}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-500 font-heading">
+                    <div className="flex items-center justify-between text-sm   font-heading">
                       <div className="flex items-center space-x-4">
                         <span>{post.author}</span>
                         <div className="flex items-center">
@@ -161,7 +161,7 @@ export default function Blog() {
                     </div>
                     <h3 className="font-heading text-xl font-semibold mb-3 leading-tight">{post.title}</h3>
                     <p className=" mb-4">{post.excerpt}</p>
-                    <div className="flex items-center space-x-6 text-sm text-gray-500 font-heading">
+                    <div className="flex items-center space-x-6 text-sm  font-heading">
                       <span>{post.author}</span>
                       <div className="flex items-center">
                         <svg
@@ -191,7 +191,7 @@ export default function Blog() {
                   <div className="mt-4 md:mt-0 md:ml-8">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-gray-400"
+                      className="h-5 w-5  "
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -213,7 +213,7 @@ export default function Blog() {
         <section className="mt-20 py-16 bg-gray-50 -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-heading text-3xl font-semibold mb-4">Stay Updated</h2>
-            <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+            <p className="text-lg  mb-8 leading-relaxed">
               Get the latest research insights and policy analysis delivered to your inbox.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">

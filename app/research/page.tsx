@@ -47,9 +47,9 @@ export default function Research() {
             </div>
 
             <div className="border-l-4 border-black dark:border-white pl-6 py-2">
-              <h3 className="text-2xl font-bold mb-2">Climate Policy Optimization</h3>
+              <h3 className="text-2xl font-bold mb-2">Complex Systems Optimization</h3>
               <p className="text-lg text-gray-700">
-                Using causal inference to identify optimal policy mixes for climate change mitigation while minimizing
+                Using causal inference to identify optimal policy mixes for complex systems  while minimizing
                 economic disruption.
               </p>
             </div>

@@ -76,56 +76,15 @@
 }
 
 .dark {
-  --background: 0 0% 5%; /* Very dark background */
-  --foreground: 0 0% 98%; /* Almost white foreground text */
+  --background: oklch(0.05 0.005 120); /* Very dark */
+  --foreground: oklch(0.98 0.005 120); /* Very light text */
 
-  --card: oklch(0.15 0.01 120); /* dark card background */
-  --card-foreground: oklch(0.95 0.01 120); /* light text on card */
+  --card: oklch(0.12 0.01 120);
+  --card-foreground: oklch(0.97 0.005 120);
 
-  --popover: 0 0% 10%;
-  --popover-foreground: 0 0% 98%;
+  --muted-foreground: oklch(0.75 0.015 130); /* Muted but legible */
 
-  --primary: oklch(0.1 0.15 142); /* brighter blue-green */
-  --primary-foreground: oklch(0.0 0.01 120); /* dark text or icon on primary */
-
-  --secondary: oklch(0.3 0.03 142); /* desaturated green-blue */
-  --secondary-foreground: oklch(0.95 0.01 120);
-
-  --muted: oklch(0.2 0.015 130);
-  --muted-foreground: oklch(0.7 0.03 130);
-
-  --accent: oklch(0.4 0.04 140);
-  --accent-foreground: oklch(0.95 0.01 120);
-
-  --destructive: oklch(0.6 0.2 27);
-  --destructive-foreground: oklch(1 0 0);
-
-  --border: 0 0% 20%;
-  --input: 0 0% 20%;
-  --ring: 0 0% 50%;
-  --radius: 1.2rem;
-
-  --chart-1: oklch(0.7 0.1 120);
-  --chart-2: oklch(0.6 0.1 120);
-  --chart-3: oklch(0.7 0.2 130);
-  --chart-4: oklch(0.7 0.15 70);
-  --chart-5: oklch(0.6 0.2 354);
-
-  --sidebar: oklch(0.12 0.01 137); /* dark background */
-  --sidebar-foreground: oklch(0.95 0.01 120);
-  --sidebar-primary: oklch(0.7 0.15 142);
-  --sidebar-primary-foreground: oklch(0.1 0.01 120);
-  --sidebar-accent: oklch(0.5 0.1 142);
-  --sidebar-accent-foreground: oklch(0.95 0.01 120);
-  --sidebar-border: oklch(0.25 0.02 136.5);
-  --sidebar-ring: oklch(0.5 0.1 142);
-
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Inter', serif;
-  --font-mono: 'Inter', monospace;
-
-  --tracking-normal: 0rem;
-  --spacing: 0.25rem;
+  --border: oklch(0.2 0.01 120);
 }
 
 
@@ -242,7 +201,7 @@ body {
 }
 
 .prose p {
-  @apply text-lg leading-relaxed mb-6 text-gray-700;
+  @apply text-lg leading-relaxed mb-6 ;
 }
 
 .prose ul,
@@ -251,7 +210,7 @@ body {
 }
 
 .prose li {
-  @apply text-lg leading-relaxed text-gray-700;
+  @apply text-lg leading-relaxed  ;
 }
 
 .prose blockquote {
@@ -259,7 +218,7 @@ body {
 }
 
 .prose a {
-  @apply text-black underline underline-offset-4 hover:text-gray-600 transition-colors;
+  @apply text-black underline underline-offset-4   transition-colors;
 }
 
 .prose code {
@@ -288,7 +247,7 @@ body {
 }
 
 .category-tag {
-  @apply inline-block bg-gray-100 text-gray-700 text-xs font-heading font-medium px-3 py-1 rounded-none;
+  @apply inline-block    text-xs font-heading font-medium px-3 py-1 rounded-none;
 }
 /* Chain Reaction Animations */
 @keyframes fadeIn {
