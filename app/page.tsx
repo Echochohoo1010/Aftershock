@@ -1,143 +1,153 @@
 "use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import dynamic from "next/dynamic"
 import { ArrowBigUpIcon, ArrowUpRight, Feather, ShapesIcon, Share2Icon } from "lucide-react"
+import { GlobalCommandPalette } from "@/components/global-command-palette"
 
-// Dynamically import the 3D component to avoid SSR issues
-const Metaballs3D = dynamic(() => import("@/components/metaballs-3d"), {
+// Dynamically import  
+const DynamicSDF = dynamic(() => import("@/components/SDF"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full bg-white flex items-center justify-center">
-      <div className="animate-pulse text-gray-400">Loading 3D visualization...</div>
+    <div className="w-full  h-full flex items-center justify-center">
+      <div className="animate-pulse text-muted-foreground ">Loading 3D visualization...</div>
     </div>
   ),
 })
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen text-foreground">
+
       {/* Hero Section */}
-      <section className="relative flex flex-col justify-center px-4 pt-32 pb-16 md:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-center">
-          <div className="lg:w-3/5 z-10">
-            <h2 className="uppercase font-heading text-xl text-zinc-400 font-semibold tracking-tight ">
-              Causal Scenario Planning
-            </h2>
-            <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-tight mb-4">Exploratory Policy</h1>
+      <section className="relative px-4 pt-32 pb-16 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-12">
+            <div className="lg:w-3/5 z-10">
+              <Badge variant="secondary" className="mb-6 rounded-sm">
+                Causal Scenario Planning
+              </Badge>
+              <h1 className="font-semibold text-5xl md:text-7xl tracking-tight mb-6">
+                Explore Policy
+              </h1>
+              <p className="text-xl md:text-2xl max-w-3xl mb-12 text-muted-foreground leading-relaxed">
+                Developing causal AI tools to formulate and analyze the impacts of policies within complex
+                systems.
+              </p>
 
-
-            <p className="text-xl md:text-2xl max-w-3xl mb-12  leading-relaxed">
-              Developing causal AI tools to formulate and analyze the impacts of policies within complex
-              systems.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/explore">
-                <Button className="text-lg px-8 py-4 bg-black text-white hover:bg-gray-800 font-heading">
-                  Explore AI Scenarios
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="ml-2 h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path>
-                  </svg>
-                </Button>
-              </Link>
-              <Link href="/research">
-                <Button variant="outline" className="text-lg px-8 py-4 border-black hover:bg-gray-50 font-heading">
-                  Our Research
-                </Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Link href="/explore">
+                  <Button size="lg" className="text-lg rounded-lg font-medium shadow-lg hover:shadow-xl hover:scale-105 flex items-center">
+                    Explore AI Scenarios
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="ml-2 h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                  </Button>
+                </Link>
+                <Link href="/research">
+                  <Button variant="outline" size="lg">
+                    Our Research
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
 
-          {/* 3D Metaballs Visualization */}
-          <div className="lg:w-2/5 h-96 lg:h-[500px] mt-8 lg:mt-0">
-            <div className="relative w-full h-full rounded-lg overflow-hidden  ">
-              <Metaballs3D />
+            {/* 3D Metaballs Visualization */}
+            <div className="lg:w-2/5 h-96 lg:h-[500px] mt-8 lg:mt-0">
+              <div className="relative w-full h-full rounded-lg overflow-hidden border">
+                <DynamicSDF />
 
-              {/* Overlay text explaining the visualization */}
-              <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm p-3 rounded-lg shadow-sm max-w-xs">
-                <p className="text-xs text-white font-heading">
-                  <strong>Policy Blending Visualization:</strong> White spheres represent individual policy components
-                  that create organic blending zones, demonstrating how separate policies can merge and influence each
-                  other in complex systems.
-                </p>
+                {/* Overlay text explaining the visualization */}
+                <div className="absolute bottom-2 mx-auto left-0 right-0  bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-sm max-w-xs border">
+                  <span className="text-xs text-background  font-medium">
+                    <strong className="text-background/20">Interactive Policy Dynamics </strong> represents interconnected policy elements that blend to create emergent effects within complex governance systems.
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-16 flex justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 animate-bounce text-gray-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
+          <div className="mt-16 flex justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 animate-bounce text-muted-foreground"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </div>
         </div>
       </section>
 
-      {/* New AI Tool Showcase */}
-      <section className="py-24 px-4 md:px-6 lg:px-8 bg-secondary">
+      {/* AI Tool Showcase */}
+      <section className="py-24 px-4 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl font-semibold mb-6">AI-Powered Policy Exploration</h2>
-            <p className="text-xl  max-w-3xl mx-auto leading-relaxed">
+            <h2 className="text-4xl font-bold mb-6">AI-Powered Policy Exploration</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Experience our cutting-edge causal AI system that helps policymakers understand complex scenarios,
               visualize causal relationships, and simulate policy interventions before implementation.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShapesIcon className="w-8 h-8 font-light text-white" />
-              </div>
-              <h3 className="font-heading text-xl font-semibold mb-2">Causal Graphs</h3>
-              <p className=" ">
-                Interactive visualizations of causal relationships between policy variables
-              </p>
-            </div>
+            <Card className="text-center group hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="pt-6">
+                <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <ShapesIcon className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-all duration-300">Causal Graphs</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Interactive visualizations of causal relationships between policy variables
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <Feather className="w-8 h-8 font-light text-white" />
-              </div>
-              <h3 className="font-heading text-xl font-semibold mb-2">AI Chat Assistant</h3>
-              <p className=" ">Natural language conversations about policy scenarios and interventions</p>
-            </div>
+            <Card className="text-center group hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="pt-6">
+                <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Feather className="w-8 h-8 text-secondary-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-all duration-300">AI Chat Assistant</h3>
+                <p className="text-muted-foreground leading-relaxed">Natural language conversations about policy scenarios and interventions</p>
+              </CardContent>
+            </Card>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <Share2Icon className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-heading text-xl font-semibold mb-2">Scenario Simulation</h3>
-              <p className="">
-                Model policy interventions and explore potential outcomes and consequences
-              </p>
-            </div>
+            <Card className="text-center group hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="pt-6">
+                <div className="w-16 h-16 bg-accent rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Share2Icon className="w-8 h-8 text-accent-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-all duration-300">Scenario Simulation</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Model policy interventions and explore potential outcomes and consequences
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="text-center">
             <Link href="/explore">
-              <Button className="text-lg px-8 py-4 bg-black text-white hover:bg-gray-800 font-heading">
+              <Button size="lg" className="text-lg px-8 py-4 rounded-lg font-medium shadow-lg hover:shadow-xl hover:scale-105 flex items-center mx-auto">
                 Try the AI Explorer
-                <ArrowUpRight className="w-10 h-10" />
+                <ArrowUpRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
@@ -147,46 +157,58 @@ export default function Home() {
       {/* Thesis Section */}
       <section className="py-24 px-4 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="border-l-4 border-black pl-8 py-4 mb-16">
-            <p className="text-xl md:text-2xl font-medium leading-relaxed">
-              Our core thesis is that policy, like science and engineering, must be exploratory in nature—capable of
-              simulating, testing, and adapting to uncertain technological frontiers.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-16">
-            <div>
-              <h2 className="font-heading text-3xl font-semibold mb-6">The Problem</h2>
-              <p className="text-lg  mb-6 leading-relaxed">
-                Policy systems lack the tools and protocols to anticipate, test, and iteratively improve responses to
-                high-uncertainty, fast-moving technological change.
+          <Card className="border-l-4 border-primary pl-8 py-6 mb-16">
+            <CardContent className="pt-0">
+              <p className="text-xl md:text-2xl font-medium leading-relaxed">
+                Our core thesis is that policy, like science and engineering, must be exploratory in nature—capable of
+                simulating, testing, and adapting to uncertain technological frontiers.
               </p>
-              <p className="text-lg  leading-relaxed">
-                This leads to reactive governance, misaligned incentives, and increased systemic fragility.
-              </p>
-            </div>
-            <div>
-              <h2 className="font-heading text-3xl font-semibold mb-6">Our Approach</h2>
-              <p className="text-lg   mb-6 leading-relaxed">
-                By integrating agent-based modeling, causal inference, and large language models, we provide
-                policymakers with interactive platforms to:
-              </p>
-              <ul className="list-disc pl-6 text-lg   space-y-3 leading-relaxed">
-                <li>Explore potential outcomes</li>
-                <li>Identify unintended consequences</li>
-                <li>Enhance decision-making processes</li>
-              </ul>
-            </div>
+            </CardContent>
+          </Card>
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-3xl">The Problem</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                  Policy systems lack the tools and protocols to anticipate, test, and iteratively improve responses to
+                  high-uncertainty, fast-moving technological change.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  This leads to reactive governance, misaligned incentives, and increased systemic fragility.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-3xl">Our Approach</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                  By integrating agent-based modeling, causal inference, and large language models, we provide
+                  policymakers with interactive platforms to:
+                </p>
+                <ul className="list-disc pl-6 text-lg text-muted-foreground space-y-3 leading-relaxed">
+                  <li>Explore potential outcomes</li>
+                  <li>Identify unintended consequences</li>
+                  <li>Enhance decision-making processes</li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* Latest Research */}
-      <section className="py-24 px-4 md:px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-4 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-12">
-            <h2 className="font-heading text-4xl font-semibold">Latest Research Blogs</h2>
-            <Link href="/blog" className="text-lg font-heading underline underline-offset-4 hover:">
-              View All Posts
+            <h2 className="text-4xl font-bold">Latest Research</h2>
+            <Link href="/blog">
+              <Button variant="outline" size="lg">
+                View All Posts
+              </Button>
             </Link>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -217,14 +239,16 @@ export default function Home() {
               },
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.id}`}>
-                <article className="rounded-lg p-4 h-64 bg-background ">
-                  <div className="mb-4">
-                    <span className="text-xs bg-foreground mx-1 p-1 text-background rounded-[10px]">{post.category}</span>
-                  </div>
-                  <h3 className="font-heading text-lg font-semibold mb-3 leading-tight">{post.title}</h3>
-                  <p className="blog-excerpt mb-4 overflow-true max-h-24">{post.excerpt}</p>
-                  <time className="blog-meta">{post.date}</time>
-                </article>
+                <Card className="group hover:scale-[1.02] transition-all duration-300">
+                  <CardContent className="pt-6">
+                    <div className="mb-4">
+                      <Badge variant="secondary">{post.category}</Badge>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3 leading-tight group-hover:text-primary transition-all duration-300">{post.title}</h3>
+                    <p className="text-muted-foreground mb-4 leading-relaxed line-clamp-3">{post.excerpt}</p>
+                    <time className="text-sm text-muted-foreground">{post.date}</time>
+                  </CardContent>
+                </Card>
               </Link>
             ))}
           </div>
@@ -232,112 +256,124 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <div className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center">Simulator Features</h2>
+      <section className="py-24 px-4 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold mb-12 text-center">Simulator Features</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-background p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-3">Causal Graph Analysis</h3>
-              <p className=" mb-4">
-                Visualize and modify causal relationships between key variables to understand
-                how changes in one factor affect others throughout the system.
-              </p>
-              <div className="text-sm font-medium text-black">Explore I</div>
-            </div>
+            <Card className="group hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-all duration-300">Causal Graph Analysis</h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Visualize and modify causal relationships between key variables to understand
+                  how changes in one factor affect others throughout the system.
+                </p>
+                <Badge variant="secondary">Explore I</Badge>
+              </CardContent>
+            </Card>
 
-            <div className="bg-background  p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-3">Chain Reaction Simulator</h3>
-              <p className=" mb-4">
-                Monitor real-time system responses to policy changes as they cascade through
-                stakeholders, markets, regulations, and social systems.
-              </p>
-              <div className="text-sm font-medium text-black">Explore II</div>
-            </div>
+            <Card className="group hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-all duration-300">Chain Reaction Simulator</h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Monitor real-time system responses to policy changes as they cascade through
+                  stakeholders, markets, regulations, and social systems.
+                </p>
+                <Badge variant="secondary">Explore II</Badge>
+              </CardContent>
+            </Card>
 
-            <div className="bg-background  p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-3">AI Policy Assistant</h3>
-              <p className=" mb-4">
-                Interact with our AI assistant to ask questions about policy impacts, explore
-                alternative scenarios, and receive insights on potential outcomes.
-              </p>
-              <div className="text-sm font-medium text-black">Interactive Analysis</div>
-            </div>
+            <Card className="group hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-all duration-300">AI Policy Assistant</h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Interact with our AI assistant to ask questions about policy impacts, explore
+                  alternative scenarios, and receive insights on potential outcomes.
+                </p>
+                <Badge variant="secondary">Interactive Analysis</Badge>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </div>
+      </section>
       {/* Team Section */}
       <section className="py-24 px-4 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h2 className="font-heading text-4xl font-semibold mb-12">Our Team</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <h2 className="text-4xl font-bold mb-12">Our Team</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { name: "Joel Christoph", role: "CEO" },
               { name: "Jonas Kgomo", role: "CPO" },
               { name: "Caleb Maresca", role: "CTO" },
               { name: "Echo Huang", role: "Chief Operations Officer" },
             ].map((member, index) => (
-              <div key={index} className="border-l-4 border-black pl-6 py-2">
-                <h3 className="font-heading text-xl font-semibold">{member.name}</h3>
-                <p className="">{member.role}</p>
-              </div>
+              <Card key={index} className="border-l-4 border-primary group hover:scale-[1.02] transition-all duration-300">
+                <CardContent className="pt-6">
+                  <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-all duration-300">{member.name}</h3>
+                  <p className="text-muted-foreground">{member.role}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 md:px-6 lg:px-8 border-t border-gray-200">
+      <footer className="py-16 px-4 md:px-6 lg:px-8 border-t">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start">
-            <div className="mb-8 md:mb-0">
-              <h3 className="font-heading text-xl font-semibold mb-2">Exploratory Policy</h3>
-              <p className=" mb-4">Advancing the science of policy through causal AI</p>
-              <p className="text-sm text-gray-500">© 2025 All rights reserved</p>
-            </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h4 className="font-heading font-semibold mb-3">Research</h4>
-                <ul className="space-y-2 text-sm ">
-                  <li>
-                    <Link href="/research" className="hover:text-black">
-                      Policy Synthesis
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/research" className="hover:text-black">
-                      Impact Analysis
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/blog" className="hover:text-black">
-                      Publications
-                    </Link>
-                  </li>
-                </ul>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row justify-between items-start">
+                <div className="mb-8 md:mb-0">
+                  <h3 className="text-xl font-bold mb-2">Explore Policy</h3>
+                  <p className="text-muted-foreground mb-4">Advancing the science of policy through causal AI</p>
+                  <p className="text-sm text-muted-foreground">© 2025 All rights reserved</p>
+                </div>
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-semibold mb-3">Research</h4>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>
+                        <Link href="/research" className="hover:text-primary transition-colors">
+                          Policy Synthesis
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/research" className="hover:text-primary transition-colors">
+                          Impact Analysis
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/blog" className="hover:text-primary transition-colors">
+                          Publications
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-3">Connect</h4>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>
+                        <Link href="#" className="hover:text-primary transition-colors">
+                          Twitter
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="#" className="hover:text-primary transition-colors">
+                          LinkedIn
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="#" className="hover:text-primary transition-colors">
+                          GitHub
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h4 className="font-heading font-semibold mb-3">Connect</h4>
-                <ul className="space-y-2 text-sm ">
-                  <li>
-                    <Link href="#" className="hover:text-black">
-                      Twitter
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="#" className="hover:text-black">
-                      LinkedIn
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="#" className="hover:text-black">
-                      GitHub
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </footer>
     </div>

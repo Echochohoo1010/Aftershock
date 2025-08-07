@@ -1,6 +1,6 @@
 import type React from "react"
 import "./globals.css"
-import { IBM_Plex_Sans, IBM_Plex_Serif, Inter, Noticia_Text } from "next/font/google"
+import { IBM_Plex_Sans, Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 
@@ -30,9 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${noticiaText.variable}`} suppressHydrationWarning>
       <body className="font-body">
-        <ThemeProvider attribute="class" >
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+
           <Header />
           {children}
+
+
         </ThemeProvider>
       </body>
     </html>

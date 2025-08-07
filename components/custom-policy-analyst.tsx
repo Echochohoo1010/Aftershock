@@ -483,7 +483,7 @@ export default function CustomPolicyAnalyst() {
             {/* Left column: Active Simulator */}
             <div>
               <Card className="overflow-hidden shadow-md">
-                <div className="p-4 my-2 border-b bg-gray-50  justify-between items-center">
+                <div className="p-4 my-2 border-b bg-background  justify-between items-center">
                   <div>
                     <h2 className="text-xl font-bold">
                       {activeTab === "explore1" ? "Causal Graph" : "Chain Reactions"}

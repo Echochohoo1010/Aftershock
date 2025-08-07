@@ -918,7 +918,7 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
         </header>
 
         {/* Article Content */}
-        <article className="prose prose-lg max-w-none">
+        <article className="prose prose-lg max-w-none  bg-background  dark:bg-foreground rounded-2xl p-8 m-2">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
         </article>
 

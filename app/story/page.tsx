@@ -371,9 +371,9 @@ Format:
                             </div>
                             <div className="text-center">
                                 <div className="w-16 h-16 mx-auto  rounded-full flex items-center justify-center mb-2">
-                                    <Cpu className="w-6 h-6 text-green-600" />
+                                    <Cpu className="w-6 h-6 " />
                                 </div>
-                                <div className="text-sm font-bold text-green-600">{currentNode.worldState.compute > 0 ? '+' : ''}{currentNode.worldState.compute}%</div>
+                                <div className="text-sm font-bold ">{currentNode.worldState.compute > 0 ? '+' : ''}{currentNode.worldState.compute}%</div>
                                 <div className="text-xs text-gray-600">Compute</div>
                             </div>
                             <div className="text-center">
@@ -479,7 +479,7 @@ Format:
                                 <div
                                     key={node.id}
                                     className={`p-3 rounded-lg border ${visitedNodeIds.has(node.id)
-                                        ? 'bg-green-50 border-green-200'
+                                        ? ' border-green-200'
                                         : node.id === currentNode?.id
                                             ? 'bg-blue-50 border-blue-200'
                                             : 'bg-gray-50 border-gray-200'
@@ -500,7 +500,7 @@ Format:
                                     </div>
                                     <div className="mt-2 flex gap-1">
                                         {visitedNodeIds.has(node.id) && (
-                                            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                                            <Badge variant="secondary" className="  text-xs">
                                                 Visited
                                             </Badge>
                                         )}
@@ -532,23 +532,23 @@ Format:
     }
 
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen bg-background">
             {/* Compact Header */}
             <div className="pt-20 pb-6">
                 <div className="container mx-auto px-4">
                     <div className="max-w-7xl mx-auto text-center">
-                        <h1 className="text-3xl font-bold mb-2 text-green-900 ">Predictive Historian
+                        <h1 className="text-3xl font-bold mb-2 text-foreground">Predictive Historian
 
                         </h1>
-                        <p className="text-sm text-gray-600 mb-4">AI agent that simulates policy decisions through branching narratives</p>
+                        <p className="text-sm text-muted-foreground mb-4">AI agent that simulates policy decisions through branching narratives</p>
                         <div className="flex justify-center gap-2 text-sm">
-                            <Badge variant="secondary" className="bg-green-100 text-green-800  ">
+                            <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                                 {currentNode.title}
                             </Badge>
-                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-800  ">
+                            <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                                 Visited: {storyPath.length + 1}
                             </Badge>
-                            {isEnding && <Badge variant="destructive" className="bg-green-600 text-white  ">Ending</Badge>}
+                            {isEnding && <Badge variant="destructive" className="bg-destructive text-destructive-foreground">Ending</Badge>}
                         </div>
                     </div>
                 </div>
@@ -558,10 +558,10 @@ Format:
                 <div className="container mx-auto px-4">
                     <div className="max-w-7xl mx-auto">
                         {/* AI Input at Top - Always Visible */}
-                        <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                        <Card className="mb-6   border-border">
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-green-900 flex items-center gap-2 text-lg  ">
-                                    <Sparkles className="w-5 h-5 text-green-600" />
+                                <CardTitle className="text-card-foreground flex items-center gap-2 text-lg">
+                                    <Sparkles className="w-5 h-5 text-primary" />
                                     AI Scenario Generator
                                 </CardTitle>
                             </CardHeader>
@@ -571,13 +571,13 @@ Format:
                                         placeholder="e.g., What if Australia developed a revolutionary quantum chip that outperforms all existing technology?"
                                         value={customScenario}
                                         onChange={(e) => setCustomScenario(e.target.value)}
-                                        className="flex-1 min-h-[60px] resize-none placeholder:text-gray-500"
+                                        className="flex-1 min-h-[60px] resize-none placeholder:text-muted-foreground"
                                         disabled={isGenerating}
                                     />
                                     <Button
                                         onClick={() => generateCustomScenario(customScenario)}
                                         disabled={!customScenario.trim() || isGenerating}
-                                        className="bg-green-600 hover:bg-green-700 text-white px-6"
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6"
                                     >
                                         {isGenerating ? (
                                             <Loader2 className="animate-spin h-4 w-4" />
@@ -593,18 +593,18 @@ Format:
                         <div className="grid grid-cols-12 gap-4">
                             {/* Main Story Content - Large */}
                             <div className="col-span-12 lg:col-span-8">
-                                <Card className="h-full bg-white border-green-200">
+                                <Card className="h-full border-border">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <CardTitle className="text-xl text-green-900 ">{currentNode.title}</CardTitle>
+                                                <CardTitle className="text-xl text-card-foreground">{currentNode.title}</CardTitle>
                                                 {currentNode.tags && (
                                                     <div className="flex gap-1 mt-2">
                                                         {currentNode.tags.map(tag => (
                                                             <Badge
                                                                 key={tag}
                                                                 variant="outline"
-                                                                className="text-xs bg-green-50 text-green-700 border-green-200"
+                                                                className="text-xs border-border"
                                                             >
                                                                 {tag}
                                                             </Badge>
@@ -624,26 +624,26 @@ Format:
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-gray-800 leading-relaxed mb-4 ">
+                                        <p className="text-card-foreground leading-relaxed mb-4">
                                             {currentNode.content}
                                         </p>
 
                                         {!isEnding && currentNode.choices.length > 0 && (
                                             <div className="space-y-2">
-                                                <div className="text-sm text-gray-500 mb-3 ">Choose your path:</div>
+                                                <div className="text-sm text-muted-foreground mb-3">Choose your path:</div>
                                                 {currentNode.choices.map((choice) => (
                                                     <Button
                                                         key={choice.id}
                                                         onClick={() => makeChoice(choice.id)}
                                                         variant="outline"
-                                                        className="w-full text-left justify-start p-3 h-auto hover:bg-green-50 border-green-200"
+                                                        className="w-full text-left justify-start p-3 h-auto"
                                                     >
                                                         <div className="flex flex-col items-start w-full">
                                                             <div className="flex items-center mb-1">
-                                                                <ChevronRight className="mr-2 w-3 h-3 text-green-600" />
-                                                                <span className="font-medium text-sm ">{choice.description}</span>
+                                                                <ChevronRight className="mr-2 w-3 h-3 text-muted-foreground" />
+                                                                <span className="font-medium text-sm text-foreground">{choice.description}</span>
                                                             </div>
-                                                            <div className="text-xs text-gray-500 ml-5 ">
+                                                            <div className="text-xs text-muted-foreground ml-5">
                                                                 {getChoiceConsequence(choice)}
                                                             </div>
                                                         </div>
@@ -653,9 +653,9 @@ Format:
                                         )}
 
                                         {isEnding && (
-                                            <div className="text-center py-4 border-t">
-                                                <div className="text-green-600 font-bold mb-2 ">◆ THE END ◆</div>
-                                                <p className="text-sm text-gray-700 ">
+                                            <div className="text-center py-4 border-t border-border">
+                                                <div className="text-foreground font-bold mb-2">◆ THE END ◆</div>
+                                                <p className="text-sm text-muted-foreground">
                                                     You've reached an ending. The future you shaped echoes through eternity.
                                                 </p>
                                             </div>
@@ -666,38 +666,38 @@ Format:
 
                             {/* World State - Compact */}
                             <div className="col-span-12 lg:col-span-4">
-                                <Card className="bg-white border-green-200 mb-4">
+                                <Card className="  mb-4">
                                     <CardHeader className="pb-2">
-                                        <CardTitle className="text-sm text-green-900 flex items-center gap-2 ">
-                                            <Clock className="w-4 h-4 text-green-600" />
+                                        <CardTitle className="text-sm text-card-foreground flex items-center gap-2">
+                                            <Clock className="w-4 h-4 text-primary" />
                                             World State
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid grid-cols-2 gap-3">
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-green-600 font-sans">
-                                                    T+{currentNode.worldState.t}
+                                            <div className=" ">
+                                                <div className="text-lg   text-foreground ">
+                                                    {currentNode.worldState.t}
                                                 </div>
-                                                <div className="text-xs text-gray-600 font-serif">Months <sub>(time elapsed)</sub></div>
+                                                <div className="text-xs text-muted-foreground  ">Months <sub>(time elapsed)</sub></div>
                                             </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-emerald-600 font-sans">
+                                            <div className=" r">
+                                                <div className="text-lg font-bold text-primary  ">
                                                     {currentNode.worldState.compute > 0 ? '+' : ''}{currentNode.worldState.compute}%
                                                 </div>
-                                                <div className="text-xs text-gray-600 font-serif">AI Capacity <sub>(supercomputers & accelerators)</sub></div>
+                                                <div className=" text-muted-foreground  ">AI Capacity <sub>(supercomputers )</sub></div>
                                             </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-green-700 font-sans">
+                                            <div className=" ">
+                                                <div className="text-lg  text-foreground ">
                                                     {currentNode.worldState.unemployment > 0 ? '+' : ''}{currentNode.worldState.unemployment}%
                                                 </div>
-                                                <div className="text-xs text-gray-600 font-serif">Model Deployment <sub>(AI models in production)</sub></div>
+                                                <div className=" text-muted-foreground ">Model Deployment <sub>(AI models in production)</sub></div>
                                             </div>
-                                            <div className="text-center">
-                                                <div className="text-xs font-medium text-gray-900 truncate  ">
+                                            <div className=" ">
+                                                <div className=" font-medium text-foreground truncate">
                                                     {currentNode.worldState.geopolitics}
                                                 </div>
-                                                <div className="text-xs text-gray-600 ">Geopolitics</div>
+                                                <div className=" text-muted-foreground">Geopolitics</div>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -705,10 +705,10 @@ Format:
 
                                 {/* Journey Path - Compact */}
                                 {storyPath.length > 0 && (
-                                    <Card className="bg-white border-green-200">
+                                    <Card className=" border-border">
                                         <CardHeader className="pb-2">
-                                            <CardTitle className="text-sm text-green-900 flex items-center gap-2 ">
-                                                <Map className="w-4 h-4" />
+                                            <CardTitle className="text-sm text-card-foreground flex items-center gap-2">
+                                                <Map className="w-4 h-4 text-primary" />
                                                 Journey ({storyPath.length + 1})
                                             </CardTitle>
                                         </CardHeader>
@@ -716,22 +716,22 @@ Format:
                                             <div className="space-y-2 max-h-48 overflow-y-auto">
                                                 {storyPath.map((node, index) => (
                                                     <div key={node.id} className="flex items-center text-xs">
-                                                        <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
+                                                        <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-xs font-bold mr-2 flex-shrink-0">
                                                             {index + 1}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <div className="font-medium truncate">{node.title}</div>
-                                                            <div className="text-gray-500">T+{node.worldState.t}</div>
+                                                            <div className="font-medium truncate text-foreground">{node.title}</div>
+                                                            <div className="text-muted-foreground">T+{node.worldState.t}</div>
                                                         </div>
                                                     </div>
                                                 ))}
                                                 <div className="flex items-center text-xs">
-                                                    <div className="w-5 h-5  rounded-full flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
+                                                    <div className="w-5 h-5 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground text-xs font-bold mr-2 flex-shrink-0">
                                                         {storyPath.length + 1}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="font-medium truncate">{currentNode.title}</div>
-                                                        <div className="text-gray-500">Current</div>
+                                                        <div className="font-medium truncate text-foreground">{currentNode.title}</div>
+                                                        <div className="text-muted-foreground">Current</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -742,42 +742,43 @@ Format:
 
                             {/* AI Data Dashboard - Wide */}
                             <div className="col-span-12">
-                                <Card className="bg-white border-gray-200">
+                                <Card className=" border-border">
                                     <CardHeader className="pb-3">
-                                        <CardTitle className="text-sm text-gray-900 flex items-center gap-2">
-                                            <BarChart3 className="w-4 h-4" />
+                                        <CardTitle className="text-sm text-card-foreground flex items-center gap-2">
+                                            <BarChart3 className="w-4 h-4 text-primary" />
                                             AI Data Insights & Timeline
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent>
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                            <div>
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm">Real AI Data Trends</h4>
-                                                <p className="text-xs text-gray-600 mb-3">
-                                                    Live data: 500+ AI supercomputers, 160+ ML accelerators, 2400+ AI models
-                                                </p>
-                                                <AIDataDashboard />
-                                            </div>
-                                            <div>
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm">Interactive Timeline</h4>
-                                                <BranchingTimeline
-                                                    currentNode={currentNode}
-                                                    storyPath={storyPath}
-                                                    onDecisionClick={handleDecisionClick}
-                                                    onGeneratePDF={handleGeneratePDF}
-                                                />
-                                            </div>
-                                        </div>
-                                    </CardContent>
+
                                 </Card>
+
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 className="font-medium text-foreground mb-2 text-sm">Real AI Data Trends</h4>
+                                        <p className="text-xs text-muted-foreground mb-3">
+                                            Live data: 500+ AI supercomputers, 160+ ML accelerators, 2400+ AI models
+                                        </p>
+                                        <AIDataDashboard />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-medium text-foreground mb-2 text-sm">Interactive Timeline</h4>
+                                        <BranchingTimeline
+                                            currentNode={currentNode}
+                                            storyPath={storyPath}
+                                            onDecisionClick={handleDecisionClick}
+                                            onGeneratePDF={handleGeneratePDF}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Story Map - Wide */}
                             <div className="col-span-12">
-                                <Card className="bg-white border-gray-200">
+                                <Card className=" border-border">
                                     <CardHeader className="pb-3">
-                                        <CardTitle className="text-sm text-gray-900 flex items-center gap-2">
-                                            <Map className="w-4 h-4" />
+                                        <CardTitle className="text-sm text-card-foreground flex items-center gap-2">
+                                            <Map className="w-4 h-4 text-primary" />
                                             Story Map
                                         </CardTitle>
                                     </CardHeader>
@@ -790,33 +791,33 @@ Format:
                                                         <div
                                                             key={node.id}
                                                             className={`p-3 rounded-lg border text-xs ${visitedNodeIds.has(node.id)
-                                                                ? 'bg-green-50 border-green-200'
+                                                                ? 'bg-secondary border-border'
                                                                 : node.id === currentNode?.id
-                                                                    ? 'bg-blue-50 border-blue-200'
-                                                                    : 'bg-gray-50 border-gray-200'
+                                                                    ? 'bg-primary/10 border-primary'
+                                                                    : 'bg-muted border-border'
                                                                 }`}
                                                         >
-                                                            <div className="font-medium text-gray-900 mb-1 truncate">
+                                                            <div className="font-medium text-foreground mb-1 truncate">
                                                                 {node.title}
                                                             </div>
-                                                            <div className="text-gray-600 mb-2 flex flex-wrap gap-1">
+                                                            <div className="text-muted-foreground mb-2 flex flex-wrap gap-1">
                                                                 {node.tags?.slice(0, 2).map(tag => (
                                                                     <Badge key={tag} variant="outline" className="text-xs px-1 py-0">
                                                                         {tag}
                                                                     </Badge>
                                                                 ))}
                                                             </div>
-                                                            <div className="text-gray-500 line-clamp-2">
+                                                            <div className="text-muted-foreground line-clamp-2">
                                                                 {node.content.slice(0, 80)}...
                                                             </div>
                                                             <div className="mt-2 flex gap-1">
                                                                 {visitedNodeIds.has(node.id) && (
-                                                                    <Badge variant="secondary" className="  text-xs px-1 py-0">
+                                                                    <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-xs px-1 py-0">
                                                                         ✓
                                                                     </Badge>
                                                                 )}
                                                                 {node.id === currentNode?.id && (
-                                                                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs px-1 py-0">
+                                                                    <Badge variant="secondary" className="bg-primary text-primary-foreground text-xs px-1 py-0">
                                                                         Current
                                                                     </Badge>
                                                                 )}

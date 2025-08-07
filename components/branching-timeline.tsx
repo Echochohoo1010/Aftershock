@@ -71,10 +71,10 @@ export default function BranchingTimeline({ currentNode, storyPath, onDecisionCl
             </div>
 
             {/* Dynamic Branching Visualization */}
-            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-lg border">
+            <div className=" p-4 rounded-lg border">
                 <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-900">Scenario Branches</h4>
-                    <div className="text-sm text-gray-600">
+                    <h4 className="font-semibold  ">Scenario Branches</h4>
+                    <div className="text-sm  ">
                         {currentNode.worldState.geopolitics}
                     </div>
                 </div>

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -12,40 +13,43 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-200">
+    <header className="fixed w-full glass z-50 border-b border-white/20 dark:border-white/10">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex flex-inline gap-2">
-            <p className="rounded-full p-1 w-8 h-8 text-white text-center mx-auto">E</p>
-            <Link href="/" className="text-xl font-heading font-semibold">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="h-12 w-12 border-2 border-foreground rounded-2xl  flex items-center justify-center  font-medium text-lg">
+              E
+            </Link>
+            <Link href="/" className="text-xl  font-semibold  ">
               Exploratory Policy
             </Link>
           </div>
 
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/explore" className="text-gray-600 hover:text-black transition-colors font-medium">
+          <nav className="hidden md:flex items-center space-x-3">
+            <Link href="/explore" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
               Explore
             </Link>
-            <Link href="/story" className="text-gray-600 hover:text-black transition-colors font-medium">
+            <Link href="/story" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
               Story
             </Link>
-            <Link href="/about" className="text-gray-600 hover:text-black transition-colors">
+            <Link href="/about" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
               About
             </Link>
-            <Link href="/research" className="text-gray-600 hover:text-black transition-colors">
+            <Link href="/research" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
               Research
             </Link>
-            <Link href="/blog" className="text-gray-600 hover:text-black transition-colors">
+            <Link href="/blog" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
               Blog
             </Link>
-            <Link href="/team" className="text-gray-600 hover:text-black transition-colors">
+            <Link href="/team" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
               Team
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-black transition-colors">
+            <Link href="/contact" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
               Contact
             </Link>
+            <ThemeToggle />
           </nav>
 
           {/* Mobile Menu Button */}
@@ -86,37 +90,40 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-4 py-6 space-y-4">
-            <Link href="/explore" className="block text-gray-600 hover:text-black transition-colors font-medium" onClick={toggleMenu}>
+        <div className="md:hidden glass-panel border-t border-white/10 dark:border-white/05">
+          <div className="px-4 py-6 space-y-3">
+            <Link href="/explore" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
               Explore
             </Link>
-            <Link href="/story" className="block text-gray-600 hover:text-black transition-colors font-medium" onClick={toggleMenu}>
+            <Link href="/story" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
               Story
             </Link>
-            <Link href="/about" className="block text-gray-600 hover:text-black transition-colors" onClick={toggleMenu}>
+            <Link href="/about" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
               About
             </Link>
             <Link
               href="/research"
-              className="block text-gray-600 hover:text-black transition-colors"
+              className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200"
               onClick={toggleMenu}
             >
               Research
             </Link>
-            <Link href="/blog" className="block text-gray-600 hover:text-black transition-colors" onClick={toggleMenu}>
+            <Link href="/blog" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
               Blog
             </Link>
-            <Link href="/team" className="block text-gray-600 hover:text-black transition-colors" onClick={toggleMenu}>
+            <Link href="/team" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
               Team
             </Link>
             <Link
               href="/contact"
-              className="block text-gray-600 hover:text-black transition-colors"
+              className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200"
               onClick={toggleMenu}
             >
               Contact
             </Link>
+            <div className="pt-4 border-t border-white/10 dark:border-white/05">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       )}
