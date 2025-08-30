@@ -43,8 +43,8 @@ export default function ExplorePage() {
               <h2 className="text-3xl font-bold">Exploratory Policy Analysis</h2>
             </div>
             <p className="text-lg   mb-6">
-              Our integrated simulator combines causal modeling (Explore I) with temporal chain reaction analysis (Explore II)
-              to provide a comprehensive view of how policies cascade through complex systems.
+              Our integrated simulator combines causal modeling (Explore I), temporal chain reaction analysis (Explore II),
+              and agent-based dynamics (Explore III) to provide a comprehensive view of how policies cascade through complex systems.
             </p>
             <div className="bg-gray-50 border p-4 rounded-lg">
               <h3 className="font-bold mb-2 flex items-center">

@@ -34,6 +34,9 @@ export default function Header() {
             <Link href="/story" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
               Story
             </Link>
+            <Link href="/canvas" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
+              Canvas
+            </Link>
             <Link href="/about" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
               About
             </Link>
@@ -97,6 +100,9 @@ export default function Header() {
             </Link>
             <Link href="/story" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
               Story
+            </Link>
+            <Link href="/canvas" className="block glass-button bg-secondary text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
+              Canvas
             </Link>
             <Link href="/about" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
               About

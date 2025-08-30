@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import CausalGraph from "@/components/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/scenario-chat"
-import { Share2, Shapes, FileText } from "lucide-react"
+import AgentBubblesVisualization from "@/components/agent-bubbles-visualization"
+import { Share2, Shapes, FileText, Users } from "lucide-react"
 import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
 
 // Default economic policy causal graph
@@ -139,60 +140,6 @@ const caseStudies = [
       { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" },
       { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" }
     ]
-  },
-  {
-    id: "education-reform",
-    title: "Education Reform Initiative",
-    description: "A nationwide education reform program focusing on modernizing curriculum, increasing teacher compensation, expanding early childhood education access, and implementing technology-enhanced learning methods to improve educational outcomes.",
-    icon: "📚",
-    variables: [
-      "education_funding",
-      "teacher_quality",
-      "student_outcomes",
-      "workforce_skills",
-      "economic_productivity",
-      "income_inequality",
-      "innovation_capacity"
-    ],
-    relationships: [
-      { from: "education_funding", to: "teacher_quality", strength: 0.7, type: "positive" },
-      { from: "teacher_quality", to: "student_outcomes", strength: 0.8, type: "positive" },
-      { from: "student_outcomes", to: "workforce_skills", strength: 0.7, type: "positive" },
-      { from: "workforce_skills", to: "economic_productivity", strength: 0.6, type: "positive" },
-      { from: "economic_productivity", to: "income_inequality", strength: -0.4, type: "negative" },
-      { from: "student_outcomes", to: "innovation_capacity", strength: 0.5, type: "positive" },
-      { from: "innovation_capacity", to: "economic_productivity", strength: 0.7, type: "positive" },
-      { from: "income_inequality", to: "student_outcomes", strength: -0.5, type: "negative" },
-      { from: "education_funding", to: "innovation_capacity", strength: 0.4, type: "positive" },
-      { from: "workforce_skills", to: "income_inequality", strength: -0.6, type: "negative" }
-    ]
-  },
-  {
-    id: "healthcare-access",
-    title: "Universal Healthcare Access",
-    description: "A policy proposal to expand healthcare access through a combination of public insurance options, subsidies for private insurance, price controls on prescription medications, and investments in preventative care and rural healthcare facilities.",
-    icon: "🏥",
-    variables: [
-      "healthcare_coverage",
-      "healthcare_costs",
-      "public_health",
-      "labor_productivity",
-      "government_spending",
-      "personal_bankruptcy",
-      "economic_growth"
-    ],
-    relationships: [
-      { from: "healthcare_coverage", to: "public_health", strength: 0.8, type: "positive" },
-      { from: "healthcare_coverage", to: "healthcare_costs", strength: -0.5, type: "negative" },
-      { from: "healthcare_costs", to: "personal_bankruptcy", strength: 0.6, type: "positive" },
-      { from: "public_health", to: "labor_productivity", strength: 0.7, type: "positive" },
-      { from: "labor_productivity", to: "economic_growth", strength: 0.6, type: "positive" },
-      { from: "government_spending", to: "healthcare_coverage", strength: 0.8, type: "positive" },
-      { from: "government_spending", to: "economic_growth", strength: -0.3, type: "negative" },
-      { from: "personal_bankruptcy", to: "economic_growth", strength: -0.4, type: "negative" },
-      { from: "healthcare_costs", to: "government_spending", strength: 0.5, type: "positive" },
-      { from: "public_health", to: "healthcare_costs", strength: -0.4, type: "negative" }
-    ]
   }
 ]
 
@@ -215,7 +162,7 @@ export default function CustomPolicyAnalyst() {
   const [variables, setVariables] = useState(defaultVariables)
   const [relationships, setRelationships] = useState(defaultRelationships)
   const [showCaseStudies, setShowCaseStudies] = useState(false)
-  const [activeTab, setActiveTab] = useState<"explore1" | "explore2">("explore1")
+  const [activeTab, setActiveTab] = useState<"explore1" | "explore2" | "explore3">("explore1")
   const [selectedEvent, setSelectedEvent] = useState<ReactionEvent | null>(null)
   const [quickTags, setQuickTags] = useState<string[]>([])
   const [events, setEvents] = useState<ReactionEvent[]>([])
@@ -373,125 +320,129 @@ export default function CustomPolicyAnalyst() {
   return (
     <div className="container mx-auto p-4 max-w-7xl">
       {/* Policy Input Form */}
-      <Card className="p-6 mb-8 shadow-md">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-bold">Policy Details</h2>
-            <Button
-              variant="outline"
-              onClick={() => setShowCaseStudies(!showCaseStudies)}
-              disabled={isSubmitted}
-            >
-              {showCaseStudies ? "Hide Case Studies" : "Load Case Study"}
-            </Button>
-          </div>
+      {!isSubmitted &&
+        <Card className="p-6 mb-8 shadow-md max-w-4xl mx-auto ">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-bold">Policy Details</h2>
+              <Button
+                variant="outline"
+                onClick={() => setShowCaseStudies(!showCaseStudies)}
+                disabled={isSubmitted}
+              >
+                {showCaseStudies ? "Hide Case Studies" : "Load Case Study"}
+              </Button>
+            </div>
 
-          {showCaseStudies && !isSubmitted && (
-            <div className="mb-6 border rounded-lg overflow-hidden">
-              <div className="bg-gray-50 p-3 border-b">
-                <h3 className="font-medium">Select a Pre-filled Case Study</h3>
-                <p className="text-xs text-gray-500 mt-1">Each case study includes a custom causal graph with relevant variables and relationships</p>
-              </div>
-              <div className="divide-y">
-                {caseStudies.map((study) => (
-                  <div
-                    key={study.id}
-                    className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-start gap-3"
-                    onClick={() => selectCaseStudy(study)}
-                  >
-                    <div className="text-2xl">{study.icon}</div>
-                    <div>
-                      <h4 className="font-medium">{study.title}</h4>
-                      <p className="text-sm text-gray-600 line-clamp-2">{study.description}</p>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {study.variables.slice(0, 3).map(variable => (
-                          <span key={variable} className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                            {variable.replace(/_/g, ' ')}
-                          </span>
-                        ))}
-                        {study.variables.length > 3 && (
-                          <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                            +{study.variables.length - 3} more
-                          </span>
-                        )}
+            {showCaseStudies && !isSubmitted && (
+              <div className="mb-6 border rounded-lg overflow-hidden">
+                <div className="bg-gray-50 p-3 border-b">
+                  <h3 className="font-medium">Select a Pre-filled Case Study</h3>
+                  <p className="text-xs text-gray-500 mt-1">Each case study includes a custom causal graph with relevant variables and relationships</p>
+                </div>
+                <div className="divide-y">
+                  {caseStudies.map((study) => (
+                    <div
+                      key={study.id}
+                      className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-start gap-3"
+                      onClick={() => selectCaseStudy(study)}
+                    >
+                      <div className="text-2xl">{study.icon}</div>
+                      <div>
+                        <h4 className="font-medium">{study.title}</h4>
+                        <p className="text-sm text-gray-600 line-clamp-2">{study.description}</p>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {study.variables.slice(0, 3).map(variable => (
+                            <span key={variable} className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                              {variable.replace(/_/g, ' ')}
+                            </span>
+                          ))}
+                          {study.variables.length > 3 && (
+                            <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                              +{study.variables.length - 3} more
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-
-          <div>
-            <Label htmlFor="policy-title" className="text-lg font-medium">Policy Title</Label>
-            <Input
-              id="policy-title"
-              value={policyTitle}
-              onChange={(e) => setPolicyTitle(e.target.value)}
-              placeholder="Enter policy title"
-              disabled={isSubmitted}
-              className="mt-1"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="policy-description" className="text-lg font-medium">Policy Description</Label>
-            <Textarea
-              id="policy-description"
-              value={policyDescription}
-              onChange={(e) => setPolicyDescription(e.target.value)}
-              placeholder="Describe your policy proposal in detail"
-              rows={4}
-              disabled={isSubmitted}
-              className="mt-1"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-2">
-            {isSubmitted ? (
-              <>
-                <Button
-                  onClick={generatePDFReport}
-                  variant="default"
-                  size="lg"
-                  className="flex items-center gap-2"
-                >
-                  <FileText className="w-4 h-4" />
-                  Export PDF Report
-                </Button>
-                <Button onClick={handleReset} variant="outline" size="lg">
-                  Reset Analysis
-                </Button>
-              </>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={!policyTitle.trim() || !policyDescription.trim()}
-                size="lg"
-                className="bg-black hover:bg-gray-800 text-white"
-              >
-                Analyze Policy
-              </Button>
             )}
+
+            <div>
+              <Label htmlFor="policy-title" className="text-lg font-medium">Policy Title</Label>
+              <Input
+                id="policy-title"
+                value={policyTitle}
+                onChange={(e) => setPolicyTitle(e.target.value)}
+                placeholder="Enter policy title"
+                disabled={isSubmitted}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="policy-description" className="text-lg font-medium">Policy Description</Label>
+              <Textarea
+                id="policy-description"
+                value={policyDescription}
+                onChange={(e) => setPolicyDescription(e.target.value)}
+                placeholder="Describe your policy proposal in detail"
+                rows={4}
+                disabled={isSubmitted}
+                className="mt-1"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-2">
+              {isSubmitted ? (
+                <>
+                  <Button
+                    onClick={generatePDFReport}
+                    variant="default"
+                    size="lg"
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Export PDF Report
+                  </Button>
+                  <Button onClick={handleReset} variant="outline" size="lg">
+                    Reset Analysis
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!policyTitle.trim() || !policyDescription.trim()}
+                  size="lg"
+                  className="bg-black hover:bg-gray-800 text-white"
+                >
+                  Analyze Policy
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>}
 
       {isSubmitted && (
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left column: Active Simulator */}
-            <div>
+        <div className="space-y-8 ">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left column: Active Simulator - Takes 2/3 of space */}
+            <div className="lg:col-span-2">
               <Card className="overflow-hidden shadow-md">
-                <div className="p-4 my-2 border-b bg-background  justify-between items-center">
+                <div className="p-4 my-2 border-b bg-background justify-between items-center">
                   <div>
                     <h2 className="text-xl font-bold">
-                      {activeTab === "explore1" ? "Causal Graph" : "Chain Reactions"}
+                      {activeTab === "explore1" ? "Causal Graph" :
+                        activeTab === "explore2" ? "Chain Reactions" : "Agent Dynamics"}
                     </h2>
                     <p className="text-sm text-gray-600">
                       {activeTab === "explore1"
                         ? "Visualize and modify causal relationships between variables"
-                        : "Monitor real-time system responses to policy changes"}
+                        : activeTab === "explore2"
+                          ? "Monitor real-time system responses to policy changes"
+                          : "Force-directed agent-based model with collision physics"}
                     </p>
                   </div>
 
@@ -511,22 +462,22 @@ export default function CustomPolicyAnalyst() {
                       onClick={() => setActiveTab("explore2")}
                       className={`rounded-none ${activeTab === "explore2" ? "bg-black text-white" : ""}`}
                     >
-                      <Share2 className="w-4 h-4" />
-
+                      <Share2 className="w-4 h-4 mr-1" />
                       Explore II
                     </Button>
+                    <Button
+                      variant={activeTab === "explore3" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActiveTab("explore3")}
+                      className={`rounded-none ${activeTab === "explore3" ? "bg-black text-white" : ""}`}
+                    >
+                      <Users className="w-4 h-4 mr-1" />
+                      Explore III
+                    </Button>
                   </div>
-
-
                 </div>
 
-
-                <div className="h-[480px]">
-
-
-
-
-
+                <div className="h-screen">
                   {activeTab === "explore1" ? (
                     <div className="p-4 h-full">
                       <CausalGraph
@@ -536,7 +487,7 @@ export default function CustomPolicyAnalyst() {
                         highlightedRelationship={highlightedRelationship}
                       />
                     </div>
-                  ) : (
+                  ) : activeTab === "explore2" ? (
                     <ChainReactionPanel
                       isActive={isSubmitted}
                       policyInput={`${policyTitle}: ${policyDescription}`}
@@ -544,13 +495,21 @@ export default function CustomPolicyAnalyst() {
                       selectedEventId={selectedEvent?.id}
                       onEventsUpdate={handleEventsUpdate}
                     />
+                  ) : (
+                    <div className="h-full overflow-hidden">
+                      <AgentBubblesVisualization
+                        policyContext={`${policyTitle}: ${policyDescription}`}
+                        numAgents={50}
+                        timeFrames={24}
+                      />
+                    </div>
                   )}
                 </div>
               </Card>
             </div>
 
-            {/* Right column: Policy Assistant */}
-            <div>
+            {/* Right column: Policy Assistant - Takes 1/3 of space */}
+            <div className="lg:col-span-1">
               <Card className="overflow-hidden shadow-md h-full">
                 <div className="p-4 border-b bg-gray-50">
                   <h2 className="text-xl font-bold">Policy Assistant</h2>
@@ -601,36 +560,49 @@ export default function CustomPolicyAnalyst() {
           </div>
 
           {/* Insights Panel */}
-          <Card className="p-6 shadow-md">
-            <h2 className="text-xl font-bold mb-4">Integrated Policy Insights</h2>
-            <p className="text-gray-600 mb-4">
-              This holistic analysis combines causal relationships (Explore I) with temporal chain reactions (Explore II)
-              to provide a comprehensive view of policy impacts across multiple dimensions.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-bold mb-2">Causal Insights</h3>
-                <p className="text-sm text-gray-600">
-                  The causal graph reveals key relationships between {variables.length} variables,
-                  with {relationships.filter(r => Math.abs(r.strength) > 0.6).length} strong connections
-                  that suggest significant policy leverage points.
-                </p>
+
+          {!isSubmitted &&
+            <Card className="p-6 shadow-md">
+              <h2 className="text-xl font-bold mb-4">Integrated Policy Insights</h2>
+              <p className="text-gray-600 mb-4">
+                This comprehensive analysis combines causal relationships (Explore I), temporal chain reactions (Explore II),
+                and agent-based dynamics (Explore III) to provide a multi-dimensional view of policy impacts.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-bold mb-2 flex items-center">
+                    <Shapes className="w-4 h-4 mr-2" />
+                    Causal Structure
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    The causal graph reveals key relationships between {variables.length} variables,
+                    with {relationships.filter(r => Math.abs(r.strength) > 0.6).length} strong connections
+                    that suggest significant policy leverage points.
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-bold mb-2 flex items-center">
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Temporal Effects
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Chain reactions show how policy effects cascade through the system over time,
+                    with initial stakeholder responses leading to broader impacts across multiple domains.
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg ">
+                  <h3 className="font-bold mb-2 flex items-center">
+                    <Users className="w-4 h-4 mr-2" />
+                    Agent Dynamics
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Force-directed simulation reveals emergent behaviors and interaction patterns between
+                    different agent types, showing how policy adoption spreads through social networks.
+                  </p>
+                </div>
               </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-bold mb-2">Temporal Dynamics</h3>
-                <p className="text-sm text-gray-600">
-                  Chain reactions show how policy effects cascade through the system over time,
-                  with initial stakeholder responses leading to broader impacts across multiple domains.
-                </p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-bold mb-2">Recommendations</h3>
-                <p className="text-sm text-gray-600">
-                  {recommendationText}
-                </p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          }
         </div>
       )}
     </div>

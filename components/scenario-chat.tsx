@@ -39,8 +39,8 @@ interface ScenarioChatProps {
   onUpdateGraph?: (relationships: Array<{ from: string; to: string; strength: number; type: string }>) => void
   selectedEvent?: ReactionEvent | null
   generateEventAnalysis?: (event: ReactionEvent) => string
-  activeSimulator?: "explore1" | "explore2"
-  onChangeSimulator?: (simulator: "explore1" | "explore2") => void
+  activeSimulator?: "explore1" | "explore2" | "explore3"
+  onChangeSimulator?: (simulator: "explore1" | "explore2" | "explore3") => void
   onChatUpdate?: (messages: Array<{ role: string, content: string }>) => void
 }
 
@@ -140,11 +140,20 @@ What would you like to explore?`,
       };
 
       setMessages(prev => [...prev, switchMessage]);
-    } else {
+    } else if (activeSimulator === "explore2") {
       const switchMessage: Message = {
         id: `mode-switch-${Date.now()}`,
         role: "assistant",
         content: `Switched to **Explore II: Chain Reactions** mode. You can now analyze how policy effects cascade through the system over time. Select an event from the panel to see detailed analysis.`,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, switchMessage]);
+    } else if (activeSimulator === "explore3") {
+      const switchMessage: Message = {
+        id: `mode-switch-${Date.now()}`,
+        role: "assistant",
+        content: `Switched to **Explore III: Agent Dynamics** mode. You can now analyze how policies spread through agent networks using physics-based simulation. Ask about agent behaviors, clustering patterns, or adoption dynamics.`,
         timestamp: new Date(),
       };
 
@@ -213,9 +222,32 @@ What would you like to explore?`,
         return;
       }
 
-      // Use AI for both Explore I and Explore II modes
-      const requestBody = activeSimulator === "explore2" && selectedEvent
-        ? {
+      if (lowerInput.includes("switch to explore iii") ||
+        lowerInput.includes("switch to agent") ||
+        lowerInput.includes("use explore iii") ||
+        lowerInput.includes("show agents") ||
+        lowerInput.includes("agent dynamics")) {
+
+        if (onChangeSimulator && activeSimulator !== "explore3") {
+          onChangeSimulator("explore3");
+        }
+
+        const assistantMessage: Message = {
+          id: `switch-response-${Date.now()}`,
+          role: "assistant",
+          content: `Switching to Explore III: Agent Dynamics mode. You can now analyze agent-based modeling with physics simulation and policy adoption patterns.`,
+          timestamp: new Date(),
+        }
+
+        setMessages(prev => [...prev, assistantMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Use AI for all three explore modes
+      let requestBody;
+      if (activeSimulator === "explore2" && selectedEvent) {
+        requestBody = {
           query: currentInput,
           scenario,
           mode: "chain_reaction",
@@ -226,12 +258,20 @@ What would you like to explore?`,
             magnitude: selectedEvent.magnitude,
             timestamp: selectedEvent.timestamp.toISOString()
           }
-        }
-        : {
+        };
+      } else if (activeSimulator === "explore3") {
+        requestBody = {
+          query: currentInput,
+          scenario,
+          mode: "agent_dynamics"
+        };
+      } else {
+        requestBody = {
           query: currentInput,
           scenario,
           mode: "causal_graph"
         };
+      }
 
       const response = await fetch("/api/reason", {
         method: "POST",
@@ -341,16 +381,18 @@ What would you like to explore?`,
   const getPlaceholderText = () => {
     if (activeSimulator === "explore1") {
       return "Ask about causal relationships, variables, or policy impacts..."
-    } else {
+    } else if (activeSimulator === "explore2") {
       return selectedEvent
         ? `Ask about the "${selectedEvent.title}" event or other chain reactions...`
         : "Select an event from the Chain Reaction panel or ask a general question..."
+    } else {
+      return "Ask about agent behaviors, clustering patterns, or adoption dynamics..."
     }
   }
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 h-full">
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
             <Card className={`max-w-[80%] p-4 ${message.role === "user" ? "bg-black text-white" : "bg-gray-50"} shadow-md`}>
@@ -370,7 +412,7 @@ What would you like to explore?`,
                 </div>
               )}
               {message.correlations && message.correlations.length > 0 && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 space-y-2 h-full">
                   <div className="text-xs text-gray-500 font-medium">Correlations:</div>
                   <div className="flex flex-wrap gap-2">
                     {message.correlations.map((corr, index) => {
@@ -415,14 +457,14 @@ What would you like to explore?`,
       </div>
 
       {/* Input form */}
-      <CardFooter className="p-4 border-t">
-        <form onSubmit={handleSubmit} className="flex w-full gap-2">
+      <CardFooter className="p-4 border-t absolute bottom-0">
+        <form onSubmit={handleSubmit} className="flex w-full   gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={getPlaceholderText()}
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 "
           />
           {selectedEvent && (
             <Badge
