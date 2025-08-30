@@ -112,3 +112,11 @@ Transform complex policy analysis into clear, actionable insights backed by data
 
 
 
+# Supply Story 
+
+- Activity log ]
+
+
+curl -X POST http://localhost:3000/api/supply-chain -H "Content-Type: application/json" -d '{"scenario": "What if the Panama Canal experiences severe drought reducing capacity by 40%?", "prompt": "Analyze the impact of Panama Canal drought on global shipping"}'
+{"title":"Panama Canal Drought: Global Shipping Impact","summary":"Severe drought in the Panama Canal region restricts vessel drafts, causing delays and increased costs. Shippers are rerouting, impacting global trade flows and carbon emissions.","environmentalImpact":{"coastalErosion":2,"trafficVolume":-5,"waterQuality":75,"marineLife":70,"carbonEmissions":12},"routeAnalysis":{"primaryRoute":"Panama Canal","alternativeRoutes":["Suez Canal","Cape Horn"],"costIncrease":25,"delayDays":10,"riskLevel":"medium"},"economicImpact":{"freightCostIncrease":30,"affectedPorts":["Colon, Panama","Balboa, Panama"],"supplyChainDisruption":7,"estimatedLosses":"$500 Million"},"predictions":{"shortTerm":"Continued draft restrictions and congestion; increased reliance on alternative routes.","longTerm":"Potential infrastructure investments in water management; diversification of supply chains.","mitigationStrategies":["Implement dynamic pricing for Canal transit","Invest in water reservoirs and desalination plants","Promote alternative route usage with incentives"]}}% 
+❯ 
