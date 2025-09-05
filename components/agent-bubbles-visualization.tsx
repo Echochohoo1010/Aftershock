@@ -489,28 +489,17 @@ export default function AgentBubblesVisualization({
 
     return (
         <div className="space-y-2">
-            {/* Policy Context - Compact */}
-            <Card className="p-3 bg-gray-800 border-gray-600">
-                <h3 className="text-sm font-semibold mb-1 text-white">Simulation Context</h3>
-                <p className="text-gray-300 text-xs mb-2">{policyContext}</p>
-                <div className="flex gap-3 text-xs text-gray-400">
-                    <span>Agents: {numAgents}</span>
-                    <span>Timeline: {timeFrames}mo</span>
-                    <span>AI: {aiAgents.length > 0 ? 'Yes' : 'No'}</span>
-                </div>
-            </Card>
-
             {/* Legend - Compact */}
-            <Card className="p-3 bg-gray-800 border-gray-600">
-                <h3 className="text-sm font-semibold mb-2 text-white">Agent Types</h3>
+            <Card className="p-3">
+                <h3 className="text-sm font-semibold mb-2">Agent Types</h3>
                 <div className="flex flex-wrap gap-2">
                     {Object.entries(AGENT_TYPES).map(([type, config]) => (
                         <div key={type} className="flex items-center gap-1">
                             <div
-                                className="w-3 h-3 rounded-full border border-gray-300"
+                                className="w-3 h-3 rounded-full border border-border"
                                 style={{ backgroundColor: config.color }}
                             />
-                            <Badge variant="outline" className="text-xs text-gray-300 border-gray-500 px-1 py-0">
+                            <Badge variant="outline" className="text-xs px-1 py-0">
                                 {type}
                             </Badge>
                         </div>
@@ -519,7 +508,7 @@ export default function AgentBubblesVisualization({
             </Card>
 
             {/* Controls - Compact */}
-            <Card className="p-3 bg-gray-800 border-gray-600">
+            <Card className="p-3">
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -527,7 +516,7 @@ export default function AgentBubblesVisualization({
                                 onClick={isPlaying ? pause : play}
                                 variant="outline"
                                 size="sm"
-                                className="border-gray-500 text-gray-300 hover:bg-gray-700 px-2 py-1"
+                                className="px-2 py-1"
                             >
                                 {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                             </Button>
@@ -535,12 +524,12 @@ export default function AgentBubblesVisualization({
                                 onClick={reset}
                                 variant="outline"
                                 size="sm"
-                                className="border-gray-500 text-gray-300 hover:bg-gray-700 px-2 py-1"
+                                className="px-2 py-1"
                             >
                                 <RotateCcw className="w-3 h-3" />
                             </Button>
                         </div>
-                        <div className="text-xs text-gray-300">
+                        <div className="text-xs text-muted-foreground">
                             <div>Frame {currentFrame + 1}/{frames.length} — {frames[currentFrame]?.t}</div>
                             {frames[currentFrame]?.adoptionRate !== undefined && (
                                 <div className="text-xs">
@@ -557,20 +546,20 @@ export default function AgentBubblesVisualization({
                             max={frames.length - 1}
                             value={currentFrame}
                             onChange={handleScrub}
-                            className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                            className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
                 </div>
             </Card>
 
             {/* Visualization */}
-            <Card className="p-2 bg-gray-900 border-gray-700">
+            <Card className="p-2">
                 <div className="flex justify-center">
                     <svg
                         ref={svgRef}
                         width={width}
                         height={height}
-                        className="border border-gray-600 rounded bg-gray-800"
+                        className="border border-border rounded bg-muted/50"
                     />
                 </div>
             </Card>
