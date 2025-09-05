@@ -17,6 +17,33 @@ const AGENT_TYPES = {
     "Mid Petrol Cars": { color: "#ef4444", size: [24, 32] }            // Red - Level 4 (Mid Petrol)
 }
 
+// Map old agent types to vehicle types for carbon pricing scenarios
+const mapAgentTypeToVehicle = (agentType: string): string => {
+    const mapping: { [key: string]: string } = {
+        "Innovator": "Cycling/Walking",
+        "Adopter": "Mid-size Electric Cars", 
+        "Skeptic": "Mid Petrol Cars",
+        "Influencer": "Hybrid Electric Vehicle",
+        "Observer": "Mid Diesel"
+    }
+    return mapping[agentType] || "Small Petrol Cars"
+}
+
+// Emission-based radius scale and utilities
+const getEmissionLevel = (vehicleType: string): number => {
+    const emissionLevels: { [key: string]: number } = {
+        "Cycling/Walking": 1,        // Level 1 (No emission)
+        "Mid-size Electric Cars": 1, // Level 1 (No emission)
+        "Hybrid Electric Vehicle": 2, // Level 2 (Light emission)
+        "Small Petrol Cars": 3,      // Level 3 (Mid emission)
+        "Mid Diesel": 3,             // Level 3 (Mid emission) 
+        "Mid Petrol Cars": 4         // Level 4 (High emission)
+    }
+    return emissionLevels[vehicleType] || 3
+}
+
+const rScale = d3.scaleLinear().domain([1, 4]).range([8, 18]) // Size range based on emission level
+
 // AI-powered agent generation based on policy context
 async function generateAIAgents(policyContext: string, numAgents: number = 50) {
     try {
@@ -69,7 +96,7 @@ interface SimulationNode extends d3.SimulationNodeDatum {
 // Fallback agent generation
 function generateDefaultAgents(numAgents: number): Agent[] {
     return Array.from({ length: numAgents }, (_, i) => {
-        let type = "ICE-M"  // Default to high-emission vehicle
+        let type = "Mid Petrol Cars"  // Default to high-emission vehicle
         let adoptionThreshold = Math.random()
         let influence = 1 + Math.random() * 2
         let resistance = Math.random()
@@ -81,22 +108,22 @@ function generateDefaultAgents(numAgents: number): Agent[] {
             influence = 3 + Math.random()
             resistance = 0.1
         } else if (i < Math.floor(numAgents * 0.2)) {
-            type = "BEV-M"
+            type = "Mid-size Electric Cars"
             adoptionThreshold = 0.2
             influence = 3 + Math.random()
             resistance = 0.2
         } else if (i < Math.floor(numAgents * 0.35)) {
-            type = "HEV-S"
+            type = "Hybrid Electric Vehicle"
             adoptionThreshold = 0.4
             influence = 2 + Math.random()
             resistance = 0.3
         } else if (i < Math.floor(numAgents * 0.6)) {
-            type = "ICE-S"
+            type = "Small Petrol Cars"
             adoptionThreshold = 0.6
             influence = 1.5 + Math.random()
             resistance = 0.5
         } else if (i < Math.floor(numAgents * 0.8)) {
-            type = "DIE-M"
+            type = "Mid Diesel"
             adoptionThreshold = 0.7
             influence = 1 + Math.random()
             resistance = 0.6
@@ -137,15 +164,15 @@ function generateDynamicFrames(aiAgents: Agent[], numFrames: number = 24) {
 
             // Determine current type based on adoption progress and network effects
             if (adoptionProgress > personalThreshold) {
-                if (aiAgent.initialType === "ICE-M") {
-                    currentType = Math.random() < 0.4 ? "HEV-S" : Math.random() < 0.7 ? "BEV-M" : "Cycling/Walking"
-                } else if (aiAgent.initialType === "DIE-M" && adoptionProgress > 0.6) {
-                    currentType = Math.random() < 0.5 ? "HEV-S" : "ICE-S"
+                if (aiAgent.initialType === "Mid Petrol Cars") {
+                    currentType = Math.random() < 0.4 ? "Hybrid Electric Vehicle" : Math.random() < 0.7 ? "Mid-size Electric Cars" : "Cycling/Walking"
+                } else if (aiAgent.initialType === "Mid Diesel" && adoptionProgress > 0.6) {
+                    currentType = Math.random() < 0.5 ? "Hybrid Electric Vehicle" : "Small Petrol Cars"
                 }
             }
 
             // Update influence based on adoption
-            if (currentType === "Adopter" || currentType === "Influencer") {
+            if (currentType === "Mid-size Electric Cars" || currentType === "Hybrid Electric Vehicle") {
                 influence = Math.min(5, aiAgent.influence + adoptionProgress * 2)
                 adoptedCount++
             }
@@ -238,11 +265,11 @@ export default function AgentBubblesVisualization({
         // Create type-specific cluster centers (emission level grouping)
         const typePositions = {
             "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport
-            "BEV-M": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
-            "HEV-S": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
-            "ICE-S": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
-            "DIE-M": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
-            "ICE-M": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
+            "Mid-size Electric Cars": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
+            "Hybrid Electric Vehicle": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
+            "Small Petrol Cars": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
+            "Mid Diesel": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
+            "Mid Petrol Cars": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
         }
 
         // Create boundary circle
@@ -255,42 +282,24 @@ export default function AgentBubblesVisualization({
             .attr("stroke-width", 2)
             .attr("stroke-opacity", 0.5)
 
-        // Add cluster center indicators
-        Object.entries(typePositions).forEach(([type, pos]) => {
-            const agentConfig = AGENT_TYPES[type as keyof typeof AGENT_TYPES]
-            if (agentConfig) {
-                svg.append("circle")
-                    .attr("cx", pos.x)
-                    .attr("cy", pos.y)
-                    .attr("r", 8)
-                    .attr("fill", agentConfig.color)
-                    .attr("stroke", "#fff")
-                    .attr("stroke-width", 2)
-                    .attr("opacity", 0.3)
-
-                svg.append("text")
-                    .attr("x", pos.x)
-                    .attr("y", pos.y - 15)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "#ccc")
-                    .attr("font-size", "10px")
-                    .text(type)
-            }
-        })
 
         // Initialize nodes with positions near their type centers
         const nodes: SimulationNode[] = frames[0].agents.map((agent: any) => {
-            const typePos = typePositions[agent.type as keyof typeof typePositions] || { x: cx, y: cy }
+            const vehicleType = mapAgentTypeToVehicle(agent.type)
+            const typePos = typePositions[vehicleType as keyof typeof typePositions] || { x: cx, y: cy }
+            const emissionLevel = getEmissionLevel(vehicleType)
+            const radius = rScale(emissionLevel)
+            
             return {
                 id: agent.id,
                 x: typePos.x + (Math.random() - 0.5) * 60,
                 y: typePos.y + (Math.random() - 0.5) * 60,
                 vx: (Math.random() - 0.5) * 1,
                 vy: (Math.random() - 0.5) * 1,
-                r: 20,
-                targetR: 20,
-                fill: AGENT_TYPES[agent.type as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES["Cycling/Walking"].color,
-                type: agent.type
+                r: radius,
+                targetR: radius,
+                fill: AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES["Cycling/Walking"].color,
+                type: vehicleType
             }
         })
 
@@ -348,53 +357,105 @@ export default function AgentBubblesVisualization({
                     .attr("stroke", "#fff")
             })
 
-        // Physics simulation with clustering by type
+        // Enhanced physics simulation based on Netherlands visualization
+        const pad = 1.5
+        const collide = d3.forceCollide().radius((d: any) => d.r + pad).strength(0.8).iterations(10)
+        
+        // Dynamic gravity forces - weaker for distant nodes to allow color migration
+        const fx = d3.forceX(cx).strength((d: any) => {
+            const dist = Math.hypot((d.x || 0) - cx, (d.y || 0) - cy)
+            const maxDist = R * 0.8
+            return dist > maxDist ? 0.06 : 0.04 // Stronger pull only for very distant nodes
+        })
+        const fy = d3.forceY(cy).strength((d: any) => {
+            const dist = Math.hypot((d.x || 0) - cx, (d.y || 0) - cy)
+            const maxDist = R * 0.8
+            return dist > maxDist ? 0.06 : 0.04 // Stronger pull only for very distant nodes
+        })
+
+        // Enhanced pie-chart-like color clustering forces
+        function colorClusterForce() {
+            const strength = 0.6 // Significantly increased from 0.25
+            
+            // Define sector angles for each color (pie chart layout)
+            const colorSectors = new Map([
+                ["#22c55e", 0],           // Green (Electric, Cycling) - Right
+                ["#84cc16", Math.PI/2],   // Light green (Hybrid) - Top  
+                ["#f59e0b", Math.PI],     // Orange (Petrol, Diesel) - Left
+                ["#ef4444", 3*Math.PI/2]  // Red (Mid Petrol) - Bottom
+            ])
+            
+            function force() {
+                // Group nodes by color
+                const colorGroups = d3.group(nodes, (d: any) => d.fill)
+                
+                colorGroups.forEach((group, color) => {
+                    if (group.length <= 1) return
+                    
+                    // Get assigned sector angle for this color
+                    const sectorAngle = colorSectors.get(color) || 0
+                    
+                    // Calculate ideal sector position on circle edge
+                    const sectorRadius = R * 0.7 // 70% of circle radius
+                    const sectorCenterX = cx + sectorRadius * Math.cos(sectorAngle)
+                    const sectorCenterY = cy + sectorRadius * Math.sin(sectorAngle)
+                    
+                    // Apply sector-based clustering force to each node in the group
+                    group.forEach((d: any) => {
+                        const dx = sectorCenterX - (d.x || 0)
+                        const dy = sectorCenterY - (d.y || 0)
+                        const distance = Math.sqrt(dx * dx + dy * dy) || 1
+                        const force = strength / Math.max(distance, 10) // Prevent extreme forces
+                        
+                        d.vx = (d.vx || 0) + dx * force * 0.3
+                        d.vy = (d.vy || 0) + dy * force * 0.3
+                    })
+                    
+                    // Additional intra-group cohesion (keep same colors tight together)
+                    if (group.length > 1) {
+                        const groupCentroidX = d3.mean(group, (d: any) => d.x || 0) || cx
+                        const groupCentroidY = d3.mean(group, (d: any) => d.y || 0) || cy
+                        
+                        group.forEach((d: any) => {
+                            const dx = groupCentroidX - (d.x || 0)
+                            const dy = groupCentroidY - (d.y || 0)
+                            const distance = Math.sqrt(dx * dx + dy * dy) || 1
+                            const cohesionForce = 0.2 / distance
+                            
+                            d.vx = (d.vx || 0) + dx * cohesionForce * 0.8
+                            d.vy = (d.vy || 0) + dy * cohesionForce * 0.8
+                        })
+                    }
+                })
+            }
+            
+            return force
+        }
+
+        const colorCluster = colorClusterForce()
+
         const simulation = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-8)) // Reduced repulsion for clustering
-            .force("center", d3.forceCenter(cx, cy).strength(0.02)) // Very weak center force
-            .force("collision", d3.forceCollide().radius((d: any) => d.r + 2).strength(0.8))
-            // Clustering force - attract agents of same type to their designated areas
-            .force("cluster", () => {
-                const alpha = simulation.alpha()
-                nodes.forEach(node => {
-                    const typePos = typePositions[node.type as keyof typeof typePositions]
-                    if (!typePos) return
-
-                    // Apply attraction to type center
-                    const dx = typePos.x - (node.x || 0)
-                    const dy = typePos.y - (node.y || 0)
-                    const distance = Math.sqrt(dx * dx + dy * dy)
-
-                    if (distance > 0) {
-                        const strength = 0.15 * alpha // Clustering strength
-                        node.vx = (node.vx || 0) + (dx / distance) * strength * Math.min(distance / 50, 1)
-                        node.vy = (node.vy || 0) + (dy / distance) * strength * Math.min(distance / 50, 1)
-                    }
-                })
-            })
-            .force("boundary", () => {
-                // Keep nodes within boundary
-                nodes.forEach((node: SimulationNode) => {
-                    const dx = (node.x || 0) - cx
-                    const dy = (node.y || 0) - cy
-                    const distance = Math.sqrt(dx * dx + dy * dy)
-                    const maxDistance = R - node.r - 2
-
-                    if (distance > maxDistance) {
-                        const angle = Math.atan2(dy, dx)
-                        node.x = cx + Math.cos(angle) * maxDistance
-                        node.y = cy + Math.sin(angle) * maxDistance
-
-                        // Bounce off boundary
-                        const normalX = dx / distance
-                        const normalY = dy / distance
-                        const dotProduct = (node.vx || 0) * normalX + (node.vy || 0) * normalY
-                        node.vx = (node.vx || 0) - 2 * dotProduct * normalX * 0.8
-                        node.vy = (node.vy || 0) - 2 * dotProduct * normalY * 0.8
-                    }
-                })
-            })
+            .alpha(0.15) // Increased initial energy
+            .alphaDecay(0.015) // Slower decay for longer settling
+            .velocityDecay(0.6) // Less velocity decay for more movement
+            .force("collide", collide)
+            .force("fx", fx)
+            .force("fy", fy)
+            .force("colorCluster", colorCluster)
             .on("tick", () => {
+                // Keep nodes within circle boundary
+                nodes.forEach((d: any) => {
+                    const dx = (d.x || 0) - cx
+                    const dy = (d.y || 0) - cy
+                    const dist = Math.hypot(dx, dy)
+                    const maxDist = R - d.r - 5
+                    if (dist > maxDist) {
+                        const scale = maxDist / dist
+                        d.x = cx + dx * scale
+                        d.y = cy + dy * scale
+                    }
+                })
+                
                 circles
                     .attr("cx", (d: SimulationNode) => d.x || 0)
                     .attr("cy", (d: SimulationNode) => d.y || 0)
@@ -428,27 +489,53 @@ export default function AgentBubblesVisualization({
             const agent = frame.agents.find((a: any) => a.id === d.id)
             if (!agent) return
 
-            const agentConfig = AGENT_TYPES[agent.type as keyof typeof AGENT_TYPES]
-            const targetR = agentConfig.size[0] + (agent.influence / 5) * (agentConfig.size[1] - agentConfig.size[0])
+            // Map old agent types to vehicle types
+            const vehicleType = mapAgentTypeToVehicle(agent.type)
+            const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
+            
+            if (!agentConfig) {
+                console.warn(`Vehicle type '${vehicleType}' not found in AGENT_TYPES (original: ${agent.type})`)
+                return
+            }
+
+            // Use emission-based sizing instead of influence-based
+            const emissionLevel = getEmissionLevel(vehicleType)
+            const targetR = rScale(emissionLevel)
+            const targetFill = agentConfig.color
 
             d.targetR = targetR
-            d.type = agent.type
+            d.type = vehicleType
 
-            // Animate to new values
-            d3.select(this)
-                .transition()
+            // Enhanced animation with Netherlands-style transitions
+            const circle = d3.select(this)
+            circle.interrupt()
+            circle.transition()
                 .duration(300)
+                .ease(d3.easeCubicOut)
                 .attr("r", targetR)
-                .attr("fill", agentConfig.color)
+                .attr("fill", targetFill)
                 .on("end", () => {
                     d.r = targetR
-                    d.fill = agentConfig.color
+                    d.fill = targetFill
+                    
+                    // Update collision force radius for new size
+                    if (simulationRef.current) {
+                        simulationRef.current.force("collide", d3.forceCollide()
+                            .radius((d: any) => d.r + 1.5).strength(0.8).iterations(10))
+                    }
                 })
         })
 
-        // Restart simulation with some energy
+        // Boost simulation energy for color changes (like Netherlands viz)
         if (simulationRef.current) {
             simulationRef.current.alpha(0.3).restart()
+            
+            // Add temporary boost to color clustering forces
+            setTimeout(() => {
+                if (simulationRef.current) {
+                    simulationRef.current.alpha(0.2).restart()
+                }
+            }, 50)
         }
 
         setCurrentFrame(frameIndex)
