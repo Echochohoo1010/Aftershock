@@ -17,18 +17,6 @@ const AGENT_TYPES = {
     "Mid Petrol Cars": { color: "#ef4444", size: [24, 32] }            // Red - Level 4 (Mid Petrol)
 }
 
-// Map old agent types to vehicle types for carbon pricing scenarios
-const mapAgentTypeToVehicle = (agentType: string): string => {
-    const mapping: { [key: string]: string } = {
-        "Innovator": "Cycling/Walking",
-        "Adopter": "Mid-size Electric Cars", 
-        "Skeptic": "Mid Petrol Cars",
-        "Influencer": "Hybrid Electric Vehicle",
-        "Observer": "Mid Diesel"
-    }
-    return mapping[agentType] || "Small Petrol Cars"
-}
-
 // AI-powered agent generation based on policy context
 async function generateAIAgents(policyContext: string, numAgents: number = 50) {
     try {
@@ -81,7 +69,7 @@ interface SimulationNode extends d3.SimulationNodeDatum {
 // Fallback agent generation
 function generateDefaultAgents(numAgents: number): Agent[] {
     return Array.from({ length: numAgents }, (_, i) => {
-        let type = "Mid Petrol Cars"  // Default to high-emission vehicle
+        let type = "ICE-M"  // Default to high-emission vehicle
         let adoptionThreshold = Math.random()
         let influence = 1 + Math.random() * 2
         let resistance = Math.random()
@@ -93,22 +81,22 @@ function generateDefaultAgents(numAgents: number): Agent[] {
             influence = 3 + Math.random()
             resistance = 0.1
         } else if (i < Math.floor(numAgents * 0.2)) {
-            type = "Mid-size Electric Cars"
+            type = "BEV-M"
             adoptionThreshold = 0.2
             influence = 3 + Math.random()
             resistance = 0.2
         } else if (i < Math.floor(numAgents * 0.35)) {
-            type = "Hybrid Electric Vehicle"
+            type = "HEV-S"
             adoptionThreshold = 0.4
             influence = 2 + Math.random()
             resistance = 0.3
         } else if (i < Math.floor(numAgents * 0.6)) {
-            type = "Small Petrol Cars"
+            type = "ICE-S"
             adoptionThreshold = 0.6
             influence = 1.5 + Math.random()
             resistance = 0.5
         } else if (i < Math.floor(numAgents * 0.8)) {
-            type = "Mid Diesel"
+            type = "DIE-M"
             adoptionThreshold = 0.7
             influence = 1 + Math.random()
             resistance = 0.6
@@ -149,15 +137,15 @@ function generateDynamicFrames(aiAgents: Agent[], numFrames: number = 24) {
 
             // Determine current type based on adoption progress and network effects
             if (adoptionProgress > personalThreshold) {
-                if (aiAgent.initialType === "Mid Petrol Cars") {
-                    currentType = Math.random() < 0.4 ? "Hybrid Electric Vehicle" : Math.random() < 0.7 ? "Mid-size Electric Cars" : "Cycling/Walking"
-                } else if (aiAgent.initialType === "Mid Diesel" && adoptionProgress > 0.6) {
-                    currentType = Math.random() < 0.5 ? "Hybrid Electric Vehicle" : "Small Petrol Cars"
+                if (aiAgent.initialType === "ICE-M") {
+                    currentType = Math.random() < 0.4 ? "HEV-S" : Math.random() < 0.7 ? "BEV-M" : "Cycling/Walking"
+                } else if (aiAgent.initialType === "DIE-M" && adoptionProgress > 0.6) {
+                    currentType = Math.random() < 0.5 ? "HEV-S" : "ICE-S"
                 }
             }
 
             // Update influence based on adoption
-            if (currentType === "Mid-size Electric Cars" || currentType === "Hybrid Electric Vehicle") {
+            if (currentType === "Adopter" || currentType === "Influencer") {
                 influence = Math.min(5, aiAgent.influence + adoptionProgress * 2)
                 adoptedCount++
             }
@@ -250,11 +238,11 @@ export default function AgentBubblesVisualization({
         // Create type-specific cluster centers (emission level grouping)
         const typePositions = {
             "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport
-            "Mid-size Electric Cars": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
-            "Hybrid Electric Vehicle": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
-            "Small Petrol Cars": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
-            "Mid Diesel": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
-            "Mid Petrol Cars": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
+            "BEV-M": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
+            "HEV-S": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
+            "ICE-S": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
+            "DIE-M": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
+            "ICE-M": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
         }
 
         // Create boundary circle
@@ -292,8 +280,7 @@ export default function AgentBubblesVisualization({
 
         // Initialize nodes with positions near their type centers
         const nodes: SimulationNode[] = frames[0].agents.map((agent: any) => {
-            const vehicleType = mapAgentTypeToVehicle(agent.type)
-            const typePos = typePositions[vehicleType as keyof typeof typePositions] || { x: cx, y: cy }
+            const typePos = typePositions[agent.type as keyof typeof typePositions] || { x: cx, y: cy }
             return {
                 id: agent.id,
                 x: typePos.x + (Math.random() - 0.5) * 60,
@@ -302,8 +289,8 @@ export default function AgentBubblesVisualization({
                 vy: (Math.random() - 0.5) * 1,
                 r: 20,
                 targetR: 20,
-                fill: AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]?.color || "#64748b",
-                type: vehicleType
+                fill: AGENT_TYPES[agent.type as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES["Cycling/Walking"].color,
+                type: agent.type
             }
         })
 
@@ -441,19 +428,11 @@ export default function AgentBubblesVisualization({
             const agent = frame.agents.find((a: any) => a.id === d.id)
             if (!agent) return
 
-            // Map old agent types to vehicle types
-            const vehicleType = mapAgentTypeToVehicle(agent.type)
-            const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
-            
-            if (!agentConfig) {
-                console.warn(`Vehicle type '${vehicleType}' not found in AGENT_TYPES (original: ${agent.type})`)
-                return
-            }
-
+            const agentConfig = AGENT_TYPES[agent.type as keyof typeof AGENT_TYPES]
             const targetR = agentConfig.size[0] + (agent.influence / 5) * (agentConfig.size[1] - agentConfig.size[0])
 
             d.targetR = targetR
-            d.type = vehicleType
+            d.type = agent.type
 
             // Animate to new values
             d3.select(this)
