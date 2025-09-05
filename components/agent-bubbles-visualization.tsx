@@ -10,23 +10,23 @@ import { Play, Pause, RotateCcw, MessageCircle, X, Send } from "lucide-react"
 // Agent types with colors matching Netherlands visualization
 const AGENT_TYPES = {
     "Cycling/Walking": { color: "#22c55e", size: [14, 20] }, // Green - Level 1 (No emission)
-    "BEV-M": { color: "#22c55e", size: [16, 24] },           // Green - Level 1 (Electric Vehicle)
-    "HEV-S": { color: "#84cc16", size: [18, 26] },           // Light green - Level 2 (Hybrid)
-    "ICE-S": { color: "#f59e0b", size: [20, 28] },           // Orange - Level 3 (Small Petrol)
-    "DIE-M": { color: "#f59e0b", size: [22, 30] },           // Orange - Level 3 (Diesel)
-    "ICE-M": { color: "#ef4444", size: [24, 32] }            // Red - Level 4 (Mid Petrol)
+    "Mid-size Electric Cars": { color: "#22c55e", size: [16, 24] },           // Green - Level 1 (Electric Vehicle)
+    "Hybrid Electric Vehicle": { color: "#84cc16", size: [18, 26] },           // Light green - Level 2 (Hybrid)
+    "Small Petrol Cars": { color: "#f59e0b", size: [20, 28] },           // Orange - Level 3 (Small Petrol)
+    "Mid Diesel": { color: "#f59e0b", size: [22, 30] },           // Orange - Level 3 (Diesel)
+    "Mid Petrol Cars": { color: "#ef4444", size: [24, 32] }            // Red - Level 4 (Mid Petrol)
 }
 
 // Map old agent types to vehicle types for carbon pricing scenarios
 const mapAgentTypeToVehicle = (agentType: string): string => {
     const mapping: { [key: string]: string } = {
         "Innovator": "Cycling/Walking",
-        "Adopter": "BEV-M", 
-        "Skeptic": "ICE-M",
-        "Influencer": "HEV-S",
-        "Observer": "DIE-M"
+        "Adopter": "Mid-size Electric Cars", 
+        "Skeptic": "Mid Petrol Cars",
+        "Influencer": "Hybrid Electric Vehicle",
+        "Observer": "Mid Diesel"
     }
-    return mapping[agentType] || "ICE-S"
+    return mapping[agentType] || "Small Petrol Cars"
 }
 
 // AI-powered agent generation based on policy context
@@ -81,7 +81,7 @@ interface SimulationNode extends d3.SimulationNodeDatum {
 // Fallback agent generation
 function generateDefaultAgents(numAgents: number): Agent[] {
     return Array.from({ length: numAgents }, (_, i) => {
-        let type = "ICE-M"  // Default to high-emission vehicle
+        let type = "Mid Petrol Cars"  // Default to high-emission vehicle
         let adoptionThreshold = Math.random()
         let influence = 1 + Math.random() * 2
         let resistance = Math.random()
@@ -93,22 +93,22 @@ function generateDefaultAgents(numAgents: number): Agent[] {
             influence = 3 + Math.random()
             resistance = 0.1
         } else if (i < Math.floor(numAgents * 0.2)) {
-            type = "BEV-M"
+            type = "Mid-size Electric Cars"
             adoptionThreshold = 0.2
             influence = 3 + Math.random()
             resistance = 0.2
         } else if (i < Math.floor(numAgents * 0.35)) {
-            type = "HEV-S"
+            type = "Hybrid Electric Vehicle"
             adoptionThreshold = 0.4
             influence = 2 + Math.random()
             resistance = 0.3
         } else if (i < Math.floor(numAgents * 0.6)) {
-            type = "ICE-S"
+            type = "Small Petrol Cars"
             adoptionThreshold = 0.6
             influence = 1.5 + Math.random()
             resistance = 0.5
         } else if (i < Math.floor(numAgents * 0.8)) {
-            type = "DIE-M"
+            type = "Mid Diesel"
             adoptionThreshold = 0.7
             influence = 1 + Math.random()
             resistance = 0.6
@@ -149,15 +149,15 @@ function generateDynamicFrames(aiAgents: Agent[], numFrames: number = 24) {
 
             // Determine current type based on adoption progress and network effects
             if (adoptionProgress > personalThreshold) {
-                if (aiAgent.initialType === "ICE-M") {
-                    currentType = Math.random() < 0.4 ? "HEV-S" : Math.random() < 0.7 ? "BEV-M" : "Cycling/Walking"
-                } else if (aiAgent.initialType === "DIE-M" && adoptionProgress > 0.6) {
-                    currentType = Math.random() < 0.5 ? "HEV-S" : "ICE-S"
+                if (aiAgent.initialType === "Mid Petrol Cars") {
+                    currentType = Math.random() < 0.4 ? "Hybrid Electric Vehicle" : Math.random() < 0.7 ? "Mid-size Electric Cars" : "Cycling/Walking"
+                } else if (aiAgent.initialType === "Mid Diesel" && adoptionProgress > 0.6) {
+                    currentType = Math.random() < 0.5 ? "Hybrid Electric Vehicle" : "Small Petrol Cars"
                 }
             }
 
             // Update influence based on adoption
-            if (currentType === "Adopter" || currentType === "Influencer") {
+            if (currentType === "Mid-size Electric Cars" || currentType === "Hybrid Electric Vehicle") {
                 influence = Math.min(5, aiAgent.influence + adoptionProgress * 2)
                 adoptedCount++
             }
@@ -250,11 +250,11 @@ export default function AgentBubblesVisualization({
         // Create type-specific cluster centers (emission level grouping)
         const typePositions = {
             "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport
-            "BEV-M": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
-            "HEV-S": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
-            "ICE-S": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
-            "DIE-M": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
-            "ICE-M": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
+            "Mid-size Electric Cars": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
+            "Hybrid Electric Vehicle": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
+            "Small Petrol Cars": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
+            "Mid Diesel": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
+            "Mid Petrol Cars": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
         }
 
         // Create boundary circle
