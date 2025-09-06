@@ -609,7 +609,7 @@ export default function AgentBubblesVisualization({
                 updateFrame(next)
                 return next
             })
-        }, 200) // 200ms per frame (faster for 180 months)
+        }, 400) // 400ms per frame (0.4 seconds per month)
     }
 
     const pause = () => {
