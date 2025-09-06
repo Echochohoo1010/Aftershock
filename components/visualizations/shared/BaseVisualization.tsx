@@ -45,6 +45,7 @@ export default function BaseVisualization({
     const [currentFrame, setCurrentFrame] = useState(0)
     const [isPlaying, setIsPlaying] = useState(false)
     const [runningSimulation, setRunningSimulation] = useState(false)
+    const [shouldAutoPlay, setShouldAutoPlay] = useState(false)
     const intervalRef = useRef<NodeJS.Timeout | null>(null)
     const physicsEngineRef = useRef<PhysicsEngine | null>(null)
     const nodesRef = useRef<SimulationNode[]>([])
@@ -185,18 +186,7 @@ export default function BaseVisualization({
         return baseRadius * scaleFactor
     }
 
-    const handlePlay = useCallback(async () => {
-        if (currentFrame === 0 && onSimulationRun) {
-            setRunningSimulation(true)
-            try {
-                await onSimulationRun()
-            } catch (error) {
-                console.error("Simulation failed:", error)
-            } finally {
-                setRunningSimulation(false)
-            }
-        }
-
+    const startAnimation = useCallback(() => {
         setIsPlaying(true)
         intervalRef.current = setInterval(() => {
             setCurrentFrame(prev => {
@@ -212,7 +202,32 @@ export default function BaseVisualization({
                 return nextFrame
             })
         }, 400)
-    }, [currentFrame, data.length, onSimulationRun])
+    }, [data.length])
+
+    const handlePlay = useCallback(async () => {
+        // If data already exists, just start animation
+        if (data.length > 0) {
+            if (!isPlaying) {
+                setCurrentFrame(0) // Reset to beginning
+                startAnimation()
+            }
+            return
+        }
+
+        // Only run simulation if no data exists
+        if (onSimulationRun) {
+            setRunningSimulation(true)
+            setShouldAutoPlay(true)
+            try {
+                await onSimulationRun()
+            } catch (error) {
+                console.error("Simulation failed:", error)
+                setShouldAutoPlay(false)
+            } finally {
+                setRunningSimulation(false)
+            }
+        }
+    }, [data.length, isPlaying, onSimulationRun, startAnimation])
 
     const handlePause = useCallback(() => {
         setIsPlaying(false)
@@ -250,6 +265,20 @@ export default function BaseVisualization({
     useEffect(() => {
         updateFrame(currentFrame)
     }, [currentFrame, updateFrame])
+
+    // Auto-play effect when data loads and shouldAutoPlay is true
+    useEffect(() => {
+        if (shouldAutoPlay && data.length > 0 && !runningSimulation) {
+            setShouldAutoPlay(false)
+            setCurrentFrame(0) // Ensure we start from beginning
+            // Small delay to ensure visualization is ready
+            const timer = setTimeout(() => {
+                startAnimation()
+            }, 500)
+            
+            return () => clearTimeout(timer)
+        }
+    }, [shouldAutoPlay, data.length, runningSimulation, startAnimation])
 
     useEffect(() => {
         return () => {
