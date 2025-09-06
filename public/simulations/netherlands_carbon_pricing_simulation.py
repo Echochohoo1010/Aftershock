@@ -1699,11 +1699,7 @@ if __name__ == "__main__":
     print("\nExporting data for web visualization...")
     sim.export_simulation_to_json("../outputs/simulation_data.json")
     
-    # Show visualization of 15-year trends
-    print("\nGenerating 15-year trend visualizations...")
-    sim.plot_emission_and_vehicle_trends()
-    
     print(f"\nExport completed. Check the generated files:")
     print(f"- Excel: netherlands_simulation_100_agents.xlsx (detailed agent tracking)")
     print(f"- JSON: ../outputs/simulation_data.json (web visualization data)")
-    print(f"Visualization plots show emission level changes and vehicle choice trends over 15 years.")
+    print(f"Data ready for web visualization interface.")
