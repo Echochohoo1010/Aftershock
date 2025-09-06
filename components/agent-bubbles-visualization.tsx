@@ -7,14 +7,14 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Play, Pause, RotateCcw, MessageCircle, X, Send } from "lucide-react"
 
-// Agent types with colors matching Netherlands visualization - Updated for real simulation data
+// Agent types with colors and user-friendly display names
 const AGENT_TYPES = {
-    "Cycling/Walking": { color: "#22c55e", emissionLevel: 1 },  // Green - Level 1 (No emission)
-    "BEV-M": { color: "#22c55e", emissionLevel: 1 },           // Green - Level 1 (Battery Electric Vehicle)
-    "HEV-S": { color: "#84cc16", emissionLevel: 2 },           // Light green - Level 2 (Small Hybrid)
-    "ICE-S": { color: "#f59e0b", emissionLevel: 3 },           // Orange - Level 3 (Small Petrol)
-    "DIE-M": { color: "#f59e0b", emissionLevel: 3 },           // Orange - Level 3 (Mid Diesel)  
-    "ICE-M": { color: "#ef4444", emissionLevel: 4 }            // Red - Level 4 (Mid Petrol)
+    "Cycling/Walking": { color: "#22c55e", emissionLevel: 1, displayName: "Cycling/Walking" },
+    "BEV-M": { color: "#22c55e", emissionLevel: 1, displayName: "Mid-size Electric Cars" },
+    "HEV-S": { color: "#84cc16", emissionLevel: 2, displayName: "Hybrid Electric Vehicle" },
+    "ICE-S": { color: "#f59e0b", emissionLevel: 3, displayName: "Small Petrol Cars" },
+    "DIE-M": { color: "#f59e0b", emissionLevel: 3, displayName: "Mid Diesel Cars" },
+    "ICE-M": { color: "#ef4444", emissionLevel: 4, displayName: "Mid Petrol Cars" }
 }
 
 // Map simulation vehicle types to display names (if needed)
@@ -715,7 +715,7 @@ export default function AgentBubblesVisualization({
                                 style={{ backgroundColor: config.color }}
                             />
                             <Badge variant="outline" className="text-xs px-1 py-0">
-                                {type}
+                                {config.displayName}
                             </Badge>
                         </div>
                     ))}
