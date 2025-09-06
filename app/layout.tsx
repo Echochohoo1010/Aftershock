@@ -29,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${noticiaText.variable}`} suppressHydrationWarning>
-      <body className="font-body">
+      <body className="font-body" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
 
           <Header />
