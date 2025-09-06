@@ -91,17 +91,49 @@ export default function BaseVisualization({
             .attr("opacity", 0.3)
 
         const initialAgents = data[0]?.agents || []
-        const nodes: SimulationNode[] = initialAgents.map((agent) => ({
-            id: agent.id,
-            type: agent.type,
-            fill: agentTypes[agent.type]?.color || "#6b7280",
-            r: getAgentRadius(agent.emission_level),
-            targetR: getAgentRadius(agent.emission_level),
-            x: centerX + (Math.random() - 0.5) * 200,
-            y: centerY + (Math.random() - 0.5) * 200,
-            vx: 0,
-            vy: 0
-        }))
+        
+        // Group agents by type for clustered positioning
+        const agentsByType = initialAgents.reduce((acc, agent) => {
+            if (!acc[agent.type]) acc[agent.type] = []
+            acc[agent.type].push(agent)
+            return acc
+        }, {} as Record<string, typeof initialAgents>)
+        
+        const typeNames = Object.keys(agentsByType)
+        const nodes: SimulationNode[] = []
+        
+        // Create clustered initial positions
+        typeNames.forEach((typeName, typeIndex) => {
+            const agents = agentsByType[typeName]
+            
+            // Calculate cluster center position in a circle around the main center
+            const angleStep = (2 * Math.PI) / typeNames.length
+            const clusterDistance = Math.min(radius * 0.4, 120) // Distance from main center
+            const clusterCenterX = centerX + Math.cos(angleStep * typeIndex) * clusterDistance
+            const clusterCenterY = centerY + Math.sin(angleStep * typeIndex) * clusterDistance
+            
+            // Position agents within their cluster
+            agents.forEach((agent, agentIndex) => {
+                // Use spiral positioning within the cluster for better distribution
+                const spiralRadius = Math.min(60, Math.sqrt(agentIndex) * 8)
+                const spiralAngle = agentIndex * 0.5 + typeIndex * 2
+                
+                const x = clusterCenterX + Math.cos(spiralAngle) * spiralRadius + (Math.random() - 0.5) * 20
+                const y = clusterCenterY + Math.sin(spiralAngle) * spiralRadius + (Math.random() - 0.5) * 20
+                
+                nodes.push({
+                    id: agent.id,
+                    type: agent.type,
+                    fill: agentTypes[agent.type]?.color || "#6b7280",
+                    r: getAgentRadius(agent.emission_level),
+                    targetR: getAgentRadius(agent.emission_level),
+                    x,
+                    y,
+                    vx: 0,
+                    vy: 0
+                })
+            })
+        })
 
         nodesRef.current = nodes
 

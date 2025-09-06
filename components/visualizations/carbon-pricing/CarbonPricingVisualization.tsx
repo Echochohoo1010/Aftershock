@@ -35,10 +35,17 @@ export default function CarbonPricingVisualization({
 
     const handleSimulationRun = async () => {
         try {
+            setLoading(true)
+            setError(null)
             await runCarbonPricingSimulation()
-            await loadData()
+            
+            // Wait a bit for the file to be written, then reload data
+            setTimeout(async () => {
+                await loadData()
+            }, 1000)
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Simulation failed')
+            setLoading(false)
             throw err
         }
     }
@@ -49,8 +56,21 @@ export default function CarbonPricingVisualization({
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">Loading simulation data...</div>
+            <div className="space-y-4">
+                <div className="flex flex-col items-center justify-center h-64 space-y-4">
+                    <div className="text-lg font-semibold">{title}</div>
+                    <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                        <div className="text-muted-foreground">
+                            {data.length === 0 ? 'Running Netherlands simulation...' : 'Loading simulation data...'}
+                        </div>
+                    </div>
+                    {data.length === 0 && (
+                        <div className="text-sm text-muted-foreground text-center max-w-md">
+                            This will take about 30 seconds to simulate 15 years of agent behavior with 100 agents.
+                        </div>
+                    )}
+                </div>
             </div>
         )
     }
@@ -69,10 +89,25 @@ export default function CarbonPricingVisualization({
         )
     }
 
-    if (!data.length) {
+    if (!data.length && !loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">No simulation data available</div>
+            <div className="space-y-4">
+                <div className="flex flex-col items-center justify-center h-64 space-y-4">
+                    <div className="text-lg font-semibold">{title}</div>
+                    <div className="text-muted-foreground text-center">
+                        No simulation data available. Click start to run the Netherlands carbon pricing simulation.
+                    </div>
+                    <button
+                        onClick={handleSimulationRun}
+                        className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 flex items-center gap-2"
+                        disabled={loading}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Start Simulation
+                    </button>
+                </div>
             </div>
         )
     }
