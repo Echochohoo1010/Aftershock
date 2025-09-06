@@ -7,39 +7,37 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Play, Pause, RotateCcw, MessageCircle, X, Send } from "lucide-react"
 
-// Agent types with colors matching Netherlands visualization
+// Agent types with colors matching Netherlands visualization - Updated for real simulation data
 const AGENT_TYPES = {
-    "Cycling/Walking": { color: "#22c55e", size: [14, 20] }, // Green - Level 1 (No emission)
-    "Mid-size Electric Cars": { color: "#22c55e", size: [16, 24] },           // Green - Level 1 (Electric Vehicle)
-    "Hybrid Electric Vehicle": { color: "#84cc16", size: [18, 26] },           // Light green - Level 2 (Hybrid)
-    "Small Petrol Cars": { color: "#f59e0b", size: [20, 28] },           // Orange - Level 3 (Small Petrol)
-    "Mid Diesel": { color: "#f59e0b", size: [22, 30] },           // Orange - Level 3 (Diesel)
-    "Mid Petrol Cars": { color: "#ef4444", size: [24, 32] }            // Red - Level 4 (Mid Petrol)
+    "Cycling/Walking": { color: "#22c55e", emissionLevel: 1 },  // Green - Level 1 (No emission)
+    "BEV-M": { color: "#22c55e", emissionLevel: 1 },           // Green - Level 1 (Battery Electric Vehicle)
+    "HEV-S": { color: "#84cc16", emissionLevel: 2 },           // Light green - Level 2 (Small Hybrid)
+    "ICE-S": { color: "#f59e0b", emissionLevel: 3 },           // Orange - Level 3 (Small Petrol)
+    "DIE-M": { color: "#f59e0b", emissionLevel: 3 },           // Orange - Level 3 (Mid Diesel)  
+    "ICE-M": { color: "#ef4444", emissionLevel: 4 }            // Red - Level 4 (Mid Petrol)
 }
 
-// Map old agent types to vehicle types for carbon pricing scenarios
-const mapAgentTypeToVehicle = (agentType: string): string => {
+// Map simulation vehicle types to display names (if needed)
+const mapVehicleType = (vehicleType: string): string => {
+    // Direct mapping - simulation already uses correct format
     const mapping: { [key: string]: string } = {
-        "Innovator": "Cycling/Walking",
-        "Adopter": "Mid-size Electric Cars", 
-        "Skeptic": "Mid Petrol Cars",
-        "Influencer": "Hybrid Electric Vehicle",
-        "Observer": "Mid Diesel"
+        "BEV-M": "BEV-M",           // Battery Electric Vehicle - Mid
+        "HEV-S": "HEV-S",           // Hybrid Electric Vehicle - Small
+        "ICE-S": "ICE-S",           // Internal Combustion Engine - Small
+        "ICE-M": "ICE-M",           // Internal Combustion Engine - Mid
+        "DIE-M": "DIE-M",           // Diesel - Mid
+        "Cycling/Walking": "Cycling/Walking"
     }
-    return mapping[agentType] || "Small Petrol Cars"
+    return mapping[vehicleType] || vehicleType
 }
 
-// Emission-based radius scale and utilities
-const getEmissionLevel = (vehicleType: string): number => {
-    const emissionLevels: { [key: string]: number } = {
-        "Cycling/Walking": 1,        // Level 1 (No emission)
-        "Mid-size Electric Cars": 1, // Level 1 (No emission)
-        "Hybrid Electric Vehicle": 2, // Level 2 (Light emission)
-        "Small Petrol Cars": 3,      // Level 3 (Mid emission)
-        "Mid Diesel": 3,             // Level 3 (Mid emission) 
-        "Mid Petrol Cars": 4         // Level 4 (High emission)
+// Get emission level directly from AGENT_TYPES or use the provided level
+const getEmissionLevel = (vehicleType: string, providedLevel?: number): number => {
+    if (providedLevel !== undefined) {
+        return providedLevel
     }
-    return emissionLevels[vehicleType] || 3
+    const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
+    return agentConfig?.emissionLevel || 3
 }
 
 const rScale = d3.scaleLinear().domain([1, 4]).range([8, 18]) // Size range based on emission level
@@ -217,6 +215,7 @@ export default function AgentBubblesVisualization({
     const [aiAgents, setAiAgents] = useState<Agent[]>([])
     const [selectedAgent, setSelectedAgent] = useState<any>(null)
     const [showChat, setShowChat] = useState(false)
+    const [runningSimulation, setRunningSimulation] = useState(false)
     const simulationRef = useRef<d3.Simulation<SimulationNode, undefined> | null>(null)
     const timerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -226,29 +225,40 @@ export default function AgentBubblesVisualization({
     const cy = height / 2
     const R = Math.min(width, height) * 0.4
 
-    // Generate AI agents when policy context changes
+    // Load existing simulation data on component mount
     useEffect(() => {
-        async function initializeAgents() {
+        async function loadExistingSimulation() {
             setLoading(true)
             try {
-                const generatedAgents = await generateAIAgents(policyContext, numAgents)
-                setAiAgents(generatedAgents)
-                const simulationFrames = generateDynamicFrames(generatedAgents, timeFrames)
-                setFrames(simulationFrames)
+                console.log('Loading simulation data from JSON...')
+                const response = await fetch('/simulation_data.json')
+                
+                if (response.ok) {
+                    const result = await response.json()
+                    
+                    if (result.success && result.agents && result.frames) {
+                        console.log('Loaded simulation data:', result.frames.length, 'frames,', result.agents.length, 'agents')
+                        setAiAgents(result.agents)
+                        setFrames(result.frames)
+                        setCurrentFrame(0)
+                    } else {
+                        console.warn('Invalid simulation data format')
+                        setFrames([])
+                    }
+                } else {
+                    console.warn('No simulation data file found, will generate on play')
+                    setFrames([])
+                }
             } catch (error) {
-                console.error('Failed to generate agents:', error)
-                // Fallback to default
-                const defaultAgents = generateDefaultAgents(numAgents)
-                setAiAgents(defaultAgents)
-                const simulationFrames = generateDynamicFrames(defaultAgents, timeFrames)
-                setFrames(simulationFrames)
+                console.error('Failed to load simulation data:', error)
+                setFrames([])
             } finally {
                 setLoading(false)
             }
         }
 
-        initializeAgents()
-    }, [policyContext, numAgents, timeFrames])
+        loadExistingSimulation()
+    }, [])
 
     useEffect(() => {
         if (loading || frames.length === 0) {
@@ -264,12 +274,12 @@ export default function AgentBubblesVisualization({
 
         // Create type-specific cluster centers (emission level grouping)
         const typePositions = {
-            "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport
-            "Mid-size Electric Cars": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Electric vehicles
-            "Hybrid Electric Vehicle": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Hybrid vehicles
-            "Small Petrol Cars": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small petrol
-            "Mid Diesel": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Diesel
-            "Mid Petrol Cars": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid petrol
+            "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport - Level 1
+            "BEV-M": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Battery Electric - Level 1
+            "HEV-S": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Small Hybrid - Level 2
+            "ICE-S": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small Petrol - Level 3
+            "DIE-M": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Mid Diesel - Level 3
+            "ICE-M": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid Petrol - Level 4
         }
 
         // Create boundary circle
@@ -285,9 +295,9 @@ export default function AgentBubblesVisualization({
 
         // Initialize nodes with positions near their type centers
         const nodes: SimulationNode[] = frames[0].agents.map((agent: any) => {
-            const vehicleType = mapAgentTypeToVehicle(agent.type)
+            const vehicleType = mapVehicleType(agent.type)
             const typePos = typePositions[vehicleType as keyof typeof typePositions] || { x: cx, y: cy }
-            const emissionLevel = getEmissionLevel(vehicleType)
+            const emissionLevel = getEmissionLevel(vehicleType, agent.emissionLevel)
             const radius = rScale(emissionLevel)
             
             return {
@@ -489,8 +499,8 @@ export default function AgentBubblesVisualization({
             const agent = frame.agents.find((a: any) => a.id === d.id)
             if (!agent) return
 
-            // Map old agent types to vehicle types
-            const vehicleType = mapAgentTypeToVehicle(agent.type)
+            // Map vehicle types
+            const vehicleType = mapVehicleType(agent.type)
             const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
             
             if (!agentConfig) {
@@ -498,8 +508,8 @@ export default function AgentBubblesVisualization({
                 return
             }
 
-            // Use emission-based sizing instead of influence-based
-            const emissionLevel = getEmissionLevel(vehicleType)
+            // Use emission-based sizing from agent data or vehicle type
+            const emissionLevel = getEmissionLevel(vehicleType, agent.emissionLevel)
             const targetR = rScale(emissionLevel)
             const targetFill = agentConfig.color
 
@@ -541,8 +551,56 @@ export default function AgentBubblesVisualization({
         setCurrentFrame(frameIndex)
     }
 
+    const runSimulationAndPlay = async () => {
+        if (runningSimulation) return
+        
+        setRunningSimulation(true)
+        setLoading(true)
+        
+        try {
+            console.log('Running Python simulation...')
+            const response = await fetch('/api/run-simulation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            
+            const result = await response.json()
+            
+            if (result.success && result.agents && result.frames) {
+                console.log('Simulation completed, updating data:', result.frames.length, 'frames')
+                setAiAgents(result.agents)
+                setFrames(result.frames)
+                setCurrentFrame(0)
+            } else {
+                console.warn('Simulation failed, using fallback data:', result.error)
+                if (result.fallbackData) {
+                    setAiAgents(result.fallbackData.agents)
+                    setFrames(result.fallbackData.frames)
+                }
+            }
+        } catch (error) {
+            console.error('Failed to run simulation:', error)
+            // Keep existing data on error
+        } finally {
+            setRunningSimulation(false)
+            setLoading(false)
+            
+            // Start playing after simulation completes
+            setTimeout(() => {
+                play()
+            }, 1000)
+        }
+    }
+    
     const play = () => {
         if (isPlaying) return
+        
+        // If no data loaded yet, run simulation first
+        if (frames.length === 0 && !runningSimulation) {
+            runSimulationAndPlay()
+            return
+        }
+        
         setIsPlaying(true)
 
         timerRef.current = setInterval(() => {
@@ -551,7 +609,7 @@ export default function AgentBubblesVisualization({
                 updateFrame(next)
                 return next
             })
-        }, 500) // 500ms per frame
+        }, 1000) // 1000ms per frame (1 second per month)
     }
 
     const pause = () => {
@@ -576,10 +634,15 @@ export default function AgentBubblesVisualization({
     if (loading) {
         return (
             <div className="space-y-4">
-                <Card className="p-8 bg-gray-800 border-gray-600">
+                <Card className="p-8">
                     <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                        <span className="ml-3 text-white">Generating AI agents for: {policyContext}</span>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span className="ml-3">
+                            {runningSimulation 
+                                ? 'Running Python simulation...' 
+                                : `Generating AI agents for: ${policyContext}`
+                            }
+                        </span>
                     </div>
                 </Card>
             </div>
@@ -629,10 +692,13 @@ export default function AgentBubblesVisualization({
                             </Button>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                            <div>Frame {currentFrame + 1}/{frames.length} — {frames[currentFrame]?.t}</div>
+                            <div>{frames[currentFrame]?.t || `Month ${currentFrame + 1}`}</div>
+                            <div className="text-xs">
+                                Progress: {currentFrame + 1}/{frames.length} months
+                            </div>
                             {frames[currentFrame]?.adoptionRate !== undefined && (
                                 <div className="text-xs">
-                                    Adoption: {Math.round(frames[currentFrame].adoptionRate * 100)}%
+                                    Clean Transport: {Math.round(frames[currentFrame].adoptionRate * 100)}%
                                 </div>
                             )}
                         </div>
