@@ -17,13 +17,15 @@ export async function loadCarbonPricingData(): Promise<CarbonPricingFrameData[]>
     try {
         const response = await fetch('/simulation_data.json')
         if (!response.ok) {
-            throw new Error('Failed to load simulation data')
+            console.log('No existing simulation data found, will need to run simulation first')
+            return []
         }
         
         const rawData = await response.json()
         
-        if (!Array.isArray(rawData)) {
-            throw new Error('Invalid simulation data format')
+        if (!Array.isArray(rawData) || rawData.length === 0) {
+            console.log('Empty or invalid simulation data, will need to run simulation')
+            return []
         }
         
         return rawData.map(frame => ({
@@ -36,7 +38,7 @@ export async function loadCarbonPricingData(): Promise<CarbonPricingFrameData[]>
             adoptionRate: calculateAdoptionRate(frame.agents || [])
         }))
     } catch (error) {
-        console.error('Error loading carbon pricing data:', error)
+        console.log('Error loading carbon pricing data, will need to run simulation first:', error)
         return []
     }
 }
