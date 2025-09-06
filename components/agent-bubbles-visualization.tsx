@@ -609,7 +609,7 @@ export default function AgentBubblesVisualization({
                 updateFrame(next)
                 return next
             })
-        }, 1000) // 1000ms per frame (1 second per month)
+        }, 200) // 200ms per frame (faster for 180 months)
     }
 
     const pause = () => {
@@ -620,9 +620,62 @@ export default function AgentBubblesVisualization({
         }
     }
 
-    const reset = () => {
+    const reset = async () => {
         pause()
-        updateFrame(0)
+        setCurrentFrame(0)
+        
+        // Run new simulation to generate fresh data
+        setRunningSimulation(true)
+        setLoading(true)
+        
+        try {
+            console.log('Running new simulation...')
+            const response = await fetch('/api/run-simulation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            
+            const result = await response.json()
+            
+            if (result.success && result.agents && result.frames) {
+                console.log('New simulation completed:', result.frames.length, 'frames')
+                setAiAgents(result.agents)
+                setFrames(result.frames)
+                setCurrentFrame(0)
+                
+                // Update the JSON file for future loads
+                await updateSimulationJSON()
+            } else {
+                console.warn('Simulation failed, keeping existing data:', result.error)
+                // Fallback: try to regenerate from existing XLSX
+                await updateSimulationJSON()
+            }
+        } catch (error) {
+            console.error('Failed to run new simulation:', error)
+        } finally {
+            setRunningSimulation(false)
+            setLoading(false)
+        }
+    }
+    
+    // Helper function to update the JSON file with new simulation data
+    const updateSimulationJSON = async () => {
+        try {
+            console.log('Updating simulation JSON file...')
+            const response = await fetch('/api/update-simulation-json', {
+                method: 'GET' // Use GET to regenerate from latest XLSX
+            })
+            
+            const result = await response.json()
+            
+            if (result.success) {
+                console.log('Simulation JSON updated successfully')
+            } else {
+                console.warn('Failed to update simulation JSON:', result.error)
+            }
+        } catch (error) {
+            console.error('Failed to update simulation JSON:', error)
+        }
     }
 
     const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -639,8 +692,8 @@ export default function AgentBubblesVisualization({
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         <span className="ml-3">
                             {runningSimulation 
-                                ? 'Running Python simulation...' 
-                                : `Generating AI agents for: ${policyContext}`
+                                ? 'Running new Python simulation...' 
+                                : 'Loading simulation data...'
                             }
                         </span>
                     </div>
@@ -705,6 +758,10 @@ export default function AgentBubblesVisualization({
                     </div>
 
                     <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                            <span>Year 1</span>
+                            <span>Year 15</span>
+                        </div>
                         <input
                             type="range"
                             min="0"

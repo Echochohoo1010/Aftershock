@@ -128,8 +128,8 @@ function convertXLSXToAgents(xlsxData: any[]): {agents: any[], frames: any[]} {
     const agents = Array.from(agentMap.values())
     const sortedPeriods = Array.from(timePeriods).sort((a, b) => Number(a) - Number(b))
     
-    // Use first 24 months for better performance, but keep all 180 for full simulation
-    const samplePeriods = sortedPeriods.slice(0, Math.min(24, sortedPeriods.length))
+    // Use all 180 months for full 15-year simulation
+    const samplePeriods = sortedPeriods
     
     // Generate frames from time periods
     const frames = samplePeriods.map((period) => {
