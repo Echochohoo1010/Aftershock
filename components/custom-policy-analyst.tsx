@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import CausalGraph from "@/components/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/scenario-chat"
-import AgentBubblesVisualization from "@/components/agent-bubbles-visualization"
+import AgentVisualizationSelector from "@/components/visualizations/AgentVisualizationSelector"
 import { Share2, Shapes, FileText, Users } from "lucide-react"
 import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
 
@@ -508,10 +508,11 @@ export default function CustomPolicyAnalyst() {
                     />
                   ) : (
                     <div className="h-full overflow-hidden">
-                      <AgentBubblesVisualization
-                        policyContext={`${policyTitle}: ${policyDescription}`}
-                        numAgents={50}
-                        timeFrames={24}
+                      <AgentVisualizationSelector
+                        caseStudy={policyTitle}
+                        title="Agent-Based Simulation"
+                        width={600}
+                        height={500}
                       />
                     </div>
                   )}
