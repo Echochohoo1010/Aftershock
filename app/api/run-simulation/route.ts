@@ -169,10 +169,10 @@ function convertXLSXToSimulationFrames(xlsxData: any[]): any[] {
 }
 
 function generateSyntheticSimulationData(): any[] {
-    console.log('Generating synthetic 15-year simulation data...')
+    console.log('Generating synthetic 10-year simulation data...')
     
     const numAgents = 100
-    const numMonths = 180 // 15 years
+    const numMonths = 120 // 10 years
     
     // Vehicle types from the Netherlands simulation
     const vehicleTypes = ['Cycling/Walking', 'BEV-M', 'HEV-S', 'ICE-S', 'DIE-M', 'ICE-M']
@@ -196,7 +196,7 @@ function generateSyntheticSimulationData(): any[] {
     
     for (let month = 1; month <= numMonths; month++) {
         // Simulate gradual adoption of cleaner transport
-        const adoptionPressure = month / numMonths * 0.4 // 40% max adoption pressure over 15 years
+        const adoptionPressure = month / numMonths * 0.4 // 40% max adoption pressure over 10 years
         
         agents.forEach(agent => {
             // Small chance to switch to cleaner vehicle each month

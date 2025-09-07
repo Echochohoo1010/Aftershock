@@ -1685,11 +1685,11 @@ class NetherlandsCarbonPricingSimulation:
             print(f"Reports include policy impacts, agent decisions, and market evolution")
             print(f"Data exported in database-ready format for frontend presentation")
 
-# Run the full 15-year simulation
+# Run the full 10-year simulation
 if __name__ == "__main__":
-    # Simulation with 100 agents for Excel export testing
-    print("Initializing Netherlands CO2 policy simulation for Excel export...")
-    sim = NetherlandsCarbonPricingSimulation(n_agents=100, time_horizon=180)  # 100 agents, 15 years
+    # Simulation with 100 agents for 10 years
+    print("Initializing Netherlands CO2 policy simulation for 10-year analysis...")
+    sim = NetherlandsCarbonPricingSimulation(n_agents=100, time_horizon=120)  # 100 agents, 10 years
     reports = sim.run_simulation()
     
     # Export detailed agent tracking to Excel
