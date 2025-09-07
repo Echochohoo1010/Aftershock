@@ -240,7 +240,10 @@ export default function BaseVisualization({
         // If data already exists, just start animation
         if (data.length > 0) {
             if (!isPlaying) {
-                setCurrentFrame(0) // Reset to beginning
+                // Only reset to beginning if we've reached the end
+                if (currentFrame >= data.length - 1) {
+                    setCurrentFrame(0)
+                }
                 startAnimation()
             }
             return
@@ -259,7 +262,7 @@ export default function BaseVisualization({
                 setRunningSimulation(false)
             }
         }
-    }, [data.length, isPlaying, onSimulationRun, startAnimation])
+    }, [data.length, isPlaying, currentFrame, onSimulationRun, startAnimation])
 
     const handlePause = useCallback(() => {
         setIsPlaying(false)
