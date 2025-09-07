@@ -117,7 +117,7 @@ const caseStudies = [
   {
     id: "carbon-tax",
     title: "Carbon Tax Implementation",
-    description: "This simulation models 10,000 Dutch households deciding whether to buy cars over 15 years from 2008 after the government uses taxes to make dirty cars expensive and clean cars cheaper. Each person is different - some love cycling, others need cars, some get company vehicles, others buy their own.",
+    description: "This simulation models 10,000 Dutch households deciding whether to buy cars over 10 years from 2008 after the government uses taxes to make dirty cars expensive and clean cars cheaper. Each person is different - some love cycling, others need cars, some get company vehicles, others buy their own.",
     icon: "🌿",
     variables: [
       "carbon_emissions",
@@ -483,7 +483,7 @@ export default function CustomPolicyAnalyst() {
                   <p className="text-gray-700 text-xs mb-2">{policyDescription}</p>
                   <div className="flex gap-3 text-xs text-gray-600">
                     <span>Agents: 100</span>
-                    <span>Timeline: 180mo</span>
+                    <span>Timeline: 120mo</span>
                     <span>AI: Yes</span>
                   </div>
                 </Card>
