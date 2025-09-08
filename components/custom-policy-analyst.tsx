@@ -11,8 +11,10 @@ import CausalGraph from "@/components/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/scenario-chat"
 import AgentVisualizationSelector from "@/components/visualizations/AgentVisualizationSelector"
+import ExploreContainer from "@/components/explore/ExploreContainer"
 import { Share2, Shapes, FileText, Users } from "lucide-react"
 import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
+import { CaseId } from "@/components/explore/content/types"
 
 // Default economic policy causal graph
 const defaultVariables = [
@@ -167,6 +169,7 @@ export default function CustomPolicyAnalyst() {
   const [quickTags, setQuickTags] = useState<string[]>([])
   const [events, setEvents] = useState<ReactionEvent[]>([])
   const [chatHistory, setChatHistory] = useState<Array<{ role: string, content: string }>>([])
+  const [selectedCase, setSelectedCase] = useState<CaseId | null>(null)
 
   // Memoize the recommendation text to prevent infinite re-renders
   const recommendationText = useMemo(() => {
@@ -249,6 +252,8 @@ export default function CustomPolicyAnalyst() {
     setPolicyTitle(caseStudy.title)
     setPolicyDescription(caseStudy.description)
     setVariables(caseStudy.variables)
+    // Set the selected case for the new ExploreContainer
+    setSelectedCase(caseStudy.id as CaseId)
 
     // Convert relationship types to match CausalGraph component requirements
     const typedRelationships = caseStudy.relationships.map(rel => ({
@@ -489,7 +494,16 @@ export default function CustomPolicyAnalyst() {
                 </Card>
 
                 <div className="h-screen">
-                  {activeTab === "explore1" ? (
+                  {selectedCase ? (
+                    <ExploreContainer
+                      caseId={selectedCase}
+                      activeTab={activeTab}
+                      highlightedNode={highlightedNode}
+                      highlightedRelationship={highlightedRelationship}
+                      selectedEvent={selectedEvent}
+                      onEventSelect={handleEventSelect}
+                    />
+                  ) : activeTab === "explore1" ? (
                     <div className="p-4 h-full">
                       <CausalGraph
                         variables={variables}
