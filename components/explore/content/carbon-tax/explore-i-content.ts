@@ -11,16 +11,16 @@ export const carbonTaxExploreI: ExploreIContent = {
     "government_revenue"
   ],
   relationships: [
-    { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" },
-    { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" },
-    { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" },
-    { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" },
-    { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" },
-    { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" },
-    { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" },
-    { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" },
-    { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" },
-    { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" }
+    { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" as const },
+    { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" as const },
+    { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" as const },
+    { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" as const },
+    { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" as const },
+    { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" as const },
+    { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" as const },
+    { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" as const },
+    { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" as const },
+    { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" as const }
   ],
   effects: {
     innovation: [

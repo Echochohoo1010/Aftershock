@@ -27,13 +27,13 @@ const defaultVariables = [
 ]
 
 const defaultRelationships = [
-  { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
-  { from: "economic_growth", to: "inflation", strength: 0.5, type: "positive" },
-  { from: "inflation", to: "consumer_spending", strength: -0.4, type: "negative" },
-  { from: "unemployment", to: "consumer_spending", strength: -0.6, type: "negative" },
-  { from: "consumer_spending", to: "business_investment", strength: 0.6, type: "positive" },
-  { from: "business_investment", to: "economic_growth", strength: 0.7, type: "positive" },
-  { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" }
+  { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" as const },
+  { from: "economic_growth", to: "inflation", strength: 0.5, type: "positive" as const },
+  { from: "inflation", to: "consumer_spending", strength: -0.4, type: "negative" as const },
+  { from: "unemployment", to: "consumer_spending", strength: -0.6, type: "negative" as const },
+  { from: "consumer_spending", to: "business_investment", strength: 0.6, type: "positive" as const },
+  { from: "business_investment", to: "economic_growth", strength: 0.7, type: "positive" as const },
+  { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" as const }
 ]
 
 // Predefined responses for different event types
@@ -104,16 +104,16 @@ const caseStudies = [
       "inflation"
     ],
     relationships: [
-      { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" },
-      { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" },
-      { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" },
-      { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
-      { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" },
-      { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" },
-      { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" },
-      { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" },
-      { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" },
-      { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" }
+      { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" as const },
+      { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" as const },
+      { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" as const },
+      { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" as const },
+      { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" as const },
+      { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" as const },
+      { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" as const },
+      { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" as const },
+      { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" as const },
+      { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" as const }
     ]
   },
   {
@@ -131,16 +131,16 @@ const caseStudies = [
       "government_revenue"
     ],
     relationships: [
-      { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" },
-      { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" },
-      { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" },
-      { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" },
-      { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" },
-      { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" },
-      { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" },
-      { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" },
-      { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" },
-      { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" }
+      { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" as const },
+      { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" as const },
+      { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" as const },
+      { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" as const },
+      { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" as const },
+      { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" as const },
+      { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" as const },
+      { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" as const },
+      { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" as const },
+      { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" as const }
     ]
   }
 ]
@@ -162,7 +162,12 @@ export default function CustomPolicyAnalyst() {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null)
   const [highlightedRelationship, setHighlightedRelationship] = useState<{ from: string; to: string } | null>(null)
   const [variables, setVariables] = useState(defaultVariables)
-  const [relationships, setRelationships] = useState(defaultRelationships)
+  const [relationships, setRelationships] = useState<Array<{
+    from: string
+    to: string
+    strength: number
+    type: "positive" | "negative" | "complex"
+  }>>(defaultRelationships)
   const [showCaseStudies, setShowCaseStudies] = useState(false)
   const [activeTab, setActiveTab] = useState<"explore1" | "explore2" | "explore3">("explore1")
   const [selectedEvent, setSelectedEvent] = useState<ReactionEvent | null>(null)
@@ -255,15 +260,7 @@ export default function CustomPolicyAnalyst() {
     // Set the selected case for the new ExploreContainer
     setSelectedCase(caseStudy.id as CaseId)
 
-    // Convert relationship types to match CausalGraph component requirements
-    const typedRelationships = caseStudy.relationships.map(rel => ({
-      ...rel,
-      type: rel.type === "positive" || rel.type === "negative" || rel.type === "complex"
-        ? rel.type as "positive" | "negative" | "complex"
-        : "complex"
-    }))
-
-    setRelationships(typedRelationships)
+    setRelationships(caseStudy.relationships)
     setShowCaseStudies(false)
   }
 

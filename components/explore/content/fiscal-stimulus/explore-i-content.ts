@@ -11,16 +11,16 @@ export const fiscalStimulusExploreI: ExploreIContent = {
     "inflation"
   ],
   relationships: [
-    { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" },
-    { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" },
-    { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" },
-    { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
-    { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" },
-    { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" },
-    { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" },
-    { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" },
-    { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" },
-    { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" }
+    { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" as const },
+    { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" as const },
+    { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" as const },
+    { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" as const },
+    { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" as const },
+    { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" as const },
+    { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" as const },
+    { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" as const },
+    { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" as const },
+    { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" as const }
   ],
   effects: {
     innovation: [

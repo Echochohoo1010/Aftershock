@@ -4,7 +4,7 @@ export interface Relationship {
   from: string
   to: string
   strength: number
-  type: "positive" | "negative"
+  type: "positive" | "negative" | "complex"
 }
 
 export interface ExploreIContent {
