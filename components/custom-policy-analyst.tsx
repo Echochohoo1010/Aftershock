@@ -479,16 +479,18 @@ export default function CustomPolicyAnalyst() {
                   </div>
                 </div>
 
-                {/* Simulation Context - Always visible */}
-                <Card className="mx-4 mb-4 p-3 border bg-gray-50">
-                  <h3 className="text-sm font-semibold mb-1 text-gray-900">Context</h3>
-                  <p className="text-gray-700 text-xs mb-2">{policyDescription}</p>
-                  <div className="flex gap-3 text-xs text-gray-600">
-                    <span>Agents: 100</span>
-                    <span>Timeline: 120mo</span>
-                    <span>AI: Yes</span>
-                  </div>
-                </Card>
+                {/* Simulation Context - Only show for custom policies (not case studies) */}
+                {!selectedCase && (
+                  <Card className="mx-4 mb-4 p-3 border bg-gray-50">
+                    <h3 className="text-sm font-semibold mb-1 text-gray-900">Context</h3>
+                    <p className="text-gray-700 text-xs mb-2">{policyDescription}</p>
+                    <div className="flex gap-3 text-xs text-gray-600">
+                      <span>Agents: 100</span>
+                      <span>Timeline: 120mo</span>
+                      <span>AI: Yes</span>
+                    </div>
+                  </Card>
+                )}
 
                 <div className="h-screen">
                   {selectedCase ? (

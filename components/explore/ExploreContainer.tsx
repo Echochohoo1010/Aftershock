@@ -115,7 +115,7 @@ export default function ExploreContainer({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-4 overflow-hidden">
+      <div className={`flex-1 p-4 ${activeTab === "explore3" ? "overflow-y-auto" : "overflow-hidden"}`}>
         {activeTab === "explore1" && (
           <ExploreITemplate
             content={caseContent.exploreI}

@@ -10,12 +10,12 @@ interface ExploreIIITemplateProps {
 
 export default function ExploreIIITemplate({ content, caseId }: ExploreIIITemplateProps) {
   return (
-    <div className="h-full">
+    <div className="min-h-full">
       <AgentVisualizationSelector 
-        selectedCase={caseId}
-        agentTypes={content.agentTypes}
-        simulationDescription={content.simulationParams.description}
-        customPhysicsConfig={content.physicsConfig}
+        caseStudy={caseId}
+        title="Agent-Based Simulation"
+        width={600}
+        height={420}
       />
     </div>
   )
