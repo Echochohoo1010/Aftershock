@@ -7,14 +7,40 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Play, Pause, RotateCcw, MessageCircle, X, Send } from "lucide-react"
 
-// Agent types with colors and behaviors
+// Agent types with colors and user-friendly display names
 const AGENT_TYPES = {
-    "Innovator": { color: "#606c38", size: [18, 28] },
-    "Adopter": { color: "#fefae0", size: [14, 22] },
-    "Skeptic": { color: "#dda15e", size: [16, 24] },
-    "Influencer": { color: "#bc6c25", size: [20, 32] },
-    "Observer": { color: "#8b5a3c", size: [12, 18] }
+    "Cycling/Walking": { color: "#22c55e", emissionLevel: 1, displayName: "Cycling/Walking" },
+    "BEV-M": { color: "#22c55e", emissionLevel: 1, displayName: "Mid-size Electric Cars" },
+    "HEV-S": { color: "#84cc16", emissionLevel: 2, displayName: "Hybrid Electric Vehicle" },
+    "ICE-S": { color: "#f59e0b", emissionLevel: 3, displayName: "Small Petrol Cars" },
+    "DIE-M": { color: "#f59e0b", emissionLevel: 3, displayName: "Mid Diesel Cars" },
+    "ICE-M": { color: "#ef4444", emissionLevel: 4, displayName: "Mid Petrol Cars" }
 }
+
+// Map simulation vehicle types to display names (if needed)
+const mapVehicleType = (vehicleType: string): string => {
+    // Direct mapping - simulation already uses correct format
+    const mapping: { [key: string]: string } = {
+        "BEV-M": "BEV-M",           // Battery Electric Vehicle - Mid
+        "HEV-S": "HEV-S",           // Hybrid Electric Vehicle - Small
+        "ICE-S": "ICE-S",           // Internal Combustion Engine - Small
+        "ICE-M": "ICE-M",           // Internal Combustion Engine - Mid
+        "DIE-M": "DIE-M",           // Diesel - Mid
+        "Cycling/Walking": "Cycling/Walking"
+    }
+    return mapping[vehicleType] || vehicleType
+}
+
+// Get emission level directly from AGENT_TYPES or use the provided level
+const getEmissionLevel = (vehicleType: string, providedLevel?: number): number => {
+    if (providedLevel !== undefined) {
+        return providedLevel
+    }
+    const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
+    return agentConfig?.emissionLevel || 3
+}
+
+const rScale = d3.scaleLinear().domain([1, 4]).range([8, 18]) // Size range based on emission level
 
 // AI-powered agent generation based on policy context
 async function generateAIAgents(policyContext: string, numAgents: number = 50) {
@@ -68,27 +94,37 @@ interface SimulationNode extends d3.SimulationNodeDatum {
 // Fallback agent generation
 function generateDefaultAgents(numAgents: number): Agent[] {
     return Array.from({ length: numAgents }, (_, i) => {
-        let type = "Observer"
+        let type = "Mid Petrol Cars"  // Default to high-emission vehicle
         let adoptionThreshold = Math.random()
         let influence = 1 + Math.random() * 2
         let resistance = Math.random()
 
-        // Distribute agent types
-        if (i < Math.floor(numAgents * 0.05)) {
-            type = "Innovator"
+        // Distribute vehicle types based on emission transition
+        if (i < Math.floor(numAgents * 0.1)) {
+            type = "Cycling/Walking"
             adoptionThreshold = 0.1
-            influence = 4 + Math.random()
+            influence = 3 + Math.random()
             resistance = 0.1
-        } else if (i < Math.floor(numAgents * 0.15)) {
-            type = "Adopter"
-            adoptionThreshold = 0.3
-            influence = 2 + Math.random() * 2
+        } else if (i < Math.floor(numAgents * 0.2)) {
+            type = "Mid-size Electric Cars"
+            adoptionThreshold = 0.2
+            influence = 3 + Math.random()
+            resistance = 0.2
+        } else if (i < Math.floor(numAgents * 0.35)) {
+            type = "Hybrid Electric Vehicle"
+            adoptionThreshold = 0.4
+            influence = 2 + Math.random()
             resistance = 0.3
-        } else if (i >= Math.floor(numAgents * 0.8)) {
-            type = "Skeptic"
-            adoptionThreshold = 0.8
+        } else if (i < Math.floor(numAgents * 0.6)) {
+            type = "Small Petrol Cars"
+            adoptionThreshold = 0.6
+            influence = 1.5 + Math.random()
+            resistance = 0.5
+        } else if (i < Math.floor(numAgents * 0.8)) {
+            type = "Mid Diesel"
+            adoptionThreshold = 0.7
             influence = 1 + Math.random()
-            resistance = 0.8
+            resistance = 0.6
         }
 
         return {
@@ -126,15 +162,15 @@ function generateDynamicFrames(aiAgents: Agent[], numFrames: number = 24) {
 
             // Determine current type based on adoption progress and network effects
             if (adoptionProgress > personalThreshold) {
-                if (aiAgent.initialType === "Observer") {
-                    currentType = Math.random() < 0.7 ? "Adopter" : "Influencer"
-                } else if (aiAgent.initialType === "Skeptic" && adoptionProgress > 0.6) {
-                    currentType = Math.random() < 0.5 ? "Adopter" : "Skeptic"
+                if (aiAgent.initialType === "Mid Petrol Cars") {
+                    currentType = Math.random() < 0.4 ? "Hybrid Electric Vehicle" : Math.random() < 0.7 ? "Mid-size Electric Cars" : "Cycling/Walking"
+                } else if (aiAgent.initialType === "Mid Diesel" && adoptionProgress > 0.6) {
+                    currentType = Math.random() < 0.5 ? "Hybrid Electric Vehicle" : "Small Petrol Cars"
                 }
             }
 
             // Update influence based on adoption
-            if (currentType === "Adopter" || currentType === "Influencer") {
+            if (currentType === "Mid-size Electric Cars" || currentType === "Hybrid Electric Vehicle") {
                 influence = Math.min(5, aiAgent.influence + adoptionProgress * 2)
                 adoptedCount++
             }
@@ -179,6 +215,7 @@ export default function AgentBubblesVisualization({
     const [aiAgents, setAiAgents] = useState<Agent[]>([])
     const [selectedAgent, setSelectedAgent] = useState<any>(null)
     const [showChat, setShowChat] = useState(false)
+    const [runningSimulation, setRunningSimulation] = useState(false)
     const simulationRef = useRef<d3.Simulation<SimulationNode, undefined> | null>(null)
     const timerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -188,29 +225,40 @@ export default function AgentBubblesVisualization({
     const cy = height / 2
     const R = Math.min(width, height) * 0.4
 
-    // Generate AI agents when policy context changes
+    // Load existing simulation data on component mount
     useEffect(() => {
-        async function initializeAgents() {
+        async function loadExistingSimulation() {
             setLoading(true)
             try {
-                const generatedAgents = await generateAIAgents(policyContext, numAgents)
-                setAiAgents(generatedAgents)
-                const simulationFrames = generateDynamicFrames(generatedAgents, timeFrames)
-                setFrames(simulationFrames)
+                console.log('Loading simulation data from JSON...')
+                const response = await fetch('/simulation_data.json')
+                
+                if (response.ok) {
+                    const result = await response.json()
+                    
+                    if (result.success && result.agents && result.frames) {
+                        console.log('Loaded simulation data:', result.frames.length, 'frames,', result.agents.length, 'agents')
+                        setAiAgents(result.agents)
+                        setFrames(result.frames)
+                        setCurrentFrame(0)
+                    } else {
+                        console.warn('Invalid simulation data format')
+                        setFrames([])
+                    }
+                } else {
+                    console.warn('No simulation data file found, will generate on play')
+                    setFrames([])
+                }
             } catch (error) {
-                console.error('Failed to generate agents:', error)
-                // Fallback to default
-                const defaultAgents = generateDefaultAgents(numAgents)
-                setAiAgents(defaultAgents)
-                const simulationFrames = generateDynamicFrames(defaultAgents, timeFrames)
-                setFrames(simulationFrames)
+                console.error('Failed to load simulation data:', error)
+                setFrames([])
             } finally {
                 setLoading(false)
             }
         }
 
-        initializeAgents()
-    }, [policyContext, numAgents, timeFrames])
+        loadExistingSimulation()
+    }, [])
 
     useEffect(() => {
         if (loading || frames.length === 0) {
@@ -224,13 +272,14 @@ export default function AgentBubblesVisualization({
         const svg = d3.select(svgRef.current)
         svg.selectAll("*").remove()
 
-        // Create type-specific cluster centers
+        // Create type-specific cluster centers (emission level grouping)
         const typePositions = {
-            "Innovator": { x: cx - R * 0.5, y: cy - R * 0.5 },
-            "Adopter": { x: cx + R * 0.5, y: cy - R * 0.5 },
-            "Skeptic": { x: cx - R * 0.5, y: cy + R * 0.5 },
-            "Influencer": { x: cx + R * 0.5, y: cy + R * 0.5 },
-            "Observer": { x: cx, y: cy }
+            "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport - Level 1
+            "BEV-M": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Battery Electric - Level 1
+            "HEV-S": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Small Hybrid - Level 2
+            "ICE-S": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small Petrol - Level 3
+            "DIE-M": { x: cx + R * 0.3, y: cy + R * 0.6 },           // Mid Diesel - Level 3
+            "ICE-M": { x: cx - R * 0.3, y: cy + R * 0.6 }            // Mid Petrol - Level 4
         }
 
         // Create boundary circle
@@ -243,42 +292,24 @@ export default function AgentBubblesVisualization({
             .attr("stroke-width", 2)
             .attr("stroke-opacity", 0.5)
 
-        // Add cluster center indicators
-        Object.entries(typePositions).forEach(([type, pos]) => {
-            const agentConfig = AGENT_TYPES[type as keyof typeof AGENT_TYPES]
-            if (agentConfig) {
-                svg.append("circle")
-                    .attr("cx", pos.x)
-                    .attr("cy", pos.y)
-                    .attr("r", 8)
-                    .attr("fill", agentConfig.color)
-                    .attr("stroke", "#fff")
-                    .attr("stroke-width", 2)
-                    .attr("opacity", 0.3)
-
-                svg.append("text")
-                    .attr("x", pos.x)
-                    .attr("y", pos.y - 15)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "#ccc")
-                    .attr("font-size", "10px")
-                    .text(type)
-            }
-        })
 
         // Initialize nodes with positions near their type centers
         const nodes: SimulationNode[] = frames[0].agents.map((agent: any) => {
-            const typePos = typePositions[agent.type as keyof typeof typePositions] || { x: cx, y: cy }
+            const vehicleType = mapVehicleType(agent.type)
+            const typePos = typePositions[vehicleType as keyof typeof typePositions] || { x: cx, y: cy }
+            const emissionLevel = getEmissionLevel(vehicleType, agent.emissionLevel)
+            const radius = rScale(emissionLevel)
+            
             return {
                 id: agent.id,
                 x: typePos.x + (Math.random() - 0.5) * 60,
                 y: typePos.y + (Math.random() - 0.5) * 60,
                 vx: (Math.random() - 0.5) * 1,
                 vy: (Math.random() - 0.5) * 1,
-                r: 20,
-                targetR: 20,
-                fill: AGENT_TYPES[agent.type as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES.Observer.color,
-                type: agent.type
+                r: radius,
+                targetR: radius,
+                fill: AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES["Cycling/Walking"].color,
+                type: vehicleType
             }
         })
 
@@ -336,53 +367,105 @@ export default function AgentBubblesVisualization({
                     .attr("stroke", "#fff")
             })
 
-        // Physics simulation with clustering by type
+        // Enhanced physics simulation based on Netherlands visualization
+        const pad = 1.5
+        const collide = d3.forceCollide().radius((d: any) => d.r + pad).strength(0.8).iterations(10)
+        
+        // Dynamic gravity forces - weaker for distant nodes to allow color migration
+        const fx = d3.forceX(cx).strength((d: any) => {
+            const dist = Math.hypot((d.x || 0) - cx, (d.y || 0) - cy)
+            const maxDist = R * 0.8
+            return dist > maxDist ? 0.06 : 0.04 // Stronger pull only for very distant nodes
+        })
+        const fy = d3.forceY(cy).strength((d: any) => {
+            const dist = Math.hypot((d.x || 0) - cx, (d.y || 0) - cy)
+            const maxDist = R * 0.8
+            return dist > maxDist ? 0.06 : 0.04 // Stronger pull only for very distant nodes
+        })
+
+        // Enhanced pie-chart-like color clustering forces
+        function colorClusterForce() {
+            const strength = 0.6 // Significantly increased from 0.25
+            
+            // Define sector angles for each color (pie chart layout)
+            const colorSectors = new Map([
+                ["#22c55e", 0],           // Green (Electric, Cycling) - Right
+                ["#84cc16", Math.PI/2],   // Light green (Hybrid) - Top  
+                ["#f59e0b", Math.PI],     // Orange (Petrol, Diesel) - Left
+                ["#ef4444", 3*Math.PI/2]  // Red (Mid Petrol) - Bottom
+            ])
+            
+            function force() {
+                // Group nodes by color
+                const colorGroups = d3.group(nodes, (d: any) => d.fill)
+                
+                colorGroups.forEach((group, color) => {
+                    if (group.length <= 1) return
+                    
+                    // Get assigned sector angle for this color
+                    const sectorAngle = colorSectors.get(color) || 0
+                    
+                    // Calculate ideal sector position on circle edge
+                    const sectorRadius = R * 0.7 // 70% of circle radius
+                    const sectorCenterX = cx + sectorRadius * Math.cos(sectorAngle)
+                    const sectorCenterY = cy + sectorRadius * Math.sin(sectorAngle)
+                    
+                    // Apply sector-based clustering force to each node in the group
+                    group.forEach((d: any) => {
+                        const dx = sectorCenterX - (d.x || 0)
+                        const dy = sectorCenterY - (d.y || 0)
+                        const distance = Math.sqrt(dx * dx + dy * dy) || 1
+                        const force = strength / Math.max(distance, 10) // Prevent extreme forces
+                        
+                        d.vx = (d.vx || 0) + dx * force * 0.3
+                        d.vy = (d.vy || 0) + dy * force * 0.3
+                    })
+                    
+                    // Additional intra-group cohesion (keep same colors tight together)
+                    if (group.length > 1) {
+                        const groupCentroidX = d3.mean(group, (d: any) => d.x || 0) || cx
+                        const groupCentroidY = d3.mean(group, (d: any) => d.y || 0) || cy
+                        
+                        group.forEach((d: any) => {
+                            const dx = groupCentroidX - (d.x || 0)
+                            const dy = groupCentroidY - (d.y || 0)
+                            const distance = Math.sqrt(dx * dx + dy * dy) || 1
+                            const cohesionForce = 0.2 / distance
+                            
+                            d.vx = (d.vx || 0) + dx * cohesionForce * 0.8
+                            d.vy = (d.vy || 0) + dy * cohesionForce * 0.8
+                        })
+                    }
+                })
+            }
+            
+            return force
+        }
+
+        const colorCluster = colorClusterForce()
+
         const simulation = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-8)) // Reduced repulsion for clustering
-            .force("center", d3.forceCenter(cx, cy).strength(0.02)) // Very weak center force
-            .force("collision", d3.forceCollide().radius((d: any) => d.r + 2).strength(0.8))
-            // Clustering force - attract agents of same type to their designated areas
-            .force("cluster", () => {
-                const alpha = simulation.alpha()
-                nodes.forEach(node => {
-                    const typePos = typePositions[node.type as keyof typeof typePositions]
-                    if (!typePos) return
-
-                    // Apply attraction to type center
-                    const dx = typePos.x - (node.x || 0)
-                    const dy = typePos.y - (node.y || 0)
-                    const distance = Math.sqrt(dx * dx + dy * dy)
-
-                    if (distance > 0) {
-                        const strength = 0.15 * alpha // Clustering strength
-                        node.vx = (node.vx || 0) + (dx / distance) * strength * Math.min(distance / 50, 1)
-                        node.vy = (node.vy || 0) + (dy / distance) * strength * Math.min(distance / 50, 1)
-                    }
-                })
-            })
-            .force("boundary", () => {
-                // Keep nodes within boundary
-                nodes.forEach((node: SimulationNode) => {
-                    const dx = (node.x || 0) - cx
-                    const dy = (node.y || 0) - cy
-                    const distance = Math.sqrt(dx * dx + dy * dy)
-                    const maxDistance = R - node.r - 2
-
-                    if (distance > maxDistance) {
-                        const angle = Math.atan2(dy, dx)
-                        node.x = cx + Math.cos(angle) * maxDistance
-                        node.y = cy + Math.sin(angle) * maxDistance
-
-                        // Bounce off boundary
-                        const normalX = dx / distance
-                        const normalY = dy / distance
-                        const dotProduct = (node.vx || 0) * normalX + (node.vy || 0) * normalY
-                        node.vx = (node.vx || 0) - 2 * dotProduct * normalX * 0.8
-                        node.vy = (node.vy || 0) - 2 * dotProduct * normalY * 0.8
-                    }
-                })
-            })
+            .alpha(0.15) // Increased initial energy
+            .alphaDecay(0.015) // Slower decay for longer settling
+            .velocityDecay(0.6) // Less velocity decay for more movement
+            .force("collide", collide)
+            .force("fx", fx)
+            .force("fy", fy)
+            .force("colorCluster", colorCluster)
             .on("tick", () => {
+                // Keep nodes within circle boundary
+                nodes.forEach((d: any) => {
+                    const dx = (d.x || 0) - cx
+                    const dy = (d.y || 0) - cy
+                    const dist = Math.hypot(dx, dy)
+                    const maxDist = R - d.r - 5
+                    if (dist > maxDist) {
+                        const scale = maxDist / dist
+                        d.x = cx + dx * scale
+                        d.y = cy + dy * scale
+                    }
+                })
+                
                 circles
                     .attr("cx", (d: SimulationNode) => d.x || 0)
                     .attr("cy", (d: SimulationNode) => d.y || 0)
@@ -416,34 +499,108 @@ export default function AgentBubblesVisualization({
             const agent = frame.agents.find((a: any) => a.id === d.id)
             if (!agent) return
 
-            const agentConfig = AGENT_TYPES[agent.type as keyof typeof AGENT_TYPES]
-            const targetR = agentConfig.size[0] + (agent.influence / 5) * (agentConfig.size[1] - agentConfig.size[0])
+            // Map vehicle types
+            const vehicleType = mapVehicleType(agent.type)
+            const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
+            
+            if (!agentConfig) {
+                console.warn(`Vehicle type '${vehicleType}' not found in AGENT_TYPES (original: ${agent.type})`)
+                return
+            }
+
+            // Use emission-based sizing from agent data or vehicle type
+            const emissionLevel = getEmissionLevel(vehicleType, agent.emissionLevel)
+            const targetR = rScale(emissionLevel)
+            const targetFill = agentConfig.color
 
             d.targetR = targetR
-            d.type = agent.type
+            d.type = vehicleType
 
-            // Animate to new values
-            d3.select(this)
-                .transition()
+            // Enhanced animation with Netherlands-style transitions
+            const circle = d3.select(this)
+            circle.interrupt()
+            circle.transition()
                 .duration(300)
+                .ease(d3.easeCubicOut)
                 .attr("r", targetR)
-                .attr("fill", agentConfig.color)
+                .attr("fill", targetFill)
                 .on("end", () => {
                     d.r = targetR
-                    d.fill = agentConfig.color
+                    d.fill = targetFill
+                    
+                    // Update collision force radius for new size
+                    if (simulationRef.current) {
+                        simulationRef.current.force("collide", d3.forceCollide()
+                            .radius((d: any) => d.r + 1.5).strength(0.8).iterations(10))
+                    }
                 })
         })
 
-        // Restart simulation with some energy
+        // Boost simulation energy for color changes (like Netherlands viz)
         if (simulationRef.current) {
             simulationRef.current.alpha(0.3).restart()
+            
+            // Add temporary boost to color clustering forces
+            setTimeout(() => {
+                if (simulationRef.current) {
+                    simulationRef.current.alpha(0.2).restart()
+                }
+            }, 50)
         }
 
         setCurrentFrame(frameIndex)
     }
 
+    const runSimulationAndPlay = async () => {
+        if (runningSimulation) return
+        
+        setRunningSimulation(true)
+        setLoading(true)
+        
+        try {
+            console.log('Running Python simulation...')
+            const response = await fetch('/api/run-simulation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            
+            const result = await response.json()
+            
+            if (result.success && result.agents && result.frames) {
+                console.log('Simulation completed, updating data:', result.frames.length, 'frames')
+                setAiAgents(result.agents)
+                setFrames(result.frames)
+                setCurrentFrame(0)
+            } else {
+                console.warn('Simulation failed, using fallback data:', result.error)
+                if (result.fallbackData) {
+                    setAiAgents(result.fallbackData.agents)
+                    setFrames(result.fallbackData.frames)
+                }
+            }
+        } catch (error) {
+            console.error('Failed to run simulation:', error)
+            // Keep existing data on error
+        } finally {
+            setRunningSimulation(false)
+            setLoading(false)
+            
+            // Start playing after simulation completes
+            setTimeout(() => {
+                play()
+            }, 1000)
+        }
+    }
+    
     const play = () => {
         if (isPlaying) return
+        
+        // If no data loaded yet, run simulation first
+        if (frames.length === 0 && !runningSimulation) {
+            runSimulationAndPlay()
+            return
+        }
+        
         setIsPlaying(true)
 
         timerRef.current = setInterval(() => {
@@ -452,7 +609,7 @@ export default function AgentBubblesVisualization({
                 updateFrame(next)
                 return next
             })
-        }, 500) // 500ms per frame
+        }, 400) // 400ms per frame (0.4 seconds per month)
     }
 
     const pause = () => {
@@ -463,9 +620,62 @@ export default function AgentBubblesVisualization({
         }
     }
 
-    const reset = () => {
+    const reset = async () => {
         pause()
-        updateFrame(0)
+        setCurrentFrame(0)
+        
+        // Run new simulation to generate fresh data
+        setRunningSimulation(true)
+        setLoading(true)
+        
+        try {
+            console.log('Running new simulation...')
+            const response = await fetch('/api/run-simulation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            
+            const result = await response.json()
+            
+            if (result.success && result.agents && result.frames) {
+                console.log('New simulation completed:', result.frames.length, 'frames')
+                setAiAgents(result.agents)
+                setFrames(result.frames)
+                setCurrentFrame(0)
+                
+                // Update the JSON file for future loads
+                await updateSimulationJSON()
+            } else {
+                console.warn('Simulation failed, keeping existing data:', result.error)
+                // Fallback: try to regenerate from existing XLSX
+                await updateSimulationJSON()
+            }
+        } catch (error) {
+            console.error('Failed to run new simulation:', error)
+        } finally {
+            setRunningSimulation(false)
+            setLoading(false)
+        }
+    }
+    
+    // Helper function to update the JSON file with new simulation data
+    const updateSimulationJSON = async () => {
+        try {
+            console.log('Updating simulation JSON file...')
+            const response = await fetch('/api/update-simulation-json', {
+                method: 'GET' // Use GET to regenerate from latest XLSX
+            })
+            
+            const result = await response.json()
+            
+            if (result.success) {
+                console.log('Simulation JSON updated successfully')
+            } else {
+                console.warn('Failed to update simulation JSON:', result.error)
+            }
+        } catch (error) {
+            console.error('Failed to update simulation JSON:', error)
+        }
     }
 
     const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -477,10 +687,15 @@ export default function AgentBubblesVisualization({
     if (loading) {
         return (
             <div className="space-y-4">
-                <Card className="p-8 bg-gray-800 border-gray-600">
+                <Card className="p-8">
                     <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                        <span className="ml-3 text-white">Generating AI agents for: {policyContext}</span>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span className="ml-3">
+                            {runningSimulation 
+                                ? 'Running new Python simulation...' 
+                                : 'Loading simulation data...'
+                            }
+                        </span>
                     </div>
                 </Card>
             </div>
@@ -489,29 +704,18 @@ export default function AgentBubblesVisualization({
 
     return (
         <div className="space-y-2">
-            {/* Policy Context - Compact */}
-            <Card className="p-3 bg-gray-800 border-gray-600">
-                <h3 className="text-sm font-semibold mb-1 text-white">Simulation Context</h3>
-                <p className="text-gray-300 text-xs mb-2">{policyContext}</p>
-                <div className="flex gap-3 text-xs text-gray-400">
-                    <span>Agents: {numAgents}</span>
-                    <span>Timeline: {timeFrames}mo</span>
-                    <span>AI: {aiAgents.length > 0 ? 'Yes' : 'No'}</span>
-                </div>
-            </Card>
-
             {/* Legend - Compact */}
-            <Card className="p-3 bg-gray-800 border-gray-600">
-                <h3 className="text-sm font-semibold mb-2 text-white">Agent Types</h3>
+            <Card className="p-3">
+                <h3 className="text-sm font-semibold mb-2">Agent Types</h3>
                 <div className="flex flex-wrap gap-2">
                     {Object.entries(AGENT_TYPES).map(([type, config]) => (
                         <div key={type} className="flex items-center gap-1">
                             <div
-                                className="w-3 h-3 rounded-full border border-gray-300"
+                                className="w-3 h-3 rounded-full border border-border"
                                 style={{ backgroundColor: config.color }}
                             />
-                            <Badge variant="outline" className="text-xs text-gray-300 border-gray-500 px-1 py-0">
-                                {type}
+                            <Badge variant="outline" className="text-xs px-1 py-0">
+                                {config.displayName}
                             </Badge>
                         </div>
                     ))}
@@ -519,7 +723,7 @@ export default function AgentBubblesVisualization({
             </Card>
 
             {/* Controls - Compact */}
-            <Card className="p-3 bg-gray-800 border-gray-600">
+            <Card className="p-3">
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -527,7 +731,7 @@ export default function AgentBubblesVisualization({
                                 onClick={isPlaying ? pause : play}
                                 variant="outline"
                                 size="sm"
-                                className="border-gray-500 text-gray-300 hover:bg-gray-700 px-2 py-1"
+                                className="px-2 py-1"
                             >
                                 {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                             </Button>
@@ -535,42 +739,49 @@ export default function AgentBubblesVisualization({
                                 onClick={reset}
                                 variant="outline"
                                 size="sm"
-                                className="border-gray-500 text-gray-300 hover:bg-gray-700 px-2 py-1"
+                                className="px-2 py-1"
                             >
                                 <RotateCcw className="w-3 h-3" />
                             </Button>
                         </div>
-                        <div className="text-xs text-gray-300">
-                            <div>Frame {currentFrame + 1}/{frames.length} — {frames[currentFrame]?.t}</div>
+                        <div className="text-xs text-muted-foreground">
+                            <div>{frames[currentFrame]?.t || `Month ${currentFrame + 1}`}</div>
+                            <div className="text-xs">
+                                Progress: {currentFrame + 1}/{frames.length} months
+                            </div>
                             {frames[currentFrame]?.adoptionRate !== undefined && (
                                 <div className="text-xs">
-                                    Adoption: {Math.round(frames[currentFrame].adoptionRate * 100)}%
+                                    Clean Transport: {Math.round(frames[currentFrame].adoptionRate * 100)}%
                                 </div>
                             )}
                         </div>
                     </div>
 
                     <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                            <span>Year 1</span>
+                            <span>Year 15</span>
+                        </div>
                         <input
                             type="range"
                             min="0"
                             max={frames.length - 1}
                             value={currentFrame}
                             onChange={handleScrub}
-                            className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                            className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
                 </div>
             </Card>
 
             {/* Visualization */}
-            <Card className="p-2 bg-gray-900 border-gray-700">
+            <Card className="p-2">
                 <div className="flex justify-center">
                     <svg
                         ref={svgRef}
                         width={width}
                         height={height}
-                        className="border border-gray-600 rounded bg-gray-800"
+                        className="border border-border rounded bg-muted/50"
                     />
                 </div>
             </Card>

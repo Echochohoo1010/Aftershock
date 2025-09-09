@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import CausalGraph from "@/components/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/scenario-chat"
-import AgentBubblesVisualization from "@/components/agent-bubbles-visualization"
+import AgentVisualizationSelector from "@/components/visualizations/AgentVisualizationSelector"
 import { Share2, Shapes, FileText, Users } from "lucide-react"
 import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
 
@@ -117,7 +117,7 @@ const caseStudies = [
   {
     id: "carbon-tax",
     title: "Carbon Tax Implementation",
-    description: "A progressive carbon tax policy designed to reduce greenhouse gas emissions by placing a price on carbon dioxide emissions. The policy includes rebates for low-income households and investments in renewable energy infrastructure to ease the transition.",
+    description: "This simulation models 10,000 Dutch households deciding whether to buy cars over 10 years from 2008 after the government uses taxes to make dirty cars expensive and clean cars cheaper. Each person is different - some love cycling, others need cars, some get company vehicles, others buy their own.",
     icon: "🌿",
     variables: [
       "carbon_emissions",
@@ -477,6 +477,17 @@ export default function CustomPolicyAnalyst() {
                   </div>
                 </div>
 
+                {/* Simulation Context - Always visible */}
+                <Card className="mx-4 mb-4 p-3 border bg-gray-50">
+                  <h3 className="text-sm font-semibold mb-1 text-gray-900">Context</h3>
+                  <p className="text-gray-700 text-xs mb-2">{policyDescription}</p>
+                  <div className="flex gap-3 text-xs text-gray-600">
+                    <span>Agents: 100</span>
+                    <span>Timeline: 120mo</span>
+                    <span>AI: Yes</span>
+                  </div>
+                </Card>
+
                 <div className="h-screen">
                   {activeTab === "explore1" ? (
                     <div className="p-4 h-full">
@@ -497,10 +508,11 @@ export default function CustomPolicyAnalyst() {
                     />
                   ) : (
                     <div className="h-full overflow-hidden">
-                      <AgentBubblesVisualization
-                        policyContext={`${policyTitle}: ${policyDescription}`}
-                        numAgents={50}
-                        timeFrames={24}
+                      <AgentVisualizationSelector
+                        caseStudy={policyTitle}
+                        title="Agent-Based Simulation"
+                        width={600}
+                        height={500}
                       />
                     </div>
                   )}
