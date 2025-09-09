@@ -155,7 +155,11 @@ interface ReactionEvent {
   magnitude: number
 }
 
-export default function CustomPolicyAnalyst() {
+interface CustomPolicyAnalystProps {
+  onSubmissionChange?: (isSubmitted: boolean) => void
+}
+
+export default function CustomPolicyAnalyst({ onSubmissionChange }: CustomPolicyAnalystProps = {}) {
   const [policyTitle, setPolicyTitle] = useState("")
   const [policyDescription, setPolicyDescription] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -190,6 +194,7 @@ export default function CustomPolicyAnalyst() {
     if (policyTitle.trim() && policyDescription.trim()) {
       setIsSubmitted(true)
       setShowCaseStudies(false)
+      onSubmissionChange?.(true)
 
       // Generate quick tags based on variables
       const tags = variables.slice(0, 5).map(v => v.replace(/_/g, ' '));
@@ -201,6 +206,7 @@ export default function CustomPolicyAnalyst() {
     setPolicyTitle("")
     setPolicyDescription("")
     setIsSubmitted(false)
+    onSubmissionChange?.(false)
     setHighlightedNode(null)
     setHighlightedRelationship(null)
     setVariables(defaultVariables)
@@ -492,7 +498,7 @@ export default function CustomPolicyAnalyst() {
                   </Card>
                 )}
 
-                <div className="h-screen">
+                <div className="h-[calc(85vh-140px)]">
                   {selectedCase ? (
                     <ExploreContainer
                       caseId={selectedCase}
@@ -562,7 +568,7 @@ export default function CustomPolicyAnalyst() {
                     </div>
                   )}
                 </div>
-                <div className="h-[480px]">
+                <div className="h-[calc(85vh-240px)]">
                   <ScenarioChat
                     scenario={{
                       id: "1",
