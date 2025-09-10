@@ -149,7 +149,7 @@ export default function AnalysisCanvas({
 
       {/* Causal Graph - Bottom Left (original card) */}
       <div className="absolute bottom-4 left-4 z-50">
-        <Card className="w-96 h-[29rem] overflow-hidden shadow-md">
+        <Card className="w-96 h-106 overflow-hidden shadow-md">
           <div className="p-4 h-full">
             <h3 className="text-xl font-bold mb-4">Causal Graph</h3>
             <div className="h-full">
