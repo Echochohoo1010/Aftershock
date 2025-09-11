@@ -164,6 +164,17 @@ export class PhysicsEngine {
         })
     }
 
+    updateCollisionBoundaries() {
+        if (!this.simulation) return
+        
+        const collide = d3.forceCollide<SimulationNode>()
+            .radius((d: SimulationNode) => d.r + this.config.collisionPadding!)
+            .strength(this.config.collisionStrength!)
+            .iterations(10)
+        
+        this.simulation.force("collide", collide)
+    }
+
     restart() {
         if (this.simulation) {
             this.simulation.alpha(0.3).restart()

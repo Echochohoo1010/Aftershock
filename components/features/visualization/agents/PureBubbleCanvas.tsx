@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import * as d3 from "d3"
 import { PhysicsEngine } from "../simulation/PhysicsEngine"
 import { SimulationNode, PhysicsConfig } from "@/components/shared/types/simulation.types"
@@ -20,6 +20,7 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
     const svgRef = useRef<SVGSVGElement>(null)
     const physicsEngineRef = useRef<PhysicsEngine | null>(null)
     const nodesRef = useRef<SimulationNode[]>([])
+    const audioRef = useRef<HTMLAudioElement | null>(null)
     const [frames, setFrames] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
@@ -29,7 +30,7 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
     const centerX = width / 2
     const centerY = height / 2 - 40 // Move center 40px up (approximately 1cm on most screens)
 
-    const physicsConfig: PhysicsConfig = {
+    const physicsConfig: PhysicsConfig = useMemo(() => ({
         width,
         height,
         centerX,
@@ -41,7 +42,15 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         alpha: 0.2,
         alphaDecay: 0.01,
         velocityDecay: 0.5
-    }
+    }), [width, height, centerX, centerY, radius])
+
+    // Initialize audio on component mount
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            audioRef.current = new Audio('/sounds/bubble-change.mp3')
+            audioRef.current.volume = 0.3 // Set moderate volume
+        }
+    }, [])
 
     // Load simulation data on component mount
     useEffect(() => {
@@ -82,11 +91,12 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         loadSimulationData()
     }, [])
 
-    // Generate nodes from simulation data
-    const generateNodesFromSimulation = useCallback(() => {
+    // Generate initial nodes ONLY once when frames are loaded
+    const generateInitialNodes = useCallback(() => {
         if (!frames.length) return []
         
-        const frameData = frames[currentFrameIndex] || frames[0]
+        // Use first frame to determine agents
+        const frameData = frames[0]
         if (!frameData?.agents) return []
 
         // Create type-specific cluster centers (emission level grouping)
@@ -119,7 +129,7 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         })
 
         return nodes
-    }, [frames, currentFrameIndex, centerX, centerY, radius])
+    }, [frames.length, centerX, centerY, radius]) // Only depends on frames.length, not currentFrame
 
     const initializeVisualization = useCallback(() => {
         if (!svgRef.current || loading || !frames.length) return
@@ -127,7 +137,7 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         const svg = d3.select(svgRef.current)
         svg.selectAll("*").remove()
 
-        const nodes = generateNodesFromSimulation()
+        const nodes = generateInitialNodes()
         if (!nodes.length) return
         
         nodesRef.current = nodes
@@ -174,24 +184,9 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
                 .attr("cy", (d) => d.y || 0)
         })
 
-        // Add gentle movement to keep simulation alive
-        setInterval(() => {
-            if (physicsEngineRef.current) {
-                const simulation = physicsEngineRef.current.getSimulation()
-                if (simulation && simulation.alpha() < 0.02) {
-                    // Add some random gentle forces to maintain organic movement
-                    nodes.forEach(node => {
-                        if (node.vx !== undefined && node.vy !== undefined) {
-                            node.vx += (Math.random() - 0.5) * 0.15
-                            node.vy += (Math.random() - 0.5) * 0.15
-                        }
-                    })
-                    physicsEngineRef.current.restart()
-                }
-            }
-        }, 3000) // More frequent gentle nudges
+        // Removed periodic movement - agents should stay stable and only animate size/color changes
 
-    }, [generateNodesFromSimulation, centerX, centerY, radius, physicsConfig, loading, frames])
+    }, [generateInitialNodes, loading, frames.length])
 
     useEffect(() => {
         initializeVisualization()
@@ -203,13 +198,6 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         }
     }, [initializeVisualization])
 
-    // Update frame when currentFrame prop changes
-    useEffect(() => {
-        if (currentFrame !== currentFrameIndex && frames.length > 0) {
-            updateFrame(currentFrame)
-        }
-    }, [currentFrame])
-
     // Update frame function for animation
     const updateFrame = useCallback((frameIndex: number) => {
         if (!frames[frameIndex] || !physicsEngineRef.current) return
@@ -217,6 +205,7 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         const frame = frames[frameIndex]
         const svg = d3.select(svgRef.current)
         const circles = svg.selectAll("circle.agent")
+        let hasSizeChanges = false
 
         circles.each(function (d: any) {
             const agent = frame.agents.find((a: any) => a.id === d.id)
@@ -231,24 +220,51 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
             const targetR = rScale(emissionLevel)
             const targetFill = agentConfig.color
 
+            // Check if size changed
+            if (Math.abs((d.r || 0) - targetR) > 0.5) {
+                hasSizeChanges = true
+            }
+
             d.targetR = targetR
             d.type = vehicleType
 
             const circle = d3.select(this)
             circle.interrupt()
+            
+            // Animate both visual and physics radius together
             circle.transition()
-                .duration(300)
+                .duration(400)  // 0.4 seconds as requested
                 .ease(d3.easeCubicOut)
                 .attr("r", targetR)
                 .attr("fill", targetFill)
+                .tween("physics", function() {
+                    const currentR = d.r || targetR
+                    const interpolateR = d3.interpolate(currentR, targetR)
+                    return function(t) {
+                        d.r = interpolateR(t)
+                    }
+                })
                 .on("end", () => {
                     d.r = targetR
                     d.fill = targetFill
                 })
         })
 
-        // Boost simulation energy for transitions
+        // Play sound if any bubble changed size
+        if (hasSizeChanges && audioRef.current) {
+            try {
+                audioRef.current.currentTime = 0 // Reset to start
+                audioRef.current.play().catch(e => {
+                    console.log('Audio play failed (user interaction required):', e)
+                })
+            } catch (error) {
+                console.log('Audio play error:', error)
+            }
+        }
+
+        // Update collision boundaries and restart physics simulation
         if (physicsEngineRef.current) {
+            physicsEngineRef.current.updateCollisionBoundaries()
             physicsEngineRef.current.restart()
         }
 
@@ -256,15 +272,25 @@ export default function PureBubbleCanvas({ width, height, currentFrame = 0, onFr
         onFrameUpdate?.(frameIndex)
     }, [frames, onFrameUpdate])
 
-    // Handle window resize
+    // Update frame when currentFrame prop changes
+    useEffect(() => {
+        if (currentFrame !== currentFrameIndex && frames.length > 0) {
+            updateFrame(currentFrame)
+        }
+    }, [currentFrame, currentFrameIndex, frames.length, updateFrame])
+
+    // Handle window resize - reinitialize if needed
     useEffect(() => {
         const handleResize = () => {
-            initializeVisualization()
+            if (physicsEngineRef.current) {
+                // Restart simulation with current physics config
+                physicsEngineRef.current.restart()
+            }
         }
 
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
-    }, [initializeVisualization])
+    }, [physicsConfig])
 
     if (loading) {
         return (

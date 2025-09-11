@@ -71,6 +71,14 @@ export default function AnalysisCanvas({
   const [canvasTransform, setCanvasTransform] = useState({ x: 0, y: 0, scale: 1 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  
+  // Simulation control state
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentFrame, setCurrentFrame] = useState(0)
+  const [totalFrames, setTotalFrames] = useState(120)
+  const [frames, setFrames] = useState<any[]>([])
+  const [isRunningSimulation, setIsRunningSimulation] = useState(false)
+  const animationRef = useRef<NodeJS.Timeout | null>(null)
 
   // Zoom and pan functionality
   const handleWheel = useCallback((e: WheelEvent) => {
@@ -104,6 +112,108 @@ export default function AnalysisCanvas({
   const handleMouseUp = useCallback(() => {
     setIsDragging(false)
   }, [])
+
+  // Load simulation data on component mount
+  useEffect(() => {
+    async function loadSimulationData() {
+      try {
+        const response = await fetch('/simulation_data.json')
+        if (response.ok) {
+          const result = await response.json()
+          if (Array.isArray(result)) {
+            setFrames(result)
+            setTotalFrames(result.length)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load simulation data:', error)
+      }
+    }
+    loadSimulationData()
+  }, [])
+
+  // Animation control functions
+  const handlePlay = useCallback(() => {
+    if (currentFrame >= totalFrames - 1) {
+      setCurrentFrame(0) // Reset to beginning if at end
+    }
+    setIsPlaying(true)
+  }, [currentFrame, totalFrames])
+
+  const handlePause = useCallback(() => {
+    setIsPlaying(false)
+    if (animationRef.current) {
+      clearTimeout(animationRef.current)
+      animationRef.current = null
+    }
+  }, [])
+
+  const handleReset = useCallback(async () => {
+    setIsPlaying(false)
+    if (animationRef.current) {
+      clearTimeout(animationRef.current)
+      animationRef.current = null
+    }
+    
+    // Run new simulation
+    setIsRunningSimulation(true)
+    try {
+      const response = await fetch('/api/run-simulation-js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ n_agents: 100, duration_months: 120 })
+      })
+      
+      if (response.ok) {
+        // Reload the simulation data
+        const dataResponse = await fetch('/simulation_data.json')
+        if (dataResponse.ok) {
+          const result = await dataResponse.json()
+          if (Array.isArray(result)) {
+            setFrames(result)
+            setTotalFrames(result.length)
+            setCurrentFrame(0)
+            setIsPlaying(true) // Auto-start after reset
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to run new simulation:', error)
+    } finally {
+      setIsRunningSimulation(false)
+    }
+  }, [])
+
+  const handleScrub = useCallback((frameIndex: number) => {
+    setCurrentFrame(frameIndex)
+    setIsPlaying(false)
+    if (animationRef.current) {
+      clearTimeout(animationRef.current)
+      animationRef.current = null
+    }
+  }, [])
+
+  // Animation loop (0.4s per month)
+  useEffect(() => {
+    if (isPlaying && !isRunningSimulation) {
+      animationRef.current = setTimeout(() => {
+        setCurrentFrame(prev => {
+          if (prev >= totalFrames - 1) {
+            setIsPlaying(false)
+            return prev
+          }
+          return prev + 1
+        })
+      }, 400) // 0.4 seconds per month
+    }
+
+    return () => {
+      if (animationRef.current) {
+        clearTimeout(animationRef.current)
+        animationRef.current = null
+      }
+    }
+  }, [isPlaying, currentFrame, totalFrames, isRunningSimulation])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -142,6 +252,8 @@ export default function AnalysisCanvas({
           <PureBubbleCanvas
             width={typeof window !== 'undefined' ? window.innerWidth : 1920}
             height={typeof window !== 'undefined' ? window.innerHeight : 1080}
+            currentFrame={currentFrame}
+            onFrameUpdate={(frame) => setCurrentFrame(frame)}
           />
         </div>
       </div>
@@ -167,18 +279,18 @@ export default function AnalysisCanvas({
       {/* Simulation Controls - Bottom Center (original card) */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
         <SimulationControls
-          isPlaying={false}
-          currentFrame={0}
-          totalFrames={120}
+          isPlaying={isPlaying}
+          currentFrame={currentFrame}
+          totalFrames={totalFrames}
           currentFrameData={{
-            t: "Year 0, Month 12",
-            adoptionRate: 0.6
+            t: frames[currentFrame]?.t || `Year ${Math.floor(currentFrame/12)}, Month ${(currentFrame % 12) + 1}`,
+            adoptionRate: frames[currentFrame]?.adoptionRate || 0
           }}
-          runningSimulation={false}
-          onPlay={() => {}}
-          onPause={() => {}}
-          onReset={() => {}}
-          onScrub={() => {}}
+          runningSimulation={isRunningSimulation}
+          onPlay={handlePlay}
+          onPause={handlePause}
+          onReset={handleReset}
+          onScrub={handleScrub}
         />
       </div>
 
