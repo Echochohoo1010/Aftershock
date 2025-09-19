@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import AgentBubblesVisualization from "@/components/agent-bubbles-visualization"
+import AgentBubblesVisualization from "@/components/features/visualization/agents/agent-bubbles-visualization"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, TrendingUp, Network, Zap, Send } from "lucide-react"
