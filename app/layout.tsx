@@ -1,16 +1,17 @@
 import type React from "react"
 import "./globals.css"
-import { IBM_Plex_Sans, Inter } from "next/font/google"
+import {  Figtree, IBM_Plex_Sans, IBM_Plex_Sans_Condensed, Inter, Inter_Tight, Lato, Source_Sans_3, Source_Serif_4 } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 
-const inter = Inter({
+const inter = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  weight: ['400', '700'],
 })
 
-const noticiaText = IBM_Plex_Sans({
+const noticiaText = Lato({
   subsets: ["latin"],
   variable: "--font-noticia",
   display: "swap",
@@ -34,8 +35,6 @@ export default function RootLayout({
 
           <Header />
           {children}
-
-
         </ThemeProvider>
       </body>
     </html>

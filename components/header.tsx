@@ -13,7 +13,7 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed w-full glass z-50 border-b border-white/20 dark:border-white/10">
+    <header className=" w-full glass  border-b border-white/20 dark:border-white/10">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-3">
@@ -30,6 +30,9 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-3">
             <Link href="/explore" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
               Explore
+            </Link>
+            <Link href="/foundation" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
+              Foundation
             </Link>
             <Link href="/story" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
               Story
@@ -97,6 +100,9 @@ export default function Header() {
           <div className="px-4 py-6 space-y-3">
             <Link href="/explore" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
               Explore
+            </Link>
+            <Link href="/foundation" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
+              Foundation
             </Link>
             <Link href="/story" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
               Story
