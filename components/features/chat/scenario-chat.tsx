@@ -457,7 +457,7 @@ What would you like to explore?`,
       </div>
 
       {/* Input form */}
-      <CardFooter className="p-4 border-t absolute bottom-0">
+      <CardFooter className="p-4 border-t absolute bottom-0 bg-white w-full">
         <form onSubmit={handleSubmit} className="flex w-full   gap-2">
           <Input
             value={input}

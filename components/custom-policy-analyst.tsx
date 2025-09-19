@@ -11,8 +11,11 @@ import CausalGraph from "@/components/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/scenario-chat"
 import AgentVisualizationSelector from "@/components/visualizations/AgentVisualizationSelector"
+import ExploreContainer from "@/components/explore/ExploreContainer"
+import AnalysisCanvas from "@/components/core/AnalysisCanvas"
 import { Share2, Shapes, FileText, Users } from "lucide-react"
 import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
+import { CaseId } from "@/components/explore/content/types"
 
 // Default economic policy causal graph
 const defaultVariables = [
@@ -25,13 +28,13 @@ const defaultVariables = [
 ]
 
 const defaultRelationships = [
-  { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
-  { from: "economic_growth", to: "inflation", strength: 0.5, type: "positive" },
-  { from: "inflation", to: "consumer_spending", strength: -0.4, type: "negative" },
-  { from: "unemployment", to: "consumer_spending", strength: -0.6, type: "negative" },
-  { from: "consumer_spending", to: "business_investment", strength: 0.6, type: "positive" },
-  { from: "business_investment", to: "economic_growth", strength: 0.7, type: "positive" },
-  { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" }
+  { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" as const },
+  { from: "economic_growth", to: "inflation", strength: 0.5, type: "positive" as const },
+  { from: "inflation", to: "consumer_spending", strength: -0.4, type: "negative" as const },
+  { from: "unemployment", to: "consumer_spending", strength: -0.6, type: "negative" as const },
+  { from: "consumer_spending", to: "business_investment", strength: 0.6, type: "positive" as const },
+  { from: "business_investment", to: "economic_growth", strength: 0.7, type: "positive" as const },
+  { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" as const }
 ]
 
 // Predefined responses for different event types
@@ -102,16 +105,16 @@ const caseStudies = [
       "inflation"
     ],
     relationships: [
-      { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" },
-      { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" },
-      { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" },
-      { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" },
-      { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" },
-      { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" },
-      { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" },
-      { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" },
-      { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" },
-      { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" }
+      { from: "government_spending", to: "economic_growth", strength: 0.8, type: "positive" as const },
+      { from: "government_spending", to: "public_debt", strength: 0.9, type: "positive" as const },
+      { from: "government_spending", to: "unemployment", strength: -0.6, type: "negative" as const },
+      { from: "economic_growth", to: "unemployment", strength: -0.7, type: "negative" as const },
+      { from: "economic_growth", to: "consumer_confidence", strength: 0.6, type: "positive" as const },
+      { from: "consumer_confidence", to: "business_investment", strength: 0.7, type: "positive" as const },
+      { from: "business_investment", to: "economic_growth", strength: 0.5, type: "positive" as const },
+      { from: "public_debt", to: "economic_growth", strength: -0.3, type: "negative" as const },
+      { from: "economic_growth", to: "inflation", strength: 0.4, type: "positive" as const },
+      { from: "inflation", to: "consumer_confidence", strength: -0.3, type: "negative" as const }
     ]
   },
   {
@@ -129,16 +132,16 @@ const caseStudies = [
       "government_revenue"
     ],
     relationships: [
-      { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" },
-      { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" },
-      { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" },
-      { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" },
-      { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" },
-      { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" },
-      { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" },
-      { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" },
-      { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" },
-      { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" }
+      { from: "carbon_emissions", to: "energy_prices", strength: 0.7, type: "positive" as const },
+      { from: "energy_prices", to: "consumer_spending", strength: -0.5, type: "negative" as const },
+      { from: "energy_prices", to: "renewable_investment", strength: 0.8, type: "positive" as const },
+      { from: "renewable_investment", to: "innovation", strength: 0.6, type: "positive" as const },
+      { from: "innovation", to: "economic_growth", strength: 0.5, type: "positive" as const },
+      { from: "carbon_emissions", to: "economic_growth", strength: -0.3, type: "negative" as const },
+      { from: "energy_prices", to: "carbon_emissions", strength: -0.7, type: "negative" as const },
+      { from: "carbon_emissions", to: "government_revenue", strength: 0.8, type: "positive" as const },
+      { from: "government_revenue", to: "renewable_investment", strength: 0.6, type: "positive" as const },
+      { from: "innovation", to: "carbon_emissions", strength: -0.5, type: "negative" as const }
     ]
   }
 ]
@@ -153,20 +156,30 @@ interface ReactionEvent {
   magnitude: number
 }
 
-export default function CustomPolicyAnalyst() {
+interface CustomPolicyAnalystProps {
+  onSubmissionChange?: (isSubmitted: boolean) => void
+}
+
+export default function CustomPolicyAnalyst({ onSubmissionChange }: CustomPolicyAnalystProps = {}) {
   const [policyTitle, setPolicyTitle] = useState("")
   const [policyDescription, setPolicyDescription] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null)
   const [highlightedRelationship, setHighlightedRelationship] = useState<{ from: string; to: string } | null>(null)
   const [variables, setVariables] = useState(defaultVariables)
-  const [relationships, setRelationships] = useState(defaultRelationships)
+  const [relationships, setRelationships] = useState<Array<{
+    from: string
+    to: string
+    strength: number
+    type: "positive" | "negative" | "complex"
+  }>>(defaultRelationships)
   const [showCaseStudies, setShowCaseStudies] = useState(false)
   const [activeTab, setActiveTab] = useState<"explore1" | "explore2" | "explore3">("explore1")
   const [selectedEvent, setSelectedEvent] = useState<ReactionEvent | null>(null)
   const [quickTags, setQuickTags] = useState<string[]>([])
   const [events, setEvents] = useState<ReactionEvent[]>([])
   const [chatHistory, setChatHistory] = useState<Array<{ role: string, content: string }>>([])
+  const [selectedCase, setSelectedCase] = useState<CaseId | null>(null)
 
   // Memoize the recommendation text to prevent infinite re-renders
   const recommendationText = useMemo(() => {
@@ -182,6 +195,7 @@ export default function CustomPolicyAnalyst() {
     if (policyTitle.trim() && policyDescription.trim()) {
       setIsSubmitted(true)
       setShowCaseStudies(false)
+      onSubmissionChange?.(true)
 
       // Generate quick tags based on variables
       const tags = variables.slice(0, 5).map(v => v.replace(/_/g, ' '));
@@ -193,6 +207,7 @@ export default function CustomPolicyAnalyst() {
     setPolicyTitle("")
     setPolicyDescription("")
     setIsSubmitted(false)
+    onSubmissionChange?.(false)
     setHighlightedNode(null)
     setHighlightedRelationship(null)
     setVariables(defaultVariables)
@@ -249,16 +264,10 @@ export default function CustomPolicyAnalyst() {
     setPolicyTitle(caseStudy.title)
     setPolicyDescription(caseStudy.description)
     setVariables(caseStudy.variables)
+    // Set the selected case for the new ExploreContainer
+    setSelectedCase(caseStudy.id as CaseId)
 
-    // Convert relationship types to match CausalGraph component requirements
-    const typedRelationships = caseStudy.relationships.map(rel => ({
-      ...rel,
-      type: rel.type === "positive" || rel.type === "negative" || rel.type === "complex"
-        ? rel.type as "positive" | "negative" | "complex"
-        : "complex"
-    }))
-
-    setRelationships(typedRelationships)
+    setRelationships(caseStudy.relationships)
     setShowCaseStudies(false)
   }
 
@@ -318,7 +327,7 @@ export default function CustomPolicyAnalyst() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
+    <div className={`${isSubmitted ? 'w-full h-full relative' : 'container mx-auto p-4 max-w-7xl'}`}>
       {/* Policy Input Form */}
       {!isSubmitted &&
         <Card className="p-6 mb-8 shadow-md max-w-4xl mx-auto ">
@@ -426,196 +435,25 @@ export default function CustomPolicyAnalyst() {
         </Card>}
 
       {isSubmitted && (
-        <div className="space-y-8 ">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left column: Active Simulator - Takes 2/3 of space */}
-            <div className="lg:col-span-2">
-              <Card className="overflow-hidden shadow-md">
-                <div className="p-4 my-2 border-b bg-background justify-between items-center">
-                  <div>
-                    <h2 className="text-xl font-bold">
-                      {activeTab === "explore1" ? "Causal Graph" :
-                        activeTab === "explore2" ? "Chain Reactions" : "Agent Dynamics"}
-                    </h2>
-                    <p className="text-sm text-gray-600">
-                      {activeTab === "explore1"
-                        ? "Visualize and modify causal relationships between variables"
-                        : activeTab === "explore2"
-                          ? "Monitor real-time system responses to policy changes"
-                          : "Force-directed agent-based model with collision physics"}
-                    </p>
-                  </div>
-
-                  <div className="flex my-2 border rounded-sm text-sm overflow-hidden w-fit">
-                    <Button
-                      variant={activeTab === "explore1" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setActiveTab("explore1")}
-                      className={`rounded-none ${activeTab === "explore1" ? "bg-black text-white" : ""}`}
-                    >
-                      <Shapes className="w-4 h-4 mr-1" />
-                      Explore I
-                    </Button>
-                    <Button
-                      variant={activeTab === "explore2" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setActiveTab("explore2")}
-                      className={`rounded-none ${activeTab === "explore2" ? "bg-black text-white" : ""}`}
-                    >
-                      <Share2 className="w-4 h-4 mr-1" />
-                      Explore II
-                    </Button>
-                    <Button
-                      variant={activeTab === "explore3" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setActiveTab("explore3")}
-                      className={`rounded-none ${activeTab === "explore3" ? "bg-black text-white" : ""}`}
-                    >
-                      <Users className="w-4 h-4 mr-1" />
-                      Explore III
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Simulation Context - Always visible */}
-                <Card className="mx-4 mb-4 p-3 border bg-gray-50">
-                  <h3 className="text-sm font-semibold mb-1 text-gray-900">Context</h3>
-                  <p className="text-gray-700 text-xs mb-2">{policyDescription}</p>
-                  <div className="flex gap-3 text-xs text-gray-600">
-                    <span>Agents: 100</span>
-                    <span>Timeline: 120mo</span>
-                    <span>AI: Yes</span>
-                  </div>
-                </Card>
-
-                <div className="h-screen">
-                  {activeTab === "explore1" ? (
-                    <div className="p-4 h-full">
-                      <CausalGraph
-                        variables={variables}
-                        relationships={relationships}
-                        highlightedNode={highlightedNode}
-                        highlightedRelationship={highlightedRelationship}
-                      />
-                    </div>
-                  ) : activeTab === "explore2" ? (
-                    <ChainReactionPanel
-                      isActive={isSubmitted}
-                      policyInput={`${policyTitle}: ${policyDescription}`}
-                      onEventSelect={handleEventSelect}
-                      selectedEventId={selectedEvent?.id}
-                      onEventsUpdate={handleEventsUpdate}
-                    />
-                  ) : (
-                    <div className="h-full overflow-hidden">
-                      <AgentVisualizationSelector
-                        caseStudy={policyTitle}
-                        title="Agent-Based Simulation"
-                        width={600}
-                        height={500}
-                      />
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </div>
-
-            {/* Right column: Policy Assistant - Takes 1/3 of space */}
-            <div className="lg:col-span-1">
-              <Card className="overflow-hidden shadow-md h-full">
-                <div className="p-4 border-b bg-gray-50">
-                  <h2 className="text-xl font-bold">Policy Assistant</h2>
-                  <p className="text-sm text-gray-600">
-                    Ask questions about policy impacts and explore scenarios
-                  </p>
-
-                  {/* Quick tags for highlighting */}
-                  {quickTags.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {quickTags.map((tag, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="text-xs cursor-pointer hover:bg-gray-100 transition-colors"
-                          onClick={() => {
-                            // Find the original variable name with underscores
-                            const originalVar = variables.find(v => v.replace(/_/g, ' ') === tag);
-                            if (originalVar) handleHighlightNode(originalVar);
-                          }}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="h-[480px]">
-                  <ScenarioChat
-                    scenario={{
-                      id: "1",
-                      title: policyTitle,
-                      description: policyDescription,
-                      variables: variables,
-                    }}
-                    onHighlightNode={handleHighlightNode}
-                    onHighlightRelationship={handleHighlightRelationship}
-                    onUpdateGraph={handleUpdateGraph}
-                    selectedEvent={selectedEvent}
-                    generateEventAnalysis={generateEventAnalysis}
-                    activeSimulator={activeTab}
-                    onChangeSimulator={setActiveTab}
-                    onChatUpdate={handleChatUpdate}
-                  />
-                </div>
-              </Card>
-            </div>
-          </div>
-
-          {/* Insights Panel */}
-
-          {!isSubmitted &&
-            <Card className="p-6 shadow-md">
-              <h2 className="text-xl font-bold mb-4">Integrated Policy Insights</h2>
-              <p className="text-gray-600 mb-4">
-                This comprehensive analysis combines causal relationships (Explore I), temporal chain reactions (Explore II),
-                and agent-based dynamics (Explore III) to provide a multi-dimensional view of policy impacts.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-bold mb-2 flex items-center">
-                    <Shapes className="w-4 h-4 mr-2" />
-                    Causal Structure
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    The causal graph reveals key relationships between {variables.length} variables,
-                    with {relationships.filter(r => Math.abs(r.strength) > 0.6).length} strong connections
-                    that suggest significant policy leverage points.
-                  </p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-bold mb-2 flex items-center">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Temporal Effects
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Chain reactions show how policy effects cascade through the system over time,
-                    with initial stakeholder responses leading to broader impacts across multiple domains.
-                  </p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-lg ">
-                  <h3 className="font-bold mb-2 flex items-center">
-                    <Users className="w-4 h-4 mr-2" />
-                    Agent Dynamics
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Force-directed simulation reveals emergent behaviors and interaction patterns between
-                    different agent types, showing how policy adoption spreads through social networks.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          }
-        </div>
+        <AnalysisCanvas
+          policyTitle={policyTitle}
+          policyDescription={policyDescription}
+          variables={variables}
+          relationships={relationships}
+          selectedCase={selectedCase}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          highlightedNode={highlightedNode}
+          highlightedRelationship={highlightedRelationship}
+          selectedEvent={selectedEvent}
+          onEventSelect={handleEventSelect}
+          onHighlightNode={handleHighlightNode}
+          onHighlightRelationship={handleHighlightRelationship}
+          onUpdateGraph={handleUpdateGraph}
+          quickTags={quickTags}
+          generateEventAnalysis={generateEventAnalysis}
+          onChatUpdate={handleChatUpdate}
+        />
       )}
     </div>
   )

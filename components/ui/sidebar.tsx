@@ -5,7 +5,23 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 
-import useIsMobile from "useismobile";
+// Custom hook to detect mobile devices
+function useIsMobile() {
+    const [isMobile, setIsMobile] = React.useState(false);
+
+    React.useEffect(() => {
+        const checkDevice = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkDevice();
+        window.addEventListener('resize', checkDevice);
+
+        return () => window.removeEventListener('resize', checkDevice);
+    }, []);
+
+    return isMobile;
+}
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

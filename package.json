@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.19",
+    "@google/genai": "^1.19.0",
     "@langchain/core": "^0.3.58",
     "@langchain/langgraph": "^0.3.3",
     "@radix-ui/react-accordion": "^1.2.1",

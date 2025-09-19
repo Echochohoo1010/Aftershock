@@ -36,7 +36,7 @@ export default function SimulationControls({
     }
 
     return (
-        <Card className="p-3">
+        <Card className="p-3 min-w-96">
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

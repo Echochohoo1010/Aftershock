@@ -43,8 +43,8 @@ export default function CausalGraph({
     // Initialize node positions in a fixed circle layout
     // This ensures the graph doesn't move or reposition nodes unexpectedly
     const centerX = 200
-    const centerY = 200
-    const radius = Math.min(180, 900 / variables.length) // Increased radius for wider spacing
+    const centerY = 180
+    const radius = Math.min(120, 700 / variables.length) // Adjusted radius for more compact layout
     const angleStep = (2 * Math.PI) / variables.length
 
     const positions: Record<string, { x: number; y: number }> = {}
@@ -138,8 +138,8 @@ export default function CausalGraph({
 
   return (
     <div className="w-full border border-gray-200 rounded-lg bg-gray-50">
-      <div className="h-96">
-        <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 400 400">
+      <div className="h-72">
+        <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 400 320">
           {/* Arrow markers */}
           <defs>
             <marker

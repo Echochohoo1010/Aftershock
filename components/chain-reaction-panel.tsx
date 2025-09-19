@@ -12,21 +12,54 @@ interface ReactionEvent {
     type: "positive" | "negative" | "neutral" | "alert"
     timestamp: Date
     magnitude: number
+    responses?: string[]
 }
 
 interface ChainReactionPanelProps {
-    isActive: boolean
+    // Old interface (for custom policies)
+    isActive?: boolean
     policyInput?: string
-    onEventSelect?: (event: ReactionEvent) => void
     selectedEventId?: string
     onEventsUpdate?: (events: ReactionEvent[]) => void
+    
+    // New interface (for case studies)
+    events?: ReactionEvent[]
+    eventTypes?: string[]
+    eventResponses?: Record<string, string[]>
+    chainReactionPatterns?: {
+        primaryEffects: string[]
+        secondaryEffects: string[]
+        tertiaryEffects: string[]
+    }
+    
+    // Common interface
+    onEventSelect?: (event: ReactionEvent) => void
+    selectedEvent?: ReactionEvent | null
 }
 
-const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEventId, onEventsUpdate }: ChainReactionPanelProps) => {
-    const [events, setEvents] = useState<ReactionEvent[]>([])
+const ChainReactionPanel = ({ 
+    // Old interface
+    isActive, 
+    policyInput, 
+    selectedEventId, 
+    onEventsUpdate,
+    // New interface
+    events: predefinedEvents,
+    eventTypes,
+    eventResponses,
+    chainReactionPatterns,
+    // Common interface
+    onEventSelect,
+    selectedEvent
+}: ChainReactionPanelProps) => {
+    const [generatedEvents, setGeneratedEvents] = useState<ReactionEvent[]>([])
     const [isPaused, setIsPaused] = useState(false)
     const [eventIndex, setEventIndex] = useState(0)
     const [soundEnabled, setSoundEnabled] = useState(true)
+
+    // Use predefined events if provided, otherwise use generated events
+    const events = predefinedEvents || generatedEvents
+    const effectiveSelectedEventId = selectedEvent?.id || selectedEventId
 
     // Audio references for different event types
     const positiveAudioRef = useRef<HTMLAudioElement | null>(null)
@@ -64,17 +97,17 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
         }
     }, [])
 
-    // Reset events when policy changes
+    // Reset events when policy changes (only for generated events)
     useEffect(() => {
-        if (isActive && policyInput) {
-            setEvents([])
+        if (!predefinedEvents && isActive && policyInput) {
+            setGeneratedEvents([])
             setEventIndex(0)
         }
-    }, [isActive, policyInput])
+    }, [isActive, policyInput, predefinedEvents])
 
-    // Generate events at regular intervals
+    // Generate events at regular intervals (only when no predefined events)
     useEffect(() => {
-        if (!isActive || !policyInput || isPaused) return
+        if (predefinedEvents || !isActive || !policyInput || isPaused) return
 
         const eventTemplates = [
             { title: "Policy Implementation", type: "neutral", description: "Initial policy parameters set" },
@@ -108,7 +141,7 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
                 magnitude: Math.random() * 100,
             }
 
-            setEvents(prev => {
+            setGeneratedEvents(prev => {
                 const updatedEvents = [newEvent, ...prev].slice(0, 20);
 
                 // Auto-select the first event if onEventSelect is provided
@@ -217,14 +250,14 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
             {/* Events List */}
             <div className="flex-1 overflow-y-auto bg-white">
                 <div className="p-4 space-y-3">
-                    {events.length === 0 && !isActive && (
+                    {events.length === 0 && !predefinedEvents && !isActive && (
                         <div className="text-center py-8 text-gray-400">
                             <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
                             <p className="text-sm">Submit a policy to see chain reactions</p>
                         </div>
                     )}
 
-                    {events.length === 0 && isActive && (
+                    {events.length === 0 && !predefinedEvents && isActive && (
                         <div className="text-center py-8 text-gray-400">
                             <div className="animate-pulse flex space-x-1 justify-center mb-2">
                                 <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
@@ -239,7 +272,7 @@ const ChainReactionPanel = ({ isActive, policyInput, onEventSelect, selectedEven
                         <div
                             key={event.id}
                             onClick={() => onEventSelect && onEventSelect(event)}
-                            className={`p-3 bg-white rounded-lg border shadow-sm cursor-pointer transition-all hover:shadow-md ${selectedEventId === event.id ? 'border-black ring-1 ring-black/20' : 'border-gray-200'
+                            className={`p-3 bg-white rounded-lg border shadow-sm cursor-pointer transition-all hover:shadow-md ${effectiveSelectedEventId === event.id ? 'border-black ring-1 ring-black/20' : 'border-gray-200'
                                 }`}
                             style={{
                                 animationName: 'fadeIn',
