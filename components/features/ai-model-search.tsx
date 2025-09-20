@@ -242,7 +242,7 @@ export default function AIModelSearch() {
                 <div className="space-y-3">
                     <h4 className="text-sm font-medium">Search Results</h4>
                     {results.map((result, index) => (
-                        <Card key={index} className="hover:shadow-sm transition-shadow">
+                        <Card key={index}>
                             <CardContent className="pt-4">
                                 <div className="space-y-2">
                                     <div className="flex items-start justify-between">

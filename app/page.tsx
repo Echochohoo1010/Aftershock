@@ -108,7 +108,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="text-center group hover:scale-[1.02] transition-all duration-300">
+            <Card className="text-center group  transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <ShapesIcon className="w-8 h-8 text-primary-foreground" />
@@ -120,7 +120,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="text-center group hover:scale-[1.02] transition-all duration-300">
+            <Card className="text-center group transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Feather className="w-8 h-8 text-secondary-foreground" />

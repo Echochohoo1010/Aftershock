@@ -60,10 +60,11 @@ const fragmentShader = `
     vec2 posMouse = mx * vec2(1., -1.) + 0.5;
 
     // Theme colors
-    vec3 background = vec3(0.078, 0.000, 0.153);  // oklch(0.09 0.02 270)
-    vec3 foreground = vec3(0.971, 0.967, 0.982);  // oklch(0.97 0.005 270)
-    vec3 primary    = vec3(0.558, 0.293, 0.863);  // oklch(0.6 0.25 275)
-    vec3 accent     = vec3(0.652, 0.392, 0.933);  // oklch(0.7 0.25 280)
+    // Light theme colors
+vec3 background = vec3(0.96, 0.96, 0.98);  // oklch(0.98 0.005 270 / 0.6) ≈ #F6F6FB
+vec3 foreground = vec3(0.18, 0.18, 0.22);  // oklch(0.15 0.01 270) ≈ #2E2E38
+vec3 primary    = vec3(0.38, 0.25, 0.75);  // oklch(0.45 0.18 275) ≈ #6040BF
+vec3 accent     = vec3(0.44, 0.36, 0.82);  // oklch(0.6 0.1 280) ≈ #705DDA
 
     // Shape parameters
     float size = 1.2;

@@ -1,21 +1,21 @@
 import type React from "react"
 import "./globals.css"
-import {  Figtree, IBM_Plex_Sans, IBM_Plex_Sans_Condensed, Inter, Inter_Tight, Lato, Source_Sans_3, Source_Serif_4 } from "next/font/google"
+import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 
-const inter = Source_Sans_3({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-  weight: ['400', '700'],
+  weight: ['400', '500', '600', '700'],
 })
 
-const noticiaText = Lato({
+const interMedium = Inter({
   subsets: ["latin"],
-  variable: "--font-noticia",
+  variable: "--font-inter-medium",
   display: "swap",
-  weight: ['400', '700'],
+  weight: ['400'],
 })
 
 export const metadata = {
@@ -29,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${noticiaText.variable}`} suppressHydrationWarning>
-      <body className="font-body" suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${interMedium.variable}`} suppressHydrationWarning>
+      <body className="font-inter font-medium" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
 
           <Header />

@@ -396,7 +396,7 @@ Please format your response in markdown with appropriate formatting (headings, b
 
                             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <Card
-                                    className="hover:shadow-md transition-all cursor-pointer"
+                                    className="cursor-pointer"
                                     onClick={() => generateAIInsights('supply-chain', 'Supply Chain Impact')}
                                 >
                                     <CardHeader>
@@ -428,7 +428,7 @@ Please format your response in markdown with appropriate formatting (headings, b
                                 </Card>
 
                                 <Card
-                                    className="hover:shadow-md transition-all cursor-pointer"
+                                    className="cursor-pointer"
                                     onClick={() => generateAIInsights('economic', 'Economic Indicators')}
                                 >
                                     <CardHeader>
@@ -719,7 +719,7 @@ Please format your response in markdown with appropriate formatting (headings, b
                                     key={index}
                                     className={`p-2 rounded text-xs cursor-pointer transition-colors ${activeSection === index
                                         ? 'bg-primary text-primary-foreground'
-                                        : 'bg-muted hover:bg-muted/80'
+                                        : 'bg-muted'
                                         }`}
                                     onClick={() => {
                                         const section = document.querySelector(`[data-section="${index}"]`);
