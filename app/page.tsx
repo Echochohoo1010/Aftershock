@@ -71,7 +71,7 @@ export default function Home() {
 
                 {/* Overlay text explaining the visualization */}
                 <div className="absolute bottom-2 mx-auto left-0 right-0  bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-sm max-w-xs border">
-                  <span className="text-xs text-background  font-medium">
+                  <span className="text-xs text-foreground  font-medium">
                     <strong className="text-background/20">Interactive Policy Dynamics </strong> represents interconnected policy elements that blend to create emergent effects within complex governance systems.
                   </span>
                 </div>

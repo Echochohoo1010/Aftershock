@@ -1,3 +1,23 @@
+# Canvas Demo 
+What We've Accomplished:
+Broke down the massive demo page from 1500+ lines to ~40 lines
+Organized components into separate, focused files in 
+markdown-node.tsx
+Created canvas-based popovers that appear to the right of nodes
+Implemented canvas-based editors with black text on white background
+Unified the user experience across markdown and folder nodes
+
+components/canvasui/
+├── policy-canvas.tsx      # Main canvas component
+├── policy-nodes.tsx       # Basic policy card & sticky note nodes
+├── scenario-node.tsx      # Scenario node with AI functionality
+├── markdown-node.tsx      # Markdown document node with popover preview
+├── folder-node.tsx        # Folder node with document list popover
+├── image-node.tsx         # Image/visualization node
+├── canvas-editor.tsx      # Canvas-based text editor
+└── preview.tsx           # Custom popover component
+
+
 # 🌿 Future Historian - Interactive Policy Storytelling
 
 ## What it does:
@@ -62,9 +82,7 @@ It's like having a crystal ball for policy decisions, but way more fun and inter
 - ✅ Compact, space-efficient design
 - ✅ Everything accessible without toggling sections
 - ✅ Seamless integration of AI-generated and pre-built stories
-
-
-# Domains 
+  
 
 
 # Policy Bench 
@@ -120,3 +138,6 @@ Transform complex policy analysis into clear, actionable insights backed by data
 curl -X POST http://localhost:3000/api/supply-chain -H "Content-Type: application/json" -d '{"scenario": "What if the Panama Canal experiences severe drought reducing capacity by 40%?", "prompt": "Analyze the impact of Panama Canal drought on global shipping"}'
 {"title":"Panama Canal Drought: Global Shipping Impact","summary":"Severe drought in the Panama Canal region restricts vessel drafts, causing delays and increased costs. Shippers are rerouting, impacting global trade flows and carbon emissions.","environmentalImpact":{"coastalErosion":2,"trafficVolume":-5,"waterQuality":75,"marineLife":70,"carbonEmissions":12},"routeAnalysis":{"primaryRoute":"Panama Canal","alternativeRoutes":["Suez Canal","Cape Horn"],"costIncrease":25,"delayDays":10,"riskLevel":"medium"},"economicImpact":{"freightCostIncrease":30,"affectedPorts":["Colon, Panama","Balboa, Panama"],"supplyChainDisruption":7,"estimatedLosses":"$500 Million"},"predictions":{"shortTerm":"Continued draft restrictions and congestion; increased reliance on alternative routes.","longTerm":"Potential infrastructure investments in water management; diversification of supply chains.","mitigationStrategies":["Implement dynamic pricing for Canal transit","Invest in water reservoirs and desalination plants","Promote alternative route usage with incentives"]}}% 
 ❯ 
+
+
+

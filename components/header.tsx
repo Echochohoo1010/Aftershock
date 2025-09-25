@@ -1,144 +1,291 @@
-"use client"
+import React from 'react';
+import {
+	CodeIcon,
+	Grid2x2PlusIcon,
+	GlobeIcon,
+	LayersIcon,
+	UserPlusIcon,
+	Users,
+	Star,
+	FileText,
+	Shield,
+	RotateCcw,
+	Handshake,
+	Leaf,
+	HelpCircle,
+	DollarSign,
+	BarChart,
+	PlugIcon,
+	MenuIcon,
+	XIcon,
+} from 'lucide-react';
+import {
+	Sheet,
+	SheetClose,
+	SheetContent,
+	SheetTrigger,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import {
+	NavigationMenu,
+	NavigationMenuContent,
+	NavigationMenuList,
+	NavigationMenuItem,
+	NavigationMenuTrigger,
+	NavigationMenuLink,
+	type NavItemType,
+	NavGridCard,
+	NavSmallItem,
+	NavLargeItem,
+	NavItemMobile,
+} from '@/components/ui/navigation';
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@/components/ui/accordion';
+import { cn } from '@/lib/utils';
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+export const productLinks: NavItemType[] = [
+	{
+		title: 'Website Builder',
+		href: '#',
+		description: 'Create responsive websites with ease',
+		icon: GlobeIcon,
+	},
+	{
+		title: 'Cloud Platform',
+		href: '#',
+		description: 'Deploy and scale apps in the cloud',
+		icon: LayersIcon,
+	},
+	{
+		title: 'Team Collaboration',
+		href: '#',
+		description: 'Tools to help your teams work better together',
+		icon: UserPlusIcon,
+	},
+	{
+		title: 'Analytics',
+		href: '#',
+		icon: BarChart,
+	},
+	{
+		title: 'Integrations',
+		href: '#',
+		icon: PlugIcon,
+	},
+	{
+		title: 'E-Commerce',
+		href: '#',
+		icon: DollarSign,
+	},
+	{
+		title: 'Security',
+		href: '#',
+		icon: Shield,
+	},
+	{
+		title: 'API',
+		href: '#',
+		icon: CodeIcon,
+	},
+];
+
+export const companyLinks: NavItemType[] = [
+	{
+		title: 'About Us',
+		href: '#',
+		description: 'Learn more about our story and team',
+		icon: Users,
+	},
+	{
+		title: 'Customer Stories',
+		href: '#',
+		description: 'See how we’ve helped our clients succeed',
+		icon: Star,
+	},
+	{
+		title: 'Terms of Service',
+		href: '#',
+		description: 'Understand how we operate',
+		icon: FileText,
+	},
+	{
+		title: 'Privacy Policy',
+		href: '#',
+		description: 'How we protect your information',
+		icon: Shield,
+	},
+	{
+		title: 'Refund Policy',
+		href: '#',
+		description: 'Details about refunds and cancellations',
+		icon: RotateCcw,
+	},
+	{
+		title: 'Partnerships',
+		href: '#',
+		icon: Handshake,
+		description: 'Collaborate with us for mutual growth',
+	},
+	{
+		title: 'Blog',
+		href: '#',
+		icon: Leaf,
+		description: 'Insights, tutorials, and company news',
+	},
+	{
+		title: 'Help Center',
+		href: '#',
+		icon: HelpCircle,
+		description: 'Find answers to your questions',
+	},
+];
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+	return (
+		<div className="bg-background sticky top-0 z-50 mx-auto h-14 w-full border-b px-4">
+			<div className="flex h-full items-center justify-between">
+				<div className="flex items-center gap-2">
+					<Grid2x2PlusIcon className="size-6" />
+					<p className="font-mono text-lg font-bold">Asme</p>
+				</div>
+				<DesktopMenu />
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+				<div className="flex items-center gap-2">
+					<Button>Get Started</Button>
+					<MoileNav />
+				</div>
+			</div>
+		</div>
+	);
+}
 
-  return (
-    <header className=" w-full glass  border-b border-white/20 dark:border-white/10">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="h-12 w-12 border-2 border-foreground rounded-2xl  flex items-center justify-center  font-medium text-lg">
-              E
-            </Link>
-            <Link href="/" className="text-xl  font-semibold  ">
-              Exploratory Policy
-            </Link>
-          </div>
+function DesktopMenu() {
+	return (
+		<NavigationMenu className="hidden lg:block">
+			<NavigationMenuList>
+				<NavigationMenuItem>
+					<NavigationMenuTrigger>Product</NavigationMenuTrigger>
+					<NavigationMenuContent>
+						<div className="grid w-full md:w-4xl md:grid-cols-[1fr_.30fr]">
+							<ul className="grid grow gap-4 p-4 md:grid-cols-3 md:border-r">
+								{productLinks.slice(0, 3).map((link) => (
+									<li key={link.href}>
+										<NavGridCard link={link} />
+									</li>
+								))}
+							</ul>
+							<ul className="space-y-1 p-4">
+								{productLinks.slice(3).map((link) => (
+									<li key={link.href}>
+										<NavSmallItem
+											item={link}
+											href={link.href}
+											className="gap-x-1"
+										/>
+									</li>
+								))}
+							</ul>
+						</div>
+					</NavigationMenuContent>
+				</NavigationMenuItem>
+				<NavigationMenuItem>
+					<NavigationMenuTrigger>Company</NavigationMenuTrigger>
+					<NavigationMenuContent>
+						<div className="grid w-full md:w-4xl md:grid-cols-[1fr_.40fr]">
+							<ul className="grid grow grid-cols-2 gap-4 p-4 md:border-r">
+								{companyLinks.slice(0, 2).map((link) => (
+									<li key={link.href}>
+										<NavGridCard link={link} className="min-h-36" />
+									</li>
+								))}
+								<div className="col-span-2 grid grid-cols-3 gap-x-4">
+									{companyLinks.slice(2, 5).map((link) => (
+										<li key={link.href}>
+											<NavLargeItem href={link.href} link={link} />
+										</li>
+									))}
+								</div>
+							</ul>
+							<ul className="space-y-2 p-4">
+								{companyLinks.slice(5, 10).map((link) => (
+									<li key={link.href}>
+										<NavLargeItem href={link.href} link={link} />
+									</li>
+								))}
+							</ul>
+						</div>
+					</NavigationMenuContent>
+				</NavigationMenuItem>
+				<NavigationMenuItem>
+					<NavigationMenuLink className="cursor-pointer">
+						Pricing
+					</NavigationMenuLink>
+				</NavigationMenuItem>
+			</NavigationMenuList>
+		</NavigationMenu>
+	);
+}
 
+function MoileNav() {
+	const sections = [
+		{
+			id: 'product',
+			name: 'Product',
+			list: productLinks,
+		},
+		{
+			id: 'company',
+			name: 'Company',
+			list: companyLinks,
+		},
+	];
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-3">
-            <Link href="/explore" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Explore
-            </Link>
-            <Link href="/foundation" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Foundation
-            </Link>
-            <Link href="/story" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Story
-            </Link>
-            <Link href="/canvas" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Canvas
-            </Link>
-            <Link href="/about" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              About
-            </Link>
-            <Link href="/research" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Research
-            </Link>
-            <Link href="/blog" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Blog
-            </Link>
-            <Link href="/team" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Team
-            </Link>
-            <Link href="/contact" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Contact
-            </Link>
-            <ThemeToggle />
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <Button variant="ghost" className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
-            {isMenuOpen ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6 6 18"></path>
-                <path d="m6 6 12 12"></path>
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="4" x2="20" y1="12" y2="12"></line>
-                <line x1="4" x2="20" y1="6" y2="6"></line>
-                <line x1="4" x2="20" y1="18" y2="18"></line>
-              </svg>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden glass-panel border-t border-white/10 dark:border-white/05">
-          <div className="px-4 py-6 space-y-3">
-            <Link href="/explore" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Explore
-            </Link>
-            <Link href="/foundation" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Foundation
-            </Link>
-            <Link href="/story" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Story
-            </Link>
-            <Link href="/canvas" className="block glass-button bg-secondary text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Canvas
-            </Link>
-            <Link href="/about" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
-              About
-            </Link>
-            <Link
-              href="/research"
-              className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200"
-              onClick={toggleMenu}
-            >
-              Research
-            </Link>
-            <Link href="/blog" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
-              Blog
-            </Link>
-            <Link href="/team" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
-              Team
-            </Link>
-            <Link
-              href="/contact"
-              className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200"
-              onClick={toggleMenu}
-            >
-              Contact
-            </Link>
-            <div className="pt-4 border-t border-white/10 dark:border-white/05">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      )}
-    </header>
-  )
+	return (
+		<Sheet>
+			<SheetTrigger asChild>
+				<Button size="icon" variant="ghost" className="rounded-full lg:hidden">
+					<MenuIcon className="size-5" />
+				</Button>
+			</SheetTrigger>
+			<SheetContent
+				className="bg-background/95 supports-[backdrop-filter]:bg-background/80 w-full gap-0 backdrop-blur-lg"
+				showClose={false}
+			>
+				<div className="flex h-14 items-center justify-end border-b px-4">
+					<SheetClose asChild>
+						<Button size="icon" variant="ghost" className="rounded-full">
+							<XIcon className="size-5" />
+							<span className="sr-only">Close</span>
+						</Button>
+					</SheetClose>
+				</div>
+				<div className="container grid gap-y-2 overflow-y-auto px-4 pt-5 pb-12">
+					<Accordion type="single" collapsible>
+						{sections.map((section) => (
+							<AccordionItem key={section.id} value={section.id}>
+								<AccordionTrigger className="capitalize hover:no-underline">
+									{section.id}
+								</AccordionTrigger>
+								<AccordionContent className="space-y-1">
+									<ul className="grid gap-1">
+										{section.list.map((link) => (
+											<li key={link.href}>
+												<SheetClose asChild>
+													<NavItemMobile item={link} href={link.href} />
+												</SheetClose>
+											</li>
+										))}
+									</ul>
+								</AccordionContent>
+							</AccordionItem>
+						))}
+					</Accordion>
+				</div>
+			</SheetContent>
+		</Sheet>
+	);
 }

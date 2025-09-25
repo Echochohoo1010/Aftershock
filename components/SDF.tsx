@@ -59,13 +59,12 @@ const fragmentShader = `
     vec2 st = st0 + 0.5;
     vec2 posMouse = mx * vec2(1., -1.) + 0.5;
 
-    // Theme colors
-    // Light theme colors
-vec3 background = vec3(0.96, 0.96, 0.98);  // oklch(0.98 0.005 270 / 0.6) ≈ #F6F6FB
-vec3 foreground = vec3(0.18, 0.18, 0.22);  // oklch(0.15 0.01 270) ≈ #2E2E38
-vec3 primary    = vec3(0.38, 0.25, 0.75);  // oklch(0.45 0.18 275) ≈ #6040BF
-vec3 accent     = vec3(0.44, 0.36, 0.82);  // oklch(0.6 0.1 280) ≈ #705DDA
-
+    // Theme colors - Precisely matched to CSS custom properties
+    vec3 background = vec3(1.0, 1.0, 1.0);     // --background oklch(1.0000 0 0)
+    vec3 foreground = vec3(0.21, 0.21, 0.25);  // --foreground oklch(0.2101 0.0318 264.6645)
+    vec3 primary    = vec3(0.85, 0.55, 0.25);  // --primary oklch(0.6716 0.1368 48.5130) - warm orange
+    vec3 secondary  = vec3(0.0, 0.0, 0.0);   // --secondary oklch(0.5360 0.0398 196.0280) - blue
+    vec3 muted      = vec3(0.967, 0.967, 0.967); // --muted oklch(0.9670 0.0029 264.5419)
     // Shape parameters
     float size = 1.2;
     float roundness = 0.5;
@@ -80,8 +79,8 @@ vec3 accent     = vec3(0.44, 0.36, 0.82);  // oklch(0.6 0.1 280) ≈ #705DDA
     float sdf = sdRoundRect(st, vec2(size), roundness);
     sdf = stroke(sdf, 0.0, borderSize, sdfCircle) * 4.0;
 
-    // Animated gradient for shape
-    vec3 shaderColor = mix(primary, accent, sin(length(st - vec2(0.5)) * 3.0) * 0.5 + 0.5);
+    // Animated gradient for shape using theme colors
+    vec3 shaderColor = mix(primary, secondary, sin(length(st - vec2(0.5)) * 3.0) * 0.5 + 0.5);
     vec3 sdfColor = mix(background, shaderColor, sdf);
 
     // UV for gradient overlay
@@ -97,12 +96,12 @@ vec3 accent     = vec3(0.44, 0.36, 0.82);  // oklch(0.6 0.1 280) ≈ #705DDA
 
     // Radial gradient 3: circle at 40% 40%
     float r3 = smoothstep(0.8, 0.0, length(uv - vec2(0.4, 0.4)));
-    vec3 g3 = accent * 0.08 * r3;
+    vec3 g3 = secondary * 0.08 * r3;
 
-    // Linear gradient: 135 degrees
+    // Linear gradient: 135 degrees with subtle theme colors
     vec2 dir = normalize(vec2(1.0, -1.0));
     float lg = dot(uv, dir);
-    vec3 g4 = mix(primary * 0.02, accent * 0.02, lg);
+    vec3 g4 = mix(primary * 0.02, secondary * 0.02, lg);
 
     // Combine all gradients
     vec3 gradients = g1 + g2 + g3 + g4;
@@ -116,10 +115,10 @@ vec3 accent     = vec3(0.44, 0.36, 0.82);  // oklch(0.6 0.1 280) ≈ #705DDA
 
 function SDFCanvas() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const sceneRef = useRef<THREE.Scene>()
-  const rendererRef = useRef<THREE.WebGLRenderer>()
-  const cameraRef = useRef<THREE.OrthographicCamera>()
-  const materialRef = useRef<THREE.ShaderMaterial>()
+  const sceneRef = useRef<THREE.Scene | null>(null)
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
+  const cameraRef = useRef<THREE.OrthographicCamera | null>(null)
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const vMouse = useRef(new THREE.Vector2())
   const vMouseDamp = useRef(new THREE.Vector2())
   const vResolution = useRef(new THREE.Vector2())
@@ -249,7 +248,7 @@ function SDFCanvas() {
   return (
     <div
       ref={containerRef}
-      className="w-full h-full"
+      className="w-full h-full relative"
       style={{ minHeight: '400px' }}
     />
   )
@@ -258,8 +257,8 @@ function SDFCanvas() {
 export default function Metaballs3D() {
   return (
     <div
-      className="w-full h-full bg-[oklch(0.09_0.02_270)] dark:bg-[oklch(0.09_0.02_270)] light:bg-[oklch(0.97_0.005_270)]"
-      style={{ minHeight: '500px', background: 'white' }}>
+      className="w-full h-full border border-border rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
+      style={{ minHeight: '500px' }}>
       <SDFCanvas />
     </div>
   )

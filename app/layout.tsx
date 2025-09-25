@@ -1,6 +1,6 @@
 import type React from "react"
 import "./globals.css"
-import { Inter } from "next/font/google"
+import { Inter, Urbanist, Aeonik, Switzer, Outfit } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 
@@ -11,7 +11,7 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 })
 
-const interMedium = Inter({
+const interMedium = Urbanist({
   subsets: ["latin"],
   variable: "--font-inter-medium",
   display: "swap",
