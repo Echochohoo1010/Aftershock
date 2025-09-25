@@ -1,291 +1,187 @@
-import React from 'react';
-import {
-	CodeIcon,
-	Grid2x2PlusIcon,
-	GlobeIcon,
-	LayersIcon,
-	UserPlusIcon,
-	Users,
-	Star,
-	FileText,
-	Shield,
-	RotateCcw,
-	Handshake,
-	Leaf,
-	HelpCircle,
-	DollarSign,
-	BarChart,
-	PlugIcon,
-	MenuIcon,
-	XIcon,
-} from 'lucide-react';
-import {
-	Sheet,
-	SheetClose,
-	SheetContent,
-	SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import {
-	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuList,
-	NavigationMenuItem,
-	NavigationMenuTrigger,
-	NavigationMenuLink,
-	type NavItemType,
-	NavGridCard,
-	NavSmallItem,
-	NavLargeItem,
-	NavItemMobile,
-} from '@/components/ui/navigation';
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
+"use client";
 
-export const productLinks: NavItemType[] = [
-	{
-		title: 'Website Builder',
-		href: '#',
-		description: 'Create responsive websites with ease',
-		icon: GlobeIcon,
-	},
-	{
-		title: 'Cloud Platform',
-		href: '#',
-		description: 'Deploy and scale apps in the cloud',
-		icon: LayersIcon,
-	},
-	{
-		title: 'Team Collaboration',
-		href: '#',
-		description: 'Tools to help your teams work better together',
-		icon: UserPlusIcon,
-	},
-	{
-		title: 'Analytics',
-		href: '#',
-		icon: BarChart,
-	},
-	{
-		title: 'Integrations',
-		href: '#',
-		icon: PlugIcon,
-	},
-	{
-		title: 'E-Commerce',
-		href: '#',
-		icon: DollarSign,
-	},
-	{
-		title: 'Security',
-		href: '#',
-		icon: Shield,
-	},
-	{
-		title: 'API',
-		href: '#',
-		icon: CodeIcon,
-	},
-];
+import * as React from "react";
+import Link from "next/link";
+import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation";
 
-export const companyLinks: NavItemType[] = [
-	{
-		title: 'About Us',
-		href: '#',
-		description: 'Learn more about our story and team',
-		icon: Users,
-	},
-	{
-		title: 'Customer Stories',
-		href: '#',
-		description: 'See how we’ve helped our clients succeed',
-		icon: Star,
-	},
-	{
-		title: 'Terms of Service',
-		href: '#',
-		description: 'Understand how we operate',
-		icon: FileText,
-	},
-	{
-		title: 'Privacy Policy',
-		href: '#',
-		description: 'How we protect your information',
-		icon: Shield,
-	},
-	{
-		title: 'Refund Policy',
-		href: '#',
-		description: 'Details about refunds and cancellations',
-		icon: RotateCcw,
-	},
-	{
-		title: 'Partnerships',
-		href: '#',
-		icon: Handshake,
-		description: 'Collaborate with us for mutual growth',
-	},
-	{
-		title: 'Blog',
-		href: '#',
-		icon: Leaf,
-		description: 'Insights, tutorials, and company news',
-	},
-	{
-		title: 'Help Center',
-		href: '#',
-		icon: HelpCircle,
-		description: 'Find answers to your questions',
-	},
+const tools: { title: string; href: string; description: string }[] = [
+  {
+    title: "Canvas",
+    href: "/canvas",
+    description: "Visual policy modeling and scenario planning canvas.",
+  },
+  {
+    title: "Policy Bench",
+    href: "/policy-bench",
+    description: "Benchmark and analyze policy performance metrics.",
+  },
+  {
+    title: "Supply Chain",
+    href: "/supply",
+    description: "Analyze supply chain impacts of policy decisions.",
+  },
+  {
+    title: "Story",
+    href: "/story",
+    description: "Create and visualize policy scenarios with causal modeling.",
+  },
 ];
 
 export default function Header() {
-	return (
-		<div className="bg-background sticky top-0 z-50 mx-auto h-14 w-full border-b px-4">
-			<div className="flex h-full items-center justify-between">
-				<div className="flex items-center gap-2">
-					<Grid2x2PlusIcon className="size-6" />
-					<p className="font-mono text-lg font-bold">Asme</p>
-				</div>
-				<DesktopMenu />
+  return (
+    <header className="w-full justify-around   mx-auto border-b max-w-6xl">
+      <NavigationMenu viewport={false} className="w-full z-50  ">
+        <NavigationMenuList className="  flex mx-auto items-center justify-between">
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild>
+              <Link href="/" className="flex items-center ">
+                <img
+                  src="/explore-logo.png"
+                  alt="Exploratory Policy"
+                  className="h-8 w-8 rounded-full"
+                />
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
 
-				<div className="flex items-center gap-2">
-					<Button>Get Started</Button>
-					<MoileNav />
-				</div>
-			</div>
-		</div>
-	);
+          <div className="flex justify-around items-center space-x-4">
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                {" "}
+                <span className="font-semibold">Explore Policy</span>
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[200px] gap-2">
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/about">
+                        <div className="font-medium">About Us</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/team">
+                        <div className="font-medium">Team</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/research">
+                        <div className="font-medium">Research</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/blog">
+                        <div className="font-medium">Blog</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/contact">
+                        <div className="font-medium">Contact</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Product</NavigationMenuTrigger>
+
+              <NavigationMenuContent>
+                <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <li className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b from:bg-primary to:bg-secondary p-6 no-underline outline-hidden select-none focus:shadow-md"
+                        href="/"
+                      >
+                        <div className="mt-4 mb-2 text-lg font-medium">
+                          Policy Exploration
+                        </div>
+                        <p className="text-muted-foreground text-sm leading-tight">
+                          AI-powered tools for policy formulation and causal
+                          analysis.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <ListItem href="/explore" title="Policy Explorer">
+                    Explore different policy options and their economic impacts.
+                  </ListItem>
+                  <ListItem href="/agent" title="AI Agents">
+                    Interact with specialized AI agents for policy analysis.
+                  </ListItem>
+                </ul>
+
+                {/* underline the text */}
+                <div className="border-b border-gray-200 my-4"></div>
+
+                <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  {tools.map((tool) => (
+                    <ListItem
+                      key={tool.title}
+                      title={tool.title}
+                      href={tool.href}
+                    >
+                      {tool.description}
+                    </ListItem>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              {/* <NavigationMenuTrigger> */}
+              <Link href="/canvas">
+                <Button variant="outline">Canvas</Button>
+              </Link>
+              {/* </NavigationMenuTrigger> */}
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <Link href="/explore">
+                <Button variant="default">Explore </Button>
+              </Link>
+            </NavigationMenuItem>
+          </div>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </header>
+  );
 }
 
-function DesktopMenu() {
-	return (
-		<NavigationMenu className="hidden lg:block">
-			<NavigationMenuList>
-				<NavigationMenuItem>
-					<NavigationMenuTrigger>Product</NavigationMenuTrigger>
-					<NavigationMenuContent>
-						<div className="grid w-full md:w-4xl md:grid-cols-[1fr_.30fr]">
-							<ul className="grid grow gap-4 p-4 md:grid-cols-3 md:border-r">
-								{productLinks.slice(0, 3).map((link) => (
-									<li key={link.href}>
-										<NavGridCard link={link} />
-									</li>
-								))}
-							</ul>
-							<ul className="space-y-1 p-4">
-								{productLinks.slice(3).map((link) => (
-									<li key={link.href}>
-										<NavSmallItem
-											item={link}
-											href={link.href}
-											className="gap-x-1"
-										/>
-									</li>
-								))}
-							</ul>
-						</div>
-					</NavigationMenuContent>
-				</NavigationMenuItem>
-				<NavigationMenuItem>
-					<NavigationMenuTrigger>Company</NavigationMenuTrigger>
-					<NavigationMenuContent>
-						<div className="grid w-full md:w-4xl md:grid-cols-[1fr_.40fr]">
-							<ul className="grid grow grid-cols-2 gap-4 p-4 md:border-r">
-								{companyLinks.slice(0, 2).map((link) => (
-									<li key={link.href}>
-										<NavGridCard link={link} className="min-h-36" />
-									</li>
-								))}
-								<div className="col-span-2 grid grid-cols-3 gap-x-4">
-									{companyLinks.slice(2, 5).map((link) => (
-										<li key={link.href}>
-											<NavLargeItem href={link.href} link={link} />
-										</li>
-									))}
-								</div>
-							</ul>
-							<ul className="space-y-2 p-4">
-								{companyLinks.slice(5, 10).map((link) => (
-									<li key={link.href}>
-										<NavLargeItem href={link.href} link={link} />
-									</li>
-								))}
-							</ul>
-						</div>
-					</NavigationMenuContent>
-				</NavigationMenuItem>
-				<NavigationMenuItem>
-					<NavigationMenuLink className="cursor-pointer">
-						Pricing
-					</NavigationMenuLink>
-				</NavigationMenuItem>
-			</NavigationMenuList>
-		</NavigationMenu>
-	);
-}
-
-function MoileNav() {
-	const sections = [
-		{
-			id: 'product',
-			name: 'Product',
-			list: productLinks,
-		},
-		{
-			id: 'company',
-			name: 'Company',
-			list: companyLinks,
-		},
-	];
-
-	return (
-		<Sheet>
-			<SheetTrigger asChild>
-				<Button size="icon" variant="ghost" className="rounded-full lg:hidden">
-					<MenuIcon className="size-5" />
-				</Button>
-			</SheetTrigger>
-			<SheetContent
-				className="bg-background/95 supports-[backdrop-filter]:bg-background/80 w-full gap-0 backdrop-blur-lg"
-				showClose={false}
-			>
-				<div className="flex h-14 items-center justify-end border-b px-4">
-					<SheetClose asChild>
-						<Button size="icon" variant="ghost" className="rounded-full">
-							<XIcon className="size-5" />
-							<span className="sr-only">Close</span>
-						</Button>
-					</SheetClose>
-				</div>
-				<div className="container grid gap-y-2 overflow-y-auto px-4 pt-5 pb-12">
-					<Accordion type="single" collapsible>
-						{sections.map((section) => (
-							<AccordionItem key={section.id} value={section.id}>
-								<AccordionTrigger className="capitalize hover:no-underline">
-									{section.id}
-								</AccordionTrigger>
-								<AccordionContent className="space-y-1">
-									<ul className="grid gap-1">
-										{section.list.map((link) => (
-											<li key={link.href}>
-												<SheetClose asChild>
-													<NavItemMobile item={link} href={link.href} />
-												</SheetClose>
-											</li>
-										))}
-									</ul>
-								</AccordionContent>
-							</AccordionItem>
-						))}
-					</Accordion>
-				</div>
-			</SheetContent>
-		</Sheet>
-	);
+function ListItem({
+  title,
+  children,
+  href,
+  ...props
+}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
+  return (
+    <li {...props}>
+      <NavigationMenuLink asChild>
+        <Link href={href}>
+          <div className="text-sm leading-none font-medium">{title}</div>
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+            {children}
+          </p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  );
 }

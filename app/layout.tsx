@@ -1,6 +1,6 @@
 import type React from "react"
 import "./globals.css"
-import { Inter, Urbanist, Aeonik, Switzer, Outfit } from "next/font/google"
+import { Inter, Urbanist, Switzer, Outfit } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 
@@ -11,7 +11,7 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 })
 
-const interMedium = Urbanist({
+const interMedium = Outfit({
   subsets: ["latin"],
   variable: "--font-inter-medium",
   display: "swap",
@@ -32,7 +32,6 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${interMedium.variable}`} suppressHydrationWarning>
       <body className="font-inter font-medium" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-
           <Header />
           {children}
         </ThemeProvider>
