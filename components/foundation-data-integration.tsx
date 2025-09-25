@@ -99,7 +99,7 @@ export function FoundationDataIntegration({
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card
-                className={`hover:shadow-md transition-all cursor-pointer ${selectedCard === 'supercomputers' ? 'ring-2 ring-primary' : ''
+                className={`cursor-pointer ${selectedCard === 'supercomputers' ? 'ring-2 ring-primary' : ''
                     }`}
                 onClick={() => onCardClick?.('supercomputers', 'AI Supercomputers')}
             >
@@ -132,7 +132,7 @@ export function FoundationDataIntegration({
             </Card>
 
             <Card
-                className={`hover:shadow-md transition-all cursor-pointer ${selectedCard === 'ml-hardware' ? 'ring-2 ring-primary' : ''
+                className={`cursor-pointer ${selectedCard === 'ml-hardware' ? 'ring-2 ring-primary' : ''
                     }`}
                 onClick={() => onCardClick?.('ml-hardware', 'ML Hardware')}
             >
@@ -167,7 +167,7 @@ export function FoundationDataIntegration({
             </Card>
 
             <Card
-                className={`hover:shadow-md transition-all cursor-pointer ${selectedCard === 'ai-models' ? 'ring-2 ring-primary' : ''
+                className={`cursor-pointer ${selectedCard === 'ai-models' ? 'ring-2 ring-primary' : ''
                     }`}
                 onClick={() => onCardClick?.('ai-models', 'Notable AI Models')}
             >
@@ -196,10 +196,7 @@ export function FoundationDataIntegration({
                         </div>
                     </div>
                     {aiInsights['ai-models'] && (
-                        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                            <h4 className="text-sm font-medium mb-2">AI Insights</h4>
-                            <p className="text-xs text-muted-foreground">{aiInsights['ai-models']}</p>
-                        </div>
+                        <Badge variant="outline">Insights<FeatherIcon width={16} height={16} /></Badge>
                     )}
                 </CardContent>
             </Card>

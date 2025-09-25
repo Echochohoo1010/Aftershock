@@ -1,144 +1,187 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+import * as React from "react";
+import Link from "next/link";
+import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation";
+
+const tools: { title: string; href: string; description: string }[] = [
+  {
+    title: "Canvas",
+    href: "/canvas",
+    description: "Visual policy modeling and scenario planning canvas.",
+  },
+  {
+    title: "Policy Bench",
+    href: "/policy-bench",
+    description: "Benchmark and analyze policy performance metrics.",
+  },
+  {
+    title: "Supply Chain",
+    href: "/supply",
+    description: "Analyze supply chain impacts of policy decisions.",
+  },
+  {
+    title: "Story",
+    href: "/story",
+    description: "Create and visualize policy scenarios with causal modeling.",
+  },
+];
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
-
   return (
-    <header className=" w-full glass  border-b border-white/20 dark:border-white/10">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="h-12 w-12 border-2 border-foreground rounded-2xl  flex items-center justify-center  font-medium text-lg">
-              E
-            </Link>
-            <Link href="/" className="text-xl  font-semibold  ">
-              Exploratory Policy
-            </Link>
+    <header className="w-full justify-around   mx-auto border-b max-w-6xl">
+      <NavigationMenu viewport={false} className="w-full z-50  ">
+        <NavigationMenuList className="  flex mx-auto items-center justify-between">
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild>
+              <Link href="/" className="flex items-center ">
+                <img
+                  src="/explore-logo.png"
+                  alt="Exploratory Policy"
+                  className="h-8 w-8 rounded-full"
+                />
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+
+          <div className="flex justify-around items-center space-x-4">
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                {" "}
+                <span className="font-semibold">Explore Policy</span>
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[200px] gap-2">
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/about">
+                        <div className="font-medium">About Us</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/team">
+                        <div className="font-medium">Team</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/research">
+                        <div className="font-medium">Research</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/blog">
+                        <div className="font-medium">Blog</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/contact">
+                        <div className="font-medium">Contact</div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Product</NavigationMenuTrigger>
+
+              <NavigationMenuContent>
+                <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <li className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b from:bg-primary to:bg-secondary p-6 no-underline outline-hidden select-none focus:shadow-md"
+                        href="/"
+                      >
+                        <div className="mt-4 mb-2 text-lg font-medium">
+                          Policy Exploration
+                        </div>
+                        <p className="text-muted-foreground text-sm leading-tight">
+                          AI-powered tools for policy formulation and causal
+                          analysis.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <ListItem href="/explore" title="Policy Explorer">
+                    Explore different policy options and their economic impacts.
+                  </ListItem>
+                  <ListItem href="/agent" title="AI Agents">
+                    Interact with specialized AI agents for policy analysis.
+                  </ListItem>
+                </ul>
+
+                {/* underline the text */}
+                <div className="border-b border-gray-200 my-4"></div>
+
+                <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  {tools.map((tool) => (
+                    <ListItem
+                      key={tool.title}
+                      title={tool.title}
+                      href={tool.href}
+                    >
+                      {tool.description}
+                    </ListItem>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              {/* <NavigationMenuTrigger> */}
+              <Link href="/canvas">
+                <Button variant="outline">Canvas</Button>
+              </Link>
+              {/* </NavigationMenuTrigger> */}
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <Link href="/explore">
+                <Button variant="default">Explore </Button>
+              </Link>
+            </NavigationMenuItem>
           </div>
-
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-3">
-            <Link href="/explore" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Explore
-            </Link>
-            <Link href="/foundation" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Foundation
-            </Link>
-            <Link href="/story" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Story
-            </Link>
-            <Link href="/canvas" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200 font-medium">
-              Canvas
-            </Link>
-            <Link href="/about" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              About
-            </Link>
-            <Link href="/research" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Research
-            </Link>
-            <Link href="/blog" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Blog
-            </Link>
-            <Link href="/team" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Team
-            </Link>
-            <Link href="/contact" className="glass-button text-foreground/70 hover:text-primary transition-all duration-200">
-              Contact
-            </Link>
-            <ThemeToggle />
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <Button variant="ghost" className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
-            {isMenuOpen ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6 6 18"></path>
-                <path d="m6 6 12 12"></path>
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="4" x2="20" y1="12" y2="12"></line>
-                <line x1="4" x2="20" y1="6" y2="6"></line>
-                <line x1="4" x2="20" y1="18" y2="18"></line>
-              </svg>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden glass-panel border-t border-white/10 dark:border-white/05">
-          <div className="px-4 py-6 space-y-3">
-            <Link href="/explore" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Explore
-            </Link>
-            <Link href="/foundation" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Foundation
-            </Link>
-            <Link href="/story" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Story
-            </Link>
-            <Link href="/canvas" className="block glass-button bg-secondary text-left text-foreground/70 hover:text-primary transition-all duration-200 font-medium" onClick={toggleMenu}>
-              Canvas
-            </Link>
-            <Link href="/about" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
-              About
-            </Link>
-            <Link
-              href="/research"
-              className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200"
-              onClick={toggleMenu}
-            >
-              Research
-            </Link>
-            <Link href="/blog" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
-              Blog
-            </Link>
-            <Link href="/team" className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200" onClick={toggleMenu}>
-              Team
-            </Link>
-            <Link
-              href="/contact"
-              className="block glass-button text-left text-foreground/70 hover:text-primary transition-all duration-200"
-              onClick={toggleMenu}
-            >
-              Contact
-            </Link>
-            <div className="pt-4 border-t border-white/10 dark:border-white/05">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      )}
+        </NavigationMenuList>
+      </NavigationMenu>
     </header>
-  )
+  );
+}
+
+function ListItem({
+  title,
+  children,
+  href,
+  ...props
+}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
+  return (
+    <li {...props}>
+      <NavigationMenuLink asChild>
+        <Link href={href}>
+          <div className="text-sm leading-none font-medium">{title}</div>
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+            {children}
+          </p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  );
 }
