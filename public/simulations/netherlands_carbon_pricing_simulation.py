@@ -48,7 +48,11 @@ class Agent:
     vehicle_age: int = 0
     replacement_due: bool = False
     social_proof: float = 0.0
-    
+
+    # Fuel cost pressure system (for Policy B: fuel_tax)
+    fuel_burden_threshold: float = 0.08  # 8% of income threshold
+    replacement_pressure: float = 0.0    # Accumulates when fuel costs are high
+
     # Decision tracking for reporting
     last_decision_month: int = -1
     last_decision_reason: str = ""
@@ -104,7 +108,12 @@ class SimulationReport:
 class NetherlandsCarbonPricingSimulation:
     """Enhanced agent-based simulation with comprehensive reporting"""
     
-    def __init__(self, n_agents=10000, time_horizon=180):
+    def __init__(self, n_agents=10000, time_horizon=180, policy_type='vehicle_tax'):
+        # Policy validation
+        if policy_type not in ['vehicle_tax', 'fuel_tax']:
+            raise ValueError(f"policy_type must be 'vehicle_tax' or 'fuel_tax', got: {policy_type}")
+
+        self.policy_type = policy_type  # 'vehicle_tax' or 'fuel_tax'
         self.n_agents = n_agents
         self.time_horizon = time_horizon
         self.current_month = 0
@@ -132,6 +141,9 @@ class NetherlandsCarbonPricingSimulation:
         
         # BIK rates
         self.bik_rates = {0: 0.04, 51: 0.10, 111: 0.22}
+
+        # Initialize policy-specific parameters based on user choice
+        self._initialize_policy_parameters(policy_type)
         
         # Salience weights
         self.w_up = 1.0
@@ -297,7 +309,10 @@ class NetherlandsCarbonPricingSimulation:
         
         # Urban/rural distribution
         urban_status = np.random.choice([True, False], size=self.n_agents, p=[0.8, 0.2])
-        
+
+        # Calculate median income for income-based fuel sensitivity
+        median_income = np.median(incomes)
+
         for i in range(self.n_agents):
             is_urban = urban_status[i]
             
@@ -319,7 +334,12 @@ class NetherlandsCarbonPricingSimulation:
                 never_buy_prob *= 0.3  # Much lower for company car users
             
             will_never_buy = np.random.random() < never_buy_prob
-            
+
+            # Calculate income-based fuel burden threshold
+            base_threshold = 0.08  # 8% base threshold
+            sensitivity_exponent = 0.3
+            income_based_threshold = base_threshold * (incomes[i] / median_income) ** sensitivity_exponent
+
             agent = Agent(
                 id=i,
                 income=incomes[i],
@@ -329,12 +349,128 @@ class NetherlandsCarbonPricingSimulation:
                 is_urban=is_urban,
                 cycling_preference=cycling_pref,
                 will_never_buy_car=will_never_buy,
+                fuel_burden_threshold=income_based_threshold,
                 decision_utility_breakdown={}
             )
             agents.append(agent)
             
         return agents
-    
+
+    def _initialize_policy_parameters(self, policy_type: str):
+        """Initialize parameters specific to the chosen policy type"""
+        if policy_type == 'vehicle_tax':
+            # Policy A: Netherlands Vehicle Purchase Tax System
+            print("Initializing Policy A parameters: Netherlands vehicle purchase tax system")
+
+            # Vehicle purchase tax parameters (BPM/Feebate) - already initialized above
+            # MRB and BIK also remain active
+
+            # Disable fuel carbon tax
+            self.enable_bc_carbon_tax = False
+            self.carbon_tax_rates = {}
+            self.fuel_carbon_content = {}
+
+        elif policy_type == 'fuel_tax':
+            # Policy B: British Columbia Fuel Carbon Tax System
+            print("Initializing Policy B parameters: British Columbia fuel carbon tax system")
+
+            # Enable fuel carbon tax
+            self.enable_bc_carbon_tax = True
+
+            # Carbon tax rate schedule (€/tonne CO2, following BC progression)
+            self.carbon_tax_rates = {
+                0: 6.97,   # Month 0: €6.97/tonne (equivalent to C$10/tonne)
+                12: 10.45, # Month 12: €10.45/tonne
+                24: 13.94, # Month 24: €13.94/tonne
+                36: 17.42, # Month 36: €17.42/tonne
+                48: 20.89  # Month 48: €20.89/tonne (final rate)
+            }
+
+            # Fuel carbon content constants (g CO2/liter)
+            self.fuel_carbon_content = {
+                'gasoline': 2310,  # g CO2/liter
+                'diesel': 2640     # g CO2/liter
+            }
+
+    def calculate_agent_annual_emissions(self, agent: Agent) -> float:
+        """Calculate annual CO2 emissions for an agent in kg"""
+        if not agent.vehicle or agent.will_never_buy_car:
+            return 0.0  # No emissions for cycling/walking
+
+        # Get vehicle CO2 per km
+        co2_gkm = agent.vehicle.co2_gkm
+
+        # Get actual driving distance (may be reduced in Policy B)
+        driving_km = self.get_agent_actual_driving_distance(agent)
+
+        # Calculate annual emissions in kg
+        annual_emissions_kg = (co2_gkm * driving_km) / 1000
+
+        return annual_emissions_kg
+
+    def get_agent_actual_driving_distance(self, agent: Agent) -> float:
+        """Get agent's actual driving distance, accounting for policy-specific behavioral changes"""
+        base_driving_km = agent.driving_km
+
+        if self.policy_type == 'vehicle_tax':
+            # Policy A: Driving distance remains unchanged, people switch cars instead
+            return base_driving_km
+
+        elif self.policy_type == 'fuel_tax':
+            # Policy B: People reduce driving to save on fuel costs
+            # Reduction based on fuel burden and carbon tax rate
+            fuel_burden = self.calculate_monthly_fuel_burden(agent, self.current_month)
+
+            # Higher fuel burden → more driving reduction
+            if fuel_burden > agent.fuel_burden_threshold:
+                # Progressive reduction: higher burden = more reduction
+                excess_burden = fuel_burden - agent.fuel_burden_threshold
+                reduction_factor = min(0.3, excess_burden * 2)  # Max 30% reduction
+                return base_driving_km * (1 - reduction_factor)
+            else:
+                # Small reduction even below threshold due to fuel price awareness
+                carbon_tax_rate = self.get_current_carbon_tax_rate(self.current_month)
+                if carbon_tax_rate > 0:
+                    awareness_reduction = min(0.1, carbon_tax_rate / 100)  # Max 10% reduction
+                    return base_driving_km * (1 - awareness_reduction)
+
+        return base_driving_km
+
+    def get_agent_fuel_sensitivity_stats(self) -> dict:
+        """Return fuel sensitivity statistics by income quintiles"""
+        if not self.agents:
+            return {}
+
+        # Get all agent incomes and fuel burden thresholds
+        agent_data = [(agent.income, agent.fuel_burden_threshold) for agent in self.agents]
+        agent_data.sort(key=lambda x: x[0])  # Sort by income
+
+        n_agents = len(agent_data)
+        quintile_size = n_agents // 5
+
+        stats = {}
+        quintile_labels = ['Quintile 1 (Lowest)', 'Quintile 2', 'Quintile 3', 'Quintile 4', 'Quintile 5 (Highest)']
+
+        for i in range(5):
+            start_idx = i * quintile_size
+            end_idx = start_idx + quintile_size if i < 4 else n_agents  # Last quintile gets remainder
+
+            quintile_data = agent_data[start_idx:end_idx]
+            incomes = [data[0] for data in quintile_data]
+            thresholds = [data[1] for data in quintile_data]
+
+            stats[quintile_labels[i]] = {
+                'avg_income': np.mean(incomes),
+                'min_income': np.min(incomes),
+                'max_income': np.max(incomes),
+                'avg_fuel_burden_threshold': np.mean(thresholds),
+                'min_threshold': np.min(thresholds),
+                'max_threshold': np.max(thresholds),
+                'count': len(quintile_data)
+            }
+
+        return stats
+
     def _initialize_fleet(self):
         """Initialize starting fleet"""
         eligible_agents = [i for i, agent in enumerate(self.agents) if not agent.will_never_buy_car]
@@ -381,7 +517,9 @@ class NetherlandsCarbonPricingSimulation:
         return 1.0
     
     def calculate_bpm(self, co2_gkm: float, month: int) -> float:
-        """Calculate BPM (purchase tax) - FIXED naming"""
+        """Calculate BPM (purchase tax) - disabled for fuel_tax policy"""
+        if self.policy_type == 'fuel_tax':
+            return 0.0  # No vehicle purchase tax under fuel tax policy
         effectiveness = self.get_policy_effectiveness()
         
         threshold = 110
@@ -396,7 +534,10 @@ class NetherlandsCarbonPricingSimulation:
             return base_tax * effectiveness
     
     def calculate_feebate(self, co2_gkm: float) -> float:
-        """Calculate feebate"""
+        """Calculate feebate - disabled for fuel_tax policy"""
+        if self.policy_type == 'fuel_tax':
+            return 0.0  # No feebate system under fuel tax policy
+
         effectiveness = self.get_policy_effectiveness()
         
         if co2_gkm <= 90:
@@ -423,7 +564,136 @@ class NetherlandsCarbonPricingSimulation:
             if co2_gkm >= threshold:
                 return rate
         return 0.04
-    
+
+    def get_current_carbon_tax_rate(self, month: int) -> float:
+        """Get current BC-style carbon tax rate in €/tonne CO2"""
+        if not self.enable_bc_carbon_tax:
+            return 0.0
+
+        # Find the applicable rate based on month
+        rate = 6.97  # Default to initial rate
+        for month_threshold, tax_rate in sorted(self.carbon_tax_rates.items()):
+            if month >= month_threshold:
+                rate = tax_rate
+        return rate
+
+    def calculate_fuel_carbon_tax(self, fuel_type: str, liters: float, month: int) -> float:
+        """Calculate BC-style carbon tax on fuel consumption in euros"""
+        if not self.enable_bc_carbon_tax:
+            return 0.0
+
+        # Get fuel type mapping for carbon content
+        fuel_mapping = {
+            'petrol': 'gasoline',
+            'diesel': 'diesel'
+        }
+
+        carbon_fuel_type = fuel_mapping.get(fuel_type, fuel_type)
+        if carbon_fuel_type not in self.fuel_carbon_content:
+            return 0.0
+
+        # Calculate tax: liters * g_CO2_per_liter * tax_rate_per_tonne / (1000g/kg * 1000kg/tonne)
+        carbon_content_g_per_liter = self.fuel_carbon_content[carbon_fuel_type]
+        tax_rate_per_tonne = self.get_current_carbon_tax_rate(month)
+
+        total_co2_tonnes = (liters * carbon_content_g_per_liter) / (1000 * 1000)
+        tax_amount = total_co2_tonnes * tax_rate_per_tonne
+
+        return tax_amount
+
+    def calculate_annual_fuel_consumption(self, vehicle: Vehicle, agent: Agent) -> tuple[float, str]:
+        """Calculate annual fuel consumption and return (liters, fuel_type)"""
+        if vehicle.type == 'BEV-M':
+            # Electric vehicle - return kWh as "liters" for consistency
+            kwh_per_100km = 20
+            annual_kwh = (kwh_per_100km * agent.driving_km / 100)
+            return annual_kwh, 'electricity'
+        else:
+            # ICE/Hybrid vehicles
+            if 'DIE' in vehicle.type:
+                fuel_type = 'diesel'
+                l_per_100km = 5.5
+                real_world_multiplier = self.real_world_gap['diesel']
+            elif 'HEV' in vehicle.type:
+                fuel_type = 'petrol'
+                l_per_100km = 4.5
+                real_world_multiplier = self.real_world_gap['hybrid']
+            else:  # ICE-S, ICE-M
+                fuel_type = 'petrol'
+                l_per_100km = 6.5
+                real_world_multiplier = self.real_world_gap['petrol']
+
+            vehicle_fuel_factor = vehicle.get_fuel_factor()
+            age_deterioration = 1.0 + (agent.vehicle_age if agent.vehicle else 0) * 0.01
+
+            real_l_per_100km = l_per_100km * vehicle_fuel_factor * real_world_multiplier * age_deterioration
+            annual_liters = (real_l_per_100km * agent.driving_km / 100)
+
+            return annual_liters, fuel_type
+
+    def calculate_annual_fuel_cost(self, vehicle: Vehicle, agent: Agent, month: int) -> tuple[float, dict]:
+        """Calculate annual fuel cost with breakdown of base cost vs carbon tax"""
+        annual_consumption, fuel_type = self.calculate_annual_fuel_consumption(vehicle, agent)
+
+        # Base fuel cost (without carbon tax)
+        base_cost = self.fuel_prices[fuel_type] * annual_consumption
+
+        # Carbon tax cost (BC system)
+        carbon_tax_cost = 0.0
+        if self.enable_bc_carbon_tax and fuel_type in ['petrol', 'diesel']:
+            # Map fuel types for carbon tax calculation
+            carbon_tax_cost = self.calculate_fuel_carbon_tax(fuel_type, annual_consumption, month)
+
+        total_cost = base_cost + carbon_tax_cost
+
+        # Return cost breakdown
+        breakdown = {
+            'base_cost': base_cost,
+            'carbon_tax_cost': carbon_tax_cost,
+            'total_cost': total_cost,
+            'fuel_type': fuel_type,
+            'annual_consumption': annual_consumption
+        }
+
+        return total_cost, breakdown
+
+    def calculate_monthly_fuel_burden(self, agent: Agent, month: int) -> float:
+        """Calculate monthly fuel cost burden as ratio of monthly income"""
+        if not agent.vehicle:
+            return 0.0
+
+        # Get annual fuel cost (includes base cost + carbon tax)
+        annual_fuel_cost, _ = self.calculate_annual_fuel_cost(agent.vehicle, agent, month)
+
+        # Convert to monthly costs
+        monthly_fuel_cost = annual_fuel_cost / 12
+        monthly_income = agent.income / 12
+
+        # Calculate burden ratio
+        fuel_burden_ratio = monthly_fuel_cost / monthly_income if monthly_income > 0 else 0.0
+
+        return fuel_burden_ratio
+
+    def update_replacement_pressure(self):
+        """Update replacement pressure for agents based on fuel cost burden (Policy B: fuel_tax)"""
+        if not self.enable_bc_carbon_tax:
+            return  # Only apply pressure when fuel tax is active
+
+        for agent in self.agents:
+            if not agent.vehicle or agent.will_never_buy_car:
+                continue
+
+            # Calculate current fuel burden
+            fuel_burden_ratio = self.calculate_monthly_fuel_burden(agent, self.current_month)
+
+            # If fuel burden exceeds threshold, increase replacement pressure
+            if fuel_burden_ratio > agent.fuel_burden_threshold:
+                agent.replacement_pressure += 0.02
+
+                # If pressure becomes too high, force replacement consideration
+                if agent.replacement_pressure > 0.15:
+                    agent.replacement_due = True
+
     def calculate_tco(self, vehicle: Vehicle, agent: Agent, month: int) -> float:
         """Calculate Total Cost of Ownership"""
         bpm = self.calculate_bpm(vehicle.co2_gkm, month)
@@ -437,29 +707,9 @@ class NetherlandsCarbonPricingSimulation:
             bik = bik_rate * vehicle.base_price
         
         ownership_annual = mrb + bik
-        
-        if vehicle.type == 'BEV-M':
-            kwh_per_100km = 20
-            fuel_annual = (self.fuel_prices['electricity'] * kwh_per_100km * agent.driving_km / 100)
-        else:
-            if 'DIE' in vehicle.type:
-                fuel_type = 'diesel'
-                l_per_100km = 5.5
-                real_world_multiplier = self.real_world_gap['diesel']
-            elif 'HEV' in vehicle.type:
-                fuel_type = 'petrol'
-                l_per_100km = 4.5
-                real_world_multiplier = self.real_world_gap['hybrid']
-            else:
-                fuel_type = 'petrol'
-                l_per_100km = 6.5
-                real_world_multiplier = self.real_world_gap['petrol']
-            
-            vehicle_fuel_factor = vehicle.get_fuel_factor()
-            age_deterioration = 1.0 + (agent.vehicle_age if agent.vehicle else 0) * 0.01
-            
-            real_l_per_100km = l_per_100km * vehicle_fuel_factor * real_world_multiplier * age_deterioration
-            fuel_annual = (self.fuel_prices[fuel_type] * real_l_per_100km * agent.driving_km / 100)
+
+        # Use new fuel cost calculation method (includes base cost + carbon tax)
+        fuel_annual, _ = self.calculate_annual_fuel_cost(vehicle, agent, month)
         
         horizon = 3
         ownership_total = ownership_annual * horizon
@@ -607,6 +857,9 @@ class NetherlandsCarbonPricingSimulation:
         # Update social proof and learning effects
         self.update_social_proof()
         self.apply_learning_effects()
+
+        # Update fuel cost pressure system (Policy B: fuel_tax)
+        self.update_replacement_pressure()
         
         # Track decisions this month
         monthly_decision_data = {
@@ -816,7 +1069,8 @@ class NetherlandsCarbonPricingSimulation:
             agent_data = {
                 'id': agent.id,
                 'income': float(agent.income),
-                'driving_km': float(agent.driving_km),
+                'driving_km': float(agent.driving_km),  # Base driving distance
+                'actual_driving_km': float(agent.driving_km),  # Policy-adjusted driving distance
                 'is_urban': bool(agent.is_urban),
                 'is_company_car': bool(agent.is_company_car),
                 'cycling_preference': float(agent.cycling_preference),
@@ -828,7 +1082,11 @@ class NetherlandsCarbonPricingSimulation:
             }
             
             if agent.vehicle:
-                annual_co2_kg = (agent.vehicle.co2_gkm * agent.driving_km) / 1000
+                # Use policy-specific emissions calculation
+                annual_co2_kg = self.calculate_agent_annual_emissions(agent)
+                actual_driving_km = self.get_agent_actual_driving_distance(agent)
+
+                agent_data['actual_driving_km'] = float(actual_driving_km)
                 agent_data.update({
                     'vehicle_info': {
                         'type': str(agent.vehicle.type),
@@ -1109,7 +1367,7 @@ class NetherlandsCarbonPricingSimulation:
             return None
     
     def plot_emission_and_vehicle_trends(self):
-        """Plot 15-year trends of emission levels and vehicle choices"""
+        """Plot policy-specific 15-year trends of emission levels and vehicle choices"""
         if not self.monthly_agent_data:
             print("No agent data available. Run simulation first.")
             return
@@ -1151,8 +1409,17 @@ class NetherlandsCarbonPricingSimulation:
             vehicle_distributions.append(vehicle_counts)
         
         # Create plots
-        fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle('Netherlands CO2 Policy Impact - 15 Year Trends (100 Agents)', fontsize=16, fontweight='bold')
+        # Create policy-specific title
+        if self.policy_type == 'vehicle_tax':
+            policy_name = 'Netherlands Vehicle Purchase Tax (BPM/Feebate)'
+        elif self.policy_type == 'fuel_tax':
+            policy_name = 'British Columbia Fuel Carbon Tax'
+        else:
+            policy_name = 'Unknown Policy'
+
+        fig, axes = plt.subplots(2, 3, figsize=(20, 12))
+        fig.suptitle(f'Policy Impact Analysis: {policy_name} - 15 Year Trends (100 Agents)',
+                     fontsize=16, fontweight='bold')
         
         # Convert to years for x-axis
         years = [m/12 + 1 for m in months]
@@ -1211,11 +1478,69 @@ class NetherlandsCarbonPricingSimulation:
         axes[1,1].set_ylabel('Percentage of Agents')
         axes[1,1].legend()
         axes[1,1].grid(True, alpha=0.3)
-        
-        # Add policy milestone markers
-        for ax in axes.flat:
-            ax.axvline(x=3, color='red', linestyle='--', alpha=0.5, label='Policy Change 1' if ax == axes[0,0] else '')
-            ax.axvline(x=6, color='red', linestyle='--', alpha=0.5, label='Policy Change 2' if ax == axes[0,0] else '')
+
+        # 5. Average Emissions per Agent (Policy-Specific Behavior)
+        avg_emissions_per_agent = []
+        avg_driving_distance = []
+
+        for month_data in self.monthly_agent_data:
+            # Calculate average emissions per agent for this month
+            total_emissions = sum(agent['annual_co2_kg'] for agent in month_data['agents'])
+            avg_emissions = total_emissions / len(month_data['agents'])
+            avg_emissions_per_agent.append(avg_emissions)
+
+            # Calculate average actual driving distance
+            agents_with_cars = [agent for agent in month_data['agents'] if agent['vehicle_info']]
+            if agents_with_cars:
+                avg_driving = sum(agent['actual_driving_km'] for agent in agents_with_cars) / len(agents_with_cars)
+            else:
+                avg_driving = 0
+            avg_driving_distance.append(avg_driving)
+
+        # Plot emissions per agent
+        axes[0,2].plot(years, avg_emissions_per_agent, linewidth=3, color='purple', marker='o')
+
+        if self.policy_type == 'vehicle_tax':
+            axes[0,2].set_title('Policy A Behavior: Emissions per Agent\n(Vehicle switching, driving stays same)')
+        elif self.policy_type == 'fuel_tax':
+            axes[0,2].set_title('Policy B Behavior: Emissions per Agent\n(Driving reduction + some vehicle switching)')
+        else:
+            axes[0,2].set_title('Average Emissions per Agent')
+
+        axes[0,2].set_xlabel('Year')
+        axes[0,2].set_ylabel('Annual CO2 Emissions (kg)')
+        axes[0,2].grid(True, alpha=0.3)
+
+        # Plot average driving distance for car owners
+        axes[1,2].plot(years, avg_driving_distance, linewidth=3, color='darkblue', marker='s')
+
+        if self.policy_type == 'vehicle_tax':
+            axes[1,2].set_title('Policy A: Avg Driving Distance\n(Stable - no driving reduction)')
+        elif self.policy_type == 'fuel_tax':
+            axes[1,2].set_title('Policy B: Avg Driving Distance\n(Reduced to save on fuel costs)')
+        else:
+            axes[1,2].set_title('Average Driving Distance (Car Owners)')
+
+        axes[1,2].set_xlabel('Year')
+        axes[1,2].set_ylabel('Kilometers per Year')
+        axes[1,2].grid(True, alpha=0.3)
+
+        # Add policy-specific milestone markers
+        if self.policy_type == 'vehicle_tax':
+            # Netherlands vehicle tax milestones
+            for ax in axes.flat:
+                ax.axvline(x=3, color='red', linestyle='--', alpha=0.5,
+                          label='BPM Threshold: 95g CO2' if ax == axes[0,0] else '')
+                ax.axvline(x=6, color='orange', linestyle='--', alpha=0.5,
+                          label='BPM Threshold: 80g CO2' if ax == axes[0,0] else '')
+
+        elif self.policy_type == 'fuel_tax':
+            # BC fuel carbon tax milestones
+            for ax in axes.flat:
+                ax.axvline(x=2, color='green', linestyle='--', alpha=0.5,
+                          label='Carbon Tax: €13.94/tonne' if ax == axes[0,0] else '')
+                ax.axvline(x=4, color='darkgreen', linestyle='--', alpha=0.5,
+                          label='Carbon Tax: €20.89/tonne' if ax == axes[0,0] else '')
         
         plt.tight_layout()
         plt.show()
@@ -1687,19 +2012,27 @@ class NetherlandsCarbonPricingSimulation:
 
 # Run the full 10-year simulation
 if __name__ == "__main__":
-    # Simulation with 100 agents for 10 years
-    print("Initializing Netherlands CO2 policy simulation for 10-year analysis...")
-    sim = NetherlandsCarbonPricingSimulation(n_agents=100, time_horizon=120)  # 100 agents, 10 years
+    print("Netherlands Carbon Policy Simulation")
+    print("Select policy type:")
+    print("[A] Netherlands vehicle purchase tax (BPM/Feebate)")
+    print("[B] British Columbia fuel carbon tax")
+
+    while True:
+        choice = input("Enter choice (A/B): ").upper().strip()
+        if choice == 'A':
+            policy_type = 'vehicle_tax'
+            print("Selected: Netherlands vehicle purchase tax policy")
+            break
+        elif choice == 'B':
+            policy_type = 'fuel_tax'
+            print("Selected: British Columbia fuel carbon tax policy")
+            break
+        else:
+            print("Invalid choice. Please enter A or B.")
+
+    print(f"Initializing simulation with {policy_type}...")
+    sim = NetherlandsCarbonPricingSimulation(n_agents=100, time_horizon=180, policy_type=policy_type)
     reports = sim.run_simulation()
-    
-    # Export detailed agent tracking to Excel
-    sim.export_agents_to_excel("netherlands_simulation_100_agents.xlsx")
-    
-    # Export simulation data to JSON for web visualization
-    print("\nExporting data for web visualization...")
-    sim.export_simulation_to_json("../outputs/simulation_data.json")
-    
-    print(f"\nExport completed. Check the generated files:")
-    print(f"- Excel: netherlands_simulation_100_agents.xlsx (detailed agent tracking)")
-    print(f"- JSON: ../outputs/simulation_data.json (web visualization data)")
-    print(f"Data ready for web visualization interface.")
+
+    print(f"Simulation complete with {policy_type} policy!")
+    sim.plot_emission_and_vehicle_trends()
