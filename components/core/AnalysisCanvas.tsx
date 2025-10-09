@@ -14,6 +14,7 @@ import AgentLegend from "@/components/visualizations/shared/AgentLegend"
 import { AGENT_TYPES } from "@/components/shared/constants/agentTypes"
 import { Share2, Shapes, FileText, Users, Maximize2, Minimize2, Eye, EyeOff } from "lucide-react"
 import { CaseId } from "@/components/explore/content/types"
+import CanvasSidebar from "@/components/ui/canvas-sidebar"
 
 // Interface for chain reaction events
 interface ReactionEvent {
@@ -83,6 +84,7 @@ export default function AnalysisCanvas({
   const animationRef = useRef<NodeJS.Timeout | null>(null)
 
   // Card visibility state
+  const [showAgentTypes, setShowAgentTypes] = useState(false)
   const [showCausalGraph, setShowCausalGraph] = useState(true)
   const [showSimulationControls, setShowSimulationControls] = useState(true)
   const [showPolicyAssistant, setShowPolicyAssistant] = useState(true)
@@ -266,8 +268,22 @@ export default function AnalysisCanvas({
       </div>
 
       {/* Agent Legend - Top Center */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-50 mt-1">
-        <AgentLegend agentTypes={AGENT_TYPES} />
+      {showAgentTypes && (
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-50 mt-1">
+          <AgentLegend agentTypes={AGENT_TYPES} />
+        </div>
+      )}
+
+      {/* Floating Sidebar - Left Side (middle height, centered in canvas) */}
+      <div className="absolute left-4 z-50" style={{ top: '50%', transform: 'translateY(-50%)' }}>
+        <CanvasSidebar
+          showAgentTypes={showAgentTypes}
+          showSimulation={showSimulationControls}
+          showAssistant={showPolicyAssistant}
+          onToggleAgentTypes={() => setShowAgentTypes(!showAgentTypes)}
+          onToggleSimulation={() => setShowSimulationControls(!showSimulationControls)}
+          onToggleAssistant={() => setShowPolicyAssistant(!showPolicyAssistant)}
+        />
       </div>
 
       {/* Causal Graph - Bottom Left (original card) */}
