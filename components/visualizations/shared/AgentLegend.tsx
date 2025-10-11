@@ -14,11 +14,13 @@ export interface AgentType {
 interface AgentLegendProps {
     agentTypes: Record<string, AgentType>
     title?: string
+    onToggleVisibility?: () => void
 }
 
 export default function AgentLegend({
     agentTypes,
-    title = "Agent Types"
+    title = "Agent Types",
+    onToggleVisibility
 }: AgentLegendProps) {
     const [isVisible, setIsVisible] = useState(true)
 
@@ -32,7 +34,13 @@ export default function AgentLegend({
             <div className="flex items-center justify-between gap-4 mb-1.5">
                 <h3 className="text-xs font-semibold">{title}</h3>
                 <button
-                    onClick={() => setIsVisible(!isVisible)}
+                    onClick={() => {
+                        if (onToggleVisibility) {
+                            onToggleVisibility()
+                        } else {
+                            setIsVisible(!isVisible)
+                        }
+                    }}
                     className="p-1 hover:bg-gray-100 rounded transition-colors"
                     aria-label={isVisible ? "Hide legend" : "Show legend"}
                 >

@@ -74,7 +74,7 @@ export default function AnalysisCanvas({
   const [canvasTransform, setCanvasTransform] = useState({ x: 0, y: 0, scale: 1 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-
+  
   // Simulation control state
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentFrame, setCurrentFrame] = useState(0)
@@ -270,41 +270,42 @@ export default function AnalysisCanvas({
       {/* Agent Legend - Top Center */}
       {showAgentTypes && (
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-50 mt-1">
-          <AgentLegend agentTypes={AGENT_TYPES} />
+          <AgentLegend
+            agentTypes={AGENT_TYPES}
+            onToggleVisibility={() => setShowAgentTypes(false)}
+          />
         </div>
       )}
 
       {/* Floating Sidebar - Left Side (middle height, centered in canvas) */}
-      <div className="absolute left-4 z-50" style={{ top: '50%', transform: 'translateY(-50%)' }}>
+      <div className="absolute left-4 z-50" style={{ top: '40%', transform: 'translateY(-50%)' }}>
         <CanvasSidebar
           showAgentTypes={showAgentTypes}
           showSimulation={showSimulationControls}
           showAssistant={showPolicyAssistant}
+          showCausalGraph={showCausalGraph}
           onToggleAgentTypes={() => setShowAgentTypes(!showAgentTypes)}
           onToggleSimulation={() => setShowSimulationControls(!showSimulationControls)}
           onToggleAssistant={() => setShowPolicyAssistant(!showPolicyAssistant)}
+          onToggleCausalGraph={() => setShowCausalGraph(!showCausalGraph)}
         />
       </div>
 
       {/* Causal Graph - Bottom Left (original card) */}
-      <div className="absolute bottom-4 left-4 z-50">
-        <Card className="w-96 h-106 overflow-hidden shadow-md">
-          <div className="p-4 h-full">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">Causal Graph</h3>
-              <button
-                onClick={() => setShowCausalGraph(!showCausalGraph)}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-                aria-label={showCausalGraph ? "Hide causal graph" : "Show causal graph"}
-              >
-                {showCausalGraph ? (
+      {showCausalGraph && (
+        <div className="absolute bottom-4 left-4 z-50" style={{ transform: 'scale(0.8)', transformOrigin: 'bottom left' }}>
+          <Card className="w-96 h-106 overflow-hidden shadow-md">
+            <div className="p-4 h-full">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold">Causal Graph</h3>
+                <button
+                  onClick={() => setShowCausalGraph(false)}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  aria-label="Hide causal graph"
+                >
                   <Eye className="w-4 h-4 text-gray-600" />
-                ) : (
-                  <EyeOff className="w-4 h-4 text-gray-600" />
-                )}
-              </button>
-            </div>
-            {showCausalGraph && (
+                </button>
+              </div>
               <div className="h-full">
                 <CausalGraph
                   variables={variables}
@@ -313,10 +314,10 @@ export default function AnalysisCanvas({
                   highlightedRelationship={highlightedRelationship}
                 />
               </div>
-            )}
-          </div>
-        </Card>
-      </div>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Simulation Controls - Bottom Center (original card) */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
@@ -340,46 +341,29 @@ export default function AnalysisCanvas({
       <div className="absolute top-4 right-4 bottom-4 z-50">
         <Card className="w-96 h-full overflow-hidden shadow-md">
           <div className="p-4 border-b bg-gray-50">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-bold">Policy Assistant</h2>
-              <button
-                onClick={() => setShowPolicyAssistant(!showPolicyAssistant)}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-                aria-label={showPolicyAssistant ? "Hide policy assistant" : "Show policy assistant"}
-              >
-                {showPolicyAssistant ? (
-                  <Eye className="w-4 h-4 text-gray-600" />
-                ) : (
-                  <EyeOff className="w-4 h-4 text-gray-600" />
-                )}
-              </button>
-            </div>
-            {showPolicyAssistant && (
-              <p className="text-sm text-gray-600">
-                Ask questions about policy impacts and explore scenarios
-              </p>
-            )}
+            <h2 className="text-xl font-bold">Policy Assistant</h2>
+            <p className="text-sm text-gray-600">
+              Ask questions about policy impacts and explore scenarios
+            </p>
           </div>
-          {showPolicyAssistant && (
-            <div className="h-[calc(100%-140px)]">
-              <ScenarioChat
-                scenario={{
-                  id: "1",
-                  title: policyTitle,
-                  description: policyDescription,
-                  variables: variables,
-                }}
-                onHighlightNode={onHighlightNode}
-                onHighlightRelationship={onHighlightRelationship}
-                onUpdateGraph={onUpdateGraph}
-                selectedEvent={selectedEvent}
-                generateEventAnalysis={generateEventAnalysis}
-                activeSimulator={activeTab}
-                onChangeSimulator={setActiveTab}
-                onChatUpdate={onChatUpdate}
-              />
-            </div>
-          )}
+          <div className="h-[calc(100%-140px)]">
+            <ScenarioChat
+              scenario={{
+                id: "1",
+                title: policyTitle,
+                description: policyDescription,
+                variables: variables,
+              }}
+              onHighlightNode={onHighlightNode}
+              onHighlightRelationship={onHighlightRelationship}
+              onUpdateGraph={onUpdateGraph}
+              selectedEvent={selectedEvent}
+              generateEventAnalysis={generateEventAnalysis}
+              activeSimulator={activeTab}
+              onChangeSimulator={setActiveTab}
+              onChatUpdate={onChatUpdate}
+            />
+          </div>
         </Card>
       </div>
     </div>
