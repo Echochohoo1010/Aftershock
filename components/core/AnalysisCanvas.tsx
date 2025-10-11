@@ -320,22 +320,25 @@ export default function AnalysisCanvas({
       )}
 
       {/* Simulation Controls - Bottom Center (original card) */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <SimulationControls
-          isPlaying={isPlaying}
-          currentFrame={currentFrame}
-          totalFrames={totalFrames}
-          currentFrameData={{
-            t: frames[currentFrame]?.t || `Year ${Math.floor(currentFrame/12)}, Month ${(currentFrame % 12) + 1}`,
-            adoptionRate: frames[currentFrame]?.adoptionRate || 0
-          }}
-          runningSimulation={isRunningSimulation}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onReset={handleReset}
-          onScrub={handleScrub}
-        />
-      </div>
+      {showSimulationControls && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+          <SimulationControls
+            isPlaying={isPlaying}
+            currentFrame={currentFrame}
+            totalFrames={totalFrames}
+            currentFrameData={{
+              t: frames[currentFrame]?.t || `Year ${Math.floor(currentFrame/12)}, Month ${(currentFrame % 12) + 1}`,
+              adoptionRate: frames[currentFrame]?.adoptionRate || 0
+            }}
+            runningSimulation={isRunningSimulation}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onReset={handleReset}
+            onScrub={handleScrub}
+            onToggleVisibility={() => setShowSimulationControls(false)}
+          />
+        </div>
+      )}
 
       {/* Policy Assistant - Right Side (full height) */}
       <div className="absolute top-4 right-4 bottom-4 z-50">
