@@ -139,24 +139,41 @@ export default function AnalysisCanvas({
     setIsDragging(false)
   }, [])
 
-  // Load simulation data on component mount
+  // Load simulation data based on selected policy
   useEffect(() => {
     async function loadSimulationData() {
+      // Stop animation when switching policies
+      setIsPlaying(false)
+      if (animationRef.current) {
+        clearTimeout(animationRef.current)
+        animationRef.current = null
+      }
+
       try {
-        const response = await fetch('/simulation_data.json')
+        // Map policy ID to Python policy type
+        const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
+        const filename = `simulation_${policyType}.json`
+
+        console.log(`Loading simulation data for policy: ${selectedPolicy} (${filename})`)
+
+        const response = await fetch(`/${filename}`)
         if (response.ok) {
           const result = await response.json()
           if (Array.isArray(result)) {
             setFrames(result)
             setTotalFrames(result.length)
+            setCurrentFrame(0) // Reset to beginning
+            console.log(`Loaded ${result.length} frames for ${policyType} - Reset to frame 0`)
           }
+        } else {
+          console.warn(`No data found for ${filename}, may need to run simulation first`)
         }
       } catch (error) {
         console.error('Failed to load simulation data:', error)
       }
     }
     loadSimulationData()
-  }, [])
+  }, [selectedPolicy]) // Re-load when policy changes
 
   // Animation control functions
   const handlePlay = useCallback(() => {
@@ -180,35 +197,48 @@ export default function AnalysisCanvas({
       clearTimeout(animationRef.current)
       animationRef.current = null
     }
-    
-    // Run new simulation
+
+    // Run new simulation with selected policy
     setIsRunningSimulation(true)
     try {
-      const response = await fetch('/api/run-simulation-js', {
+      // Convert UI policy ID to Python policy type
+      const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
+
+      console.log(`Running simulation for policy: ${selectedPolicy} (${policyType})`)
+
+      const response = await fetch('/api/run-simulation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ n_agents: 100, duration_months: 120 })
+        body: JSON.stringify({ policyType })
       })
-      
+
       if (response.ok) {
-        // Reload the simulation data
-        const dataResponse = await fetch('/simulation_data.json')
+        const result = await response.json()
+        console.log('Simulation completed:', result)
+
+        // Reload policy-specific data
+        const filename = `simulation_${policyType}.json`
+        const dataResponse = await fetch(`/${filename}`)
         if (dataResponse.ok) {
-          const result = await dataResponse.json()
-          if (Array.isArray(result)) {
-            setFrames(result)
-            setTotalFrames(result.length)
+          const simulationData = await dataResponse.json()
+          if (Array.isArray(simulationData)) {
+            setFrames(simulationData)
+            setTotalFrames(simulationData.length)
             setCurrentFrame(0)
             setIsPlaying(true) // Auto-start after reset
+            console.log(`Loaded ${simulationData.length} frames after simulation`)
           }
         }
+      } else {
+        const errorData = await response.json()
+        console.error('Simulation failed:', errorData)
       }
     } catch (error) {
       console.error('Failed to run new simulation:', error)
     } finally {
       setIsRunningSimulation(false)
     }
-  }, [])
+  }, [selectedPolicy])
 
   const handleScrub = useCallback((frameIndex: number) => {
     setCurrentFrame(frameIndex)

@@ -2012,27 +2012,36 @@ class NetherlandsCarbonPricingSimulation:
 
 # Run the full 10-year simulation
 if __name__ == "__main__":
-    print("Netherlands Carbon Policy Simulation")
-    print("Select policy type:")
-    print("[A] Netherlands vehicle purchase tax (BPM/Feebate)")
-    print("[B] British Columbia fuel carbon tax")
+    import sys
 
-    while True:
-        choice = input("Enter choice (A/B): ").upper().strip()
-        if choice == 'A':
-            policy_type = 'vehicle_tax'
-            print("Selected: Netherlands vehicle purchase tax policy")
-            break
-        elif choice == 'B':
+    # Accept policy type from command line, default to 'vehicle_tax'
+    policy_type = 'vehicle_tax'  # default
+
+    if len(sys.argv) > 1:
+        policy_arg = sys.argv[1].lower()
+        if policy_arg in ['fuel', 'fuel_tax', 'b']:
             policy_type = 'fuel_tax'
-            print("Selected: British Columbia fuel carbon tax policy")
-            break
+            print("Running simulation: British Columbia Fuel Carbon Tax")
+        elif policy_arg in ['vehicle', 'vehicle_tax', 'purchase', 'a']:
+            policy_type = 'vehicle_tax'
+            print("Running simulation: Netherlands Vehicle Purchase Tax")
         else:
-            print("Invalid choice. Please enter A or B.")
+            print(f"Warning: Unknown policy argument '{sys.argv[1]}', defaulting to 'vehicle_tax'")
+            print("Valid options: vehicle_tax, fuel_tax")
+    else:
+        print("No policy specified, defaulting to: Netherlands Vehicle Purchase Tax")
 
-    print(f"Initializing simulation with {policy_type}...")
-    sim = NetherlandsCarbonPricingSimulation(n_agents=100, time_horizon=180, policy_type=policy_type)
+    print(f"\nInitializing simulation with policy: {policy_type}")
+    print(f"Duration: 120 months (10 years) | Agents: 100")
+
+    sim = NetherlandsCarbonPricingSimulation(n_agents=100, time_horizon=120, policy_type=policy_type)
     reports = sim.run_simulation()
 
-    print(f"Simulation complete with {policy_type} policy!")
-    sim.plot_emission_and_vehicle_trends()
+    # Export with policy-specific filename
+    output_filename = f"simulation_{policy_type}.json"
+    output_path = f"../outputs/{output_filename}"
+    sim.export_simulation_to_json(output_path=output_path)
+
+    print(f"\n✅ Simulation complete!")
+    print(f"📊 Data saved to: {output_filename}")
+    print(f"📁 Full path: {output_path}")
