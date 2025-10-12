@@ -345,7 +345,16 @@ export function GeographicAIDistribution() {
                     </SelectTrigger>
                     <SelectContent align="end" className="rounded-xl">
                         {countries.map((key) => {
-                            const config = geographicConfig[key.toLowerCase().replace(/\s+/g, '') as keyof typeof geographicConfig]
+                            // Map country names to config keys
+                            const countryKeyMap: Record<string, string> = {
+                                "United States": "us",
+                                "China": "china",
+                                "UAE": "uae",
+                                "South Korea": "korea",
+                                "Others": "others"
+                            }
+                            const configKey = countryKeyMap[key] as "us" | "china" | "uae" | "korea" | "others"
+                            const config = configKey ? geographicConfig[configKey] as { label: string; color: string } : undefined
                             return (
                                 <SelectItem
                                     key={key}

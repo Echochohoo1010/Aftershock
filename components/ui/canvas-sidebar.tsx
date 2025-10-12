@@ -33,8 +33,8 @@ export default function CanvasSidebar({
       <div className={cn(
         "flex flex-col justify-center items-center relative transition-all duration-500 ease-in-out",
         className
-      )} style={{ width: '51px', scale: '0.8' }}>
-        <article className="border border-solid border-gray-700 w-full ease-in-out duration-500 left-0 rounded-2xl inline-block shadow-lg shadow-black/15 bg-white">
+      )} style={{ width: '51px', scale: '1.0' }}>
+        <article className="border w-full ease-in-out duration-500 left-0 rounded-2xl inline-block shadow-lg shadow-black/15 bg-white">
 
           {/* Agent Types Toggle */}
           <Tooltip>
@@ -56,51 +56,71 @@ export default function CanvasSidebar({
           </Tooltip>
 
           {/* Simulation Controls Toggle */}
-          <button
-            onClick={onToggleSimulation}
-            className="relative w-full p-4 ease-in-out duration-300 group flex flex-row gap-3 items-center justify-center text-black rounded-xl cursor-pointer hover:shadow-lg transition-all"
-            style={{ height: '51px' }}
-          >
-            <svg
-              className="ease-in-out duration-300 transition-all hover:scale-125 hover:text-blue-400 hover:fill-blue-400"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </button>
-
-          {/* Policy Assistant Toggle */}
-          <button
-            onClick={onToggleAssistant}
-            className="relative w-full p-4 ease-in-out duration-300 group flex flex-row gap-3 items-center justify-center text-black rounded-xl cursor-pointer hover:shadow-lg transition-all"
-            style={{ height: '51px' }}
-          >
-            <img
-              src="/causal-graph-logo.png"
-              alt="Causal Graph"
-              className="ease-in-out duration-300 w-6 h-6 hover:scale-125"
-              style={{
-                filter: 'none',
-                transition: 'transform 0.3s ease-in-out'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.filter = 'brightness(0) saturate(100%) invert(47%) sepia(96%) saturate(2063%) hue-rotate(191deg) brightness(103%) contrast(101%)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.filter = 'none'
-              }}
-            />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onToggleSimulation}
+                className="relative w-full p-4 ease-in-out duration-300 group flex flex-row gap-3 items-center justify-center text-black rounded-xl cursor-pointer hover:shadow-lg transition-all"
+                style={{ height: '51px' }}
+              >
+                <svg
+                  className="ease-in-out duration-300 transition-all hover:scale-125 hover:text-blue-400 hover:fill-blue-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="flex items-center gap-2">
+                Simulation Control
+                {!showSimulation && <EyeOff className="w-4 h-4" />}
+              </p>
+            </TooltipContent>
+          </Tooltip>
 
           {/* Causal Graph Toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={onToggleCausalGraph}
+                className="relative w-full p-4 ease-in-out duration-300 group flex flex-row gap-3 items-center justify-center text-black rounded-xl cursor-pointer hover:shadow-lg transition-all"
+                style={{ height: '51px' }}
+              >
+                <img
+                  src="/causal-graph-logo.png"
+                  alt="Causal Graph"
+                  className="ease-in-out duration-300 w-6 h-6 hover:scale-125"
+                  style={{
+                    filter: 'none',
+                    transition: 'transform 0.3s ease-in-out'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.filter = 'brightness(0) saturate(100%) invert(47%) sepia(96%) saturate(2063%) hue-rotate(191deg) brightness(103%) contrast(101%)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.filter = 'none'
+                  }}
+                />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="flex items-center gap-2">
+                Causal Graph
+                {!showCausalGraph && <EyeOff className="w-4 h-4" />}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Policy Assistant Toggle */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onToggleAssistant}
                 className="relative w-full p-4 ease-in-out duration-300 group flex flex-row gap-3 items-center justify-center text-black rounded-xl cursor-pointer hover:shadow-lg transition-all"
                 style={{ height: '51px' }}
               >
@@ -118,8 +138,8 @@ export default function CanvasSidebar({
             </TooltipTrigger>
             <TooltipContent side="right">
               <p className="flex items-center gap-2">
-                Causal Graph
-                {!showCausalGraph && <EyeOff className="w-4 h-4" />}
+                Policy Assistant
+                {!showAssistant && <EyeOff className="w-4 h-4" />}
               </p>
             </TooltipContent>
           </Tooltip>

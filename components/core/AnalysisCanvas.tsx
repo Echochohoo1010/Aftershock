@@ -85,9 +85,9 @@ export default function AnalysisCanvas({
 
   // Card visibility state
   const [showAgentTypes, setShowAgentTypes] = useState(false)
-  const [showCausalGraph, setShowCausalGraph] = useState(true)
-  const [showSimulationControls, setShowSimulationControls] = useState(true)
-  const [showPolicyAssistant, setShowPolicyAssistant] = useState(true)
+  const [showCausalGraph, setShowCausalGraph] = useState(false)
+  const [showSimulationControls, setShowSimulationControls] = useState(false)
+  const [showPolicyAssistant, setShowPolicyAssistant] = useState(false)
 
   // Zoom and pan functionality
   const handleWheel = useCallback((e: WheelEvent) => {
@@ -278,7 +278,7 @@ export default function AnalysisCanvas({
       )}
 
       {/* Floating Sidebar - Left Side (middle height, centered in canvas) */}
-      <div className="absolute left-4 z-50" style={{ top: '40%', transform: 'translateY(-50%)' }}>
+      <div className="absolute left-4 z-50" style={{ top: '30%', transform: 'translateY(-50%)' }}>
         <CanvasSidebar
           showAgentTypes={showAgentTypes}
           showSimulation={showSimulationControls}
@@ -341,34 +341,47 @@ export default function AnalysisCanvas({
       )}
 
       {/* Policy Assistant - Right Side (full height) */}
-      <div className="absolute top-4 right-4 bottom-4 z-50">
-        <Card className="w-96 h-full overflow-hidden shadow-md">
-          <div className="p-4 border-b bg-gray-50">
-            <h2 className="text-xl font-bold">Policy Assistant</h2>
-            <p className="text-sm text-gray-600">
-              Ask questions about policy impacts and explore scenarios
-            </p>
-          </div>
-          <div className="h-[calc(100%-140px)]">
-            <ScenarioChat
-              scenario={{
-                id: "1",
-                title: policyTitle,
-                description: policyDescription,
-                variables: variables,
-              }}
-              onHighlightNode={onHighlightNode}
-              onHighlightRelationship={onHighlightRelationship}
-              onUpdateGraph={onUpdateGraph}
-              selectedEvent={selectedEvent}
-              generateEventAnalysis={generateEventAnalysis}
-              activeSimulator={activeTab}
-              onChangeSimulator={setActiveTab}
-              onChatUpdate={onChatUpdate}
-            />
-          </div>
-        </Card>
-      </div>
+      {showPolicyAssistant && (
+        <div className="absolute top-4 right-4 bottom-4 z-50">
+          <Card className="w-96 h-full overflow-hidden shadow-md">
+            <div className="p-4 border-b bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">Policy Assistant</h2>
+                  <p className="text-sm text-gray-600">
+                    Ask questions about policy impacts and explore scenarios
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowPolicyAssistant(false)}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  aria-label="Hide policy assistant"
+                >
+                  <Eye className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+            </div>
+            <div className="h-[calc(100%-140px)]">
+              <ScenarioChat
+                scenario={{
+                  id: "1",
+                  title: policyTitle,
+                  description: policyDescription,
+                  variables: variables,
+                }}
+                onHighlightNode={onHighlightNode}
+                onHighlightRelationship={onHighlightRelationship}
+                onUpdateGraph={onUpdateGraph}
+                selectedEvent={selectedEvent}
+                generateEventAnalysis={generateEventAnalysis}
+                activeSimulator={activeTab}
+                onChangeSimulator={setActiveTab}
+                onChatUpdate={onChatUpdate}
+              />
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

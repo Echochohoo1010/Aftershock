@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/echohuang/Documents/Explanatory policy /public/simulations/**)",
+      "Read(//Users/echohuang/Documents/Explanatory policy /app/explore/**)",
+      "Read(//Users/echohuang/Documents/Explanatory policy /components/visualizations/shared/**)",
+      "Read(//Users/echohuang/Documents/Explanatory policy /components/core/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
