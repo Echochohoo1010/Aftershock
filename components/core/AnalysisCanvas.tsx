@@ -15,6 +15,7 @@ import { AGENT_TYPES } from "@/components/shared/constants/agentTypes"
 import { Share2, Shapes, FileText, Users, Maximize2, Minimize2, Eye, EyeOff } from "lucide-react"
 import { CaseId } from "@/components/explore/content/types"
 import CanvasSidebar from "@/components/ui/canvas-sidebar"
+import PolicyChoiceCard from "@/components/features/visualization/simulation/PolicyChoiceCard"
 
 // Interface for chain reaction events
 interface ReactionEvent {
@@ -88,6 +89,22 @@ export default function AnalysisCanvas({
   const [showCausalGraph, setShowCausalGraph] = useState(false)
   const [showSimulationControls, setShowSimulationControls] = useState(false)
   const [showPolicyAssistant, setShowPolicyAssistant] = useState(false)
+
+  // Policy choice state
+  const [selectedPolicy, setSelectedPolicy] = useState('purchase')
+
+  const policyOptions = [
+    {
+      id: 'purchase',
+      label: 'Tax on purchase',
+      description: 'high emission cars pay ~€4-5k more than a very clean car'
+    },
+    {
+      id: 'fuel',
+      label: 'Tax on fuels',
+      description: '3.2 c€/L for gasoline and ~3.7 c€/L for diesel on average'
+    }
+  ]
 
   // Zoom and pan functionality
   const handleWheel = useCallback((e: WheelEvent) => {
@@ -265,6 +282,16 @@ export default function AnalysisCanvas({
             onFrameUpdate={(frame) => setCurrentFrame(frame)}
           />
         </div>
+      </div>
+
+      {/* Policy Choice Card - Top Left */}
+      <div className="absolute top-1 left-4 z-50" style={{ transform: 'scale(0.8)', transformOrigin: 'top left' }}>
+        <PolicyChoiceCard
+          title="Policy choice:"
+          options={policyOptions}
+          selectedOption={selectedPolicy}
+          onOptionChange={setSelectedPolicy}
+        />
       </div>
 
       {/* Agent Legend - Top Center */}

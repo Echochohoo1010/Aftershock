@@ -120,7 +120,7 @@ const caseStudies = [
   {
     id: "carbon-tax",
     title: "Carbon Tax Implementation",
-    description: "This simulation models 10,000 Dutch households deciding whether to buy cars over 10 years from 2008 after the government uses taxes to make dirty cars expensive and clean cars cheaper. Each person is different - some love cycling, others need cars, some get company vehicles, others buy their own.",
+    description: "In a Dutch town with 10,000 households. Some people love biking everywhere, others can't live without their cars, and a few get company cars. If you were designing a carbon policy to cut emissions, would you raise fuel taxes, make polluting cars more expensive, or take another approach?",
     icon: "🌿",
     variables: [
       "carbon_emissions",
