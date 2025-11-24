@@ -6,7 +6,12 @@
       "Read(//Users/echohuang/Documents/Explanatory policy /components/visualizations/shared/**)",
       "Read(//Users/echohuang/Documents/Explanatory policy /components/core/**)",
       "Read(//Users/echohuang/Documents/Explanatory policy /public/outputs/**)",
-      "Read(//Users/echohuang/Documents/Explanatory policy /public/**)"
+      "Read(//Users/echohuang/Documents/Explanatory policy /public/**)",
+      "Read(//Users/echohuang/Documents/Minerva trash /SS 146/**)",
+      "Bash(python3:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

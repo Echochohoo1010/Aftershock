@@ -85,6 +85,11 @@ const config: Config = {
     				'system-ui',
     				'sans-serif'
     			],
+    			serif: [
+    				'var(--font-playfair)',
+    				'Georgia',
+    				'serif'
+    			],
     			heading: [
     				'var(--font-inter)',
     				'ui-sans-serif',

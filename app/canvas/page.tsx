@@ -1,26 +1,47 @@
 'use client';
 
-import React from 'react';
-import { ScenarioPlanningCanvas } from '@/components/scenario-planning-canvas';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import AnalysisCanvas from '@/components/core/AnalysisCanvas';
+import { CaseId } from '@/components/explore/content/types';
+
+function CanvasContent() {
+    const searchParams = useSearchParams();
+    const [caseId, setCaseId] = useState<CaseId | null>(null);
+
+    useEffect(() => {
+        const caseParam = searchParams.get('case') as CaseId;
+        if (caseParam === 'carbon-tax' || caseParam === 'fiscal-stimulus') {
+            setCaseId(caseParam);
+        }
+    }, [searchParams]);
+
+    if (!caseId) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-zinc-50">
+                <div className="text-center">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">No case study selected</h2>
+                    <p className="text-gray-600">Please select a case study from the explore page</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="h-screen w-full">
+            <AnalysisCanvas selectedCase={caseId} />
+        </div>
+    );
+}
 
 export default function ScenarioPlanningPage() {
     return (
-        <div className="h-screen w-full">
-            <div className="flex flex-col h-full">
-                <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                    <div className="container flex h-14 items-center">
-                        <h1 className="text-lg font-semibold">Scenario Planning Canvas</h1>
-                        <div className="ml-auto flex items-center space-x-2">
-                            <span className="text-sm text-muted-foreground">
-                                Strategic Foresight & Analysis
-                            </span>
-                        </div>
-                    </div>
-                </header>
-                <main className="flex-1">
-                    <ScenarioPlanningCanvas />
-                </main>
+        <Suspense fallback={
+            <div className="h-screen w-full flex items-center justify-center bg-zinc-50">
+                <div className="animate-pulse text-gray-600">Loading simulation...</div>
             </div>
-        </div>
+        }>
+            <CanvasContent />
+        </Suspense>
     );
 }

@@ -1,8 +1,7 @@
 import type React from "react"
 import "./globals.css"
-import { Inter, Urbanist, Switzer, Outfit } from "next/font/google"
+import { Inter, Outfit, Playfair_Display } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import Header from "@/components/header"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,9 +17,16 @@ const interMedium = Outfit({
   weight: ['400'],
 })
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ['400', '500', '600', '700'],
+})
+
 export const metadata = {
-  title: "Exploratory Policy",
-  description: "Developing causal AI tools for policy formulation and analysis",
+  title: "Ripple",
+  description: "Turn complexity into clarity - Interactive policy simulation and analysis",
 }
 
 export default function RootLayout({
@@ -29,10 +35,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${interMedium.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${interMedium.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-inter font-medium" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <Header />
           {children}
         </ThemeProvider>
       </body>
