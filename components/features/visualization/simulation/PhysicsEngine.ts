@@ -24,6 +24,7 @@ export interface PhysicsConfig {
     alpha?: number
     alphaDecay?: number
     velocityDecay?: number
+    alphaMin?: number  // Minimum alpha for continuous gentle motion
 }
 
 export class PhysicsEngine {
@@ -39,6 +40,7 @@ export class PhysicsEngine {
             alpha: 0.15,
             alphaDecay: 0.015,
             velocityDecay: 0.6,
+            alphaMin: 0.005,  // Default minimum alpha for continuous motion
             ...config
         }
     }
@@ -155,6 +157,12 @@ export class PhysicsEngine {
 
         this.simulation.on("tick", () => {
             this.simulation!.nodes().forEach((d: SimulationNode) => {
+                // Smooth radius interpolation when size changes
+                if (d.targetR !== undefined && Math.abs(d.r - d.targetR) > 0.1) {
+                    // Interpolate towards target radius (10% per tick = smooth transition)
+                    d.r = d.r + (d.targetR - d.r) * 0.1
+                }
+
                 // Keep nodes within circle boundary
                 const dx = (d.x || 0) - centerX
                 const dy = (d.y || 0) - centerY
@@ -185,16 +193,12 @@ export class PhysicsEngine {
             if (!this.simulation) return
 
             const alpha = this.simulation.alpha()
+            const minAlpha = this.config.alphaMin || 0.005
 
-            // If simulation has cooled down (alpha < 0.01), pause it
-            if (alpha < 0.01) {
-                this.simulation.stop()
-
-                // Clear the interval once stopped
-                if (this.stabilityCheckInterval) {
-                    clearInterval(this.stabilityCheckInterval)
-                    this.stabilityCheckInterval = null
-                }
+            // Maintain minimum alpha for continuous gentle movement
+            // NEVER stop the simulation (only stop on cleanup)
+            if (alpha < minAlpha) {
+                this.simulation.alpha(minAlpha)
             }
         }, 2000)
     }

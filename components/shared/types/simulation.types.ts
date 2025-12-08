@@ -31,6 +31,7 @@ export interface PhysicsConfig {
     alpha?: number
     alphaDecay?: number
     velocityDecay?: number
+    alphaMin?: number  // Minimum alpha for continuous gentle motion
 }
 
 export interface AgentType {

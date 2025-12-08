@@ -21,20 +21,19 @@ const rScale = d3.scaleLinear().domain([1, 4]).range([8, 18]) // Size based on e
 interface BubbleCircleProps {
     node: SimulationNode
     isHovered: boolean
+    updateTrigger: number  // Only changes when data (size/color/type) changes
     onMouseEnter: () => void
     onMouseLeave: () => void
 }
 
-const BubbleCircle = memo(({ node, isHovered, onMouseEnter, onMouseLeave }: BubbleCircleProps) => {
-    const cx = node.x ?? 0
-    const cy = node.y ?? 0
-
+const BubbleCircle = memo(({ node, isHovered, updateTrigger, onMouseEnter, onMouseLeave }: BubbleCircleProps) => {
     return (
         <circle
             className="agent"
             r={node.r ?? 8}
-            cx={cx}
-            cy={cy}
+            cx={0}
+            cy={0}
+            transform={`translate(${node.x ?? 0}, ${node.y ?? 0})`}
             fill={node.type === "Cycling" ? "none" : (node.fill ?? "#ccc")}
             stroke={
                 isHovered
@@ -50,21 +49,20 @@ const BubbleCircle = memo(({ node, isHovered, onMouseEnter, onMouseLeave }: Bubb
             style={{
                 cursor: 'pointer',
                 filter: isHovered ? 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))' : 'none',
-                transition: 'all 0.2s ease'
+                transition: 'r 0.4s cubic-bezier(0.4, 0, 0.2, 1), fill 0.4s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.2s ease, filter 0.2s ease'
             }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         />
     )
 }, (prevProps, nextProps) => {
-    // Custom comparison function - only re-render if these values changed
+    // Only re-render if data properties changed, ignore position changes
     return (
-        prevProps.node.x === nextProps.node.x &&
-        prevProps.node.y === nextProps.node.y &&
         prevProps.node.r === nextProps.node.r &&
         prevProps.node.fill === nextProps.node.fill &&
         prevProps.node.type === nextProps.node.type &&
-        prevProps.isHovered === nextProps.isHovered
+        prevProps.isHovered === nextProps.isHovered &&
+        prevProps.updateTrigger === nextProps.updateTrigger
     )
 })
 
@@ -135,7 +133,8 @@ export default function PureBubbleCanvas({
         gravityStrength: 0.06,
         alpha: 0.2,
         alphaDecay: 0.01,
-        velocityDecay: 0.5
+        velocityDecay: 0.5,
+        alphaMin: 0.005  // Minimum energy for continuous drift
     }), [width, height, centerX, centerY, radius])
 
     // Initialize audio on component mount
@@ -373,19 +372,9 @@ export default function PureBubbleCanvas({
                 }
             })
 
-            // Throttle re-renders to max 30fps (every ~33ms) instead of 60fps
-            const now = performance.now()
-            if (now - lastPhysicsUpdateRef.current >= 33) {
-                lastPhysicsUpdateRef.current = now
-
-                // Use requestAnimationFrame for smoother updates
-                if (animationFrameRef.current) {
-                    cancelAnimationFrame(animationFrameRef.current)
-                }
-                animationFrameRef.current = requestAnimationFrame(() => {
-                    setCircleUpdateTrigger(prev => prev + 1)
-                })
-            }
+            // Trigger React re-render so transform attribute updates
+            // Note: Stable keys (key={node.id}) prevent unmounting/remounting (no beating heart)
+            setCircleUpdateTrigger(prev => prev + 1)
         })
 
         // Removed periodic movement - agents should stay stable and only animate size/color changes
@@ -521,7 +510,7 @@ export default function PureBubbleCanvas({
 
                 if (sizeChanged) {
                     hasSizeChanges = true
-                    node.r = targetR
+                    node.targetR = targetR  // Use targetR for smooth interpolation in physics
                 }
                 if (colorChanged) {
                     node.fill = targetFill
@@ -633,6 +622,7 @@ export default function PureBubbleCanvas({
                         <BubbleCircle
                             key={node.id}
                             node={node}
+                            updateTrigger={circleUpdateTrigger}
                             isHovered={hoveredAgent?.id === node.id}
                             onMouseEnter={() => {
                                 const frameData = frames[currentFrameIndex]
