@@ -33,6 +33,6 @@ next-env.d.ts
 .venv/
 
 # Generated simulation files
-/public/simulation_data.json
+# Note: simulation_data.json is needed for bubble visualization on Vercel
 /public/simulation_vehicle_tax.json
 /public/simulation_fuel_tax.json
