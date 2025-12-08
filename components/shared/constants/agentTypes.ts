@@ -1,28 +1,40 @@
 // Agent types configuration used across the application
+// "Sunset to Forest" color spectrum
 export const AGENT_TYPES = {
-    "Cycling/Walking": { color: "#22c55e", emissionLevel: 1, displayName: "Cycling/Walking" },
-    "BEV-M": { color: "#22c55e", emissionLevel: 1, displayName: "Mid-size Electric Cars" },
-    "HEV-S": { color: "#84cc16", emissionLevel: 2, displayName: "Hybrid Electric Vehicle" },
-    "ICE-S": { color: "#f59e0b", emissionLevel: 3, displayName: "Small Petrol Cars" },
-    "DIE-M": { color: "#f59e0b", emissionLevel: 3, displayName: "Mid Diesel Cars" },
-    "ICE-M": { color: "#ef4444", emissionLevel: 4, displayName: "Mid Petrol Cars" }
+    "Cycling": { color: "#0891b2", emissionLevel: 1, displayName: "Cycling" }, // Cyan 600 - hollow ring
+    "BEV-M": { color: "#059669", emissionLevel: 1, displayName: "Mid-size Electric Cars" }, // Emerald 600
+    "HEV-S": { color: "#d97706", emissionLevel: 2, displayName: "Hybrid Electric Vehicle" }, // Amber 600
+    "ICE-S": { color: "#be123c", emissionLevel: 3, displayName: "Small Petrol Cars" }, // Rose 700
+    "DIE-M": { color: "#c2410c", emissionLevel: 3, displayName: "Mid Diesel Cars" }, // Orange 700
+    "ICE-M": { color: "#be123c", emissionLevel: 4, displayName: "Mid Petrol Cars" } // Rose 700
 } as const;
 
 // Map simulation vehicle types to display names
 export const mapVehicleType = (vehicleType: string): string => {
     const mapping: { [key: string]: string } = {
         "BEV-M": "BEV-M",
-        "HEV-S": "HEV-S", 
+        "HEV-S": "HEV-S",
         "ICE-S": "ICE-S",
         "ICE-M": "ICE-M",
         "DIE-M": "DIE-M",
-        "Cycling/Walking": "Cycling/Walking"
+        "Cycling": "Cycling"
     }
     return mapping[vehicleType] || vehicleType
 }
 
 export const getEmissionLevel = (vehicleType: string, providedLevel?: number): number => {
-    if (providedLevel !== undefined) return providedLevel
+    // Use provided level if valid
+    if (providedLevel !== undefined && providedLevel !== null && providedLevel > 0) {
+        return providedLevel
+    }
+
+    // Fall back to vehicle type config
     const agentConfig = AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]
-    return agentConfig?.emissionLevel || 3
+    if (agentConfig) {
+        return agentConfig.emissionLevel
+    }
+
+    // Log warning for debugging
+    console.warn(`Missing emission level for ${vehicleType}, using default: 3`)
+    return 3
 }

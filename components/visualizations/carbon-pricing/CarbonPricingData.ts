@@ -45,7 +45,7 @@ export async function loadCarbonPricingData(): Promise<CarbonPricingFrameData[]>
 
 function getEmissionLevelFromType(vehicleType: string): number {
     const emissionLevels: Record<string, number> = {
-        "Cycling/Walking": 1,
+        "Cycling": 1,
         "BEV-M": 1,
         "HEV-S": 2,
         "ICE-S": 3,
@@ -58,7 +58,7 @@ function getEmissionLevelFromType(vehicleType: string): number {
 function calculateAdoptionRate(agents: any[]): number {
     if (!agents.length) return 0
     
-    const cleanTransportTypes = ["Cycling/Walking", "BEV-M", "HEV-S"]
+    const cleanTransportTypes = ["Cycling", "BEV-M", "HEV-S"]
     const cleanCount = agents.filter(agent => 
         cleanTransportTypes.includes(agent.type)
     ).length

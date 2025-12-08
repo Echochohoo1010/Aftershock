@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, ArrowLeft, Coins, Leaf } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Leaf, Plus } from 'lucide-react';
 import { ClarityButton } from '@/components/ClarityButton';
 
 interface CaseStudy {
@@ -14,16 +14,16 @@ interface CaseStudy {
 
 const CASES: CaseStudy[] = [
   {
-    id: 'fiscal-stimulus',
-    title: 'Fiscal Stimulus Package',
-    description: 'A comprehensive fiscal stimulus package aimed at boosting economic growth through increased government spending on infrastructure projects, tax cuts for middle-income households, and targeted support for small businesses affected by economic downturns.',
-    icon: Coins,
-  },
-  {
     id: 'carbon-tax',
     title: 'Carbon Tax Implementation',
     description: 'Designing a carbon policy to cut emissions while balancing energy prices. Models the impact on household income, renewable investment, and industrial output.',
     icon: Leaf,
+  },
+  {
+    id: 'build-your-own',
+    title: 'Build Your Own Case',
+    description: 'Create a custom simulation from scratch by defining your own parameters and policy inputs.',
+    icon: Plus,
   }
 ];
 
@@ -44,9 +44,10 @@ export const CaseSelectionGallery: React.FC = () => {
   };
 
   const handleViewDemo = () => {
-    if (selectedId) {
+    if (selectedId && selectedId !== 'build-your-own') {
       router.push(`/canvas?case=${selectedId}`);
     }
+    // Note: No navigation for build-your-own (future functionality placeholder)
   };
 
   return (
@@ -126,7 +127,7 @@ export const CaseSelectionGallery: React.FC = () => {
             variant="primary"
             className="flex items-center space-x-2"
           >
-            <span>View Demo</span>
+            <span>{selectedId === 'build-your-own' ? 'Start' : 'View Demo'}</span>
             <ArrowRight className="w-4 h-4" />
           </ClarityButton>
         </div>

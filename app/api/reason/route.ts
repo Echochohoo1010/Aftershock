@@ -75,13 +75,13 @@ Provide a MEDIUM , focused response (1 paragraph max) covering:
 
 Be concise and direct. Focus on what matters most right now.`;
       } else {
-        // Causal graph mode - focus on structural relationships
+        // Variable analysis mode - focus on structural relationships
         prompt = `You are an AI policy assistant analyzing the ${scenario.title} scenario. The scenario involves these variables: ${scenario.variables.join(
           ", "
         )}. The user asked: "${state.query}". Provide a concise response addressing the user's query, including:
         - Relevant causal relationships or policy impacts
         - Any correlations (e.g., "variable1 → variable2: 0.8")
-        - Causal graph insights
+        - Variable relationship insights
         Format correlations as "variable1 → variable2: value" and ensure values are between -1 and 1.`;
       }
 

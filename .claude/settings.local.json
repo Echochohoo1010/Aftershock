@@ -11,7 +11,22 @@
       "Bash(python3:*)",
       "Bash(npm run dev:*)",
       "Bash(git remote set-url:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(/usr/local/bin/npm run dev)",
+      "Bash(PATH=/usr/local/bin:$PATH npm run dev:*)",
+      "Bash(xargs:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(cat:*)",
+      "Bash(mv:*)",
+      "Bash(lsof:*)",
+      "Bash(kill:*)",
+      "Bash(git log:*)",
+      "Bash(grep:*)",
+      "Bash(jq:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

@@ -29,6 +29,7 @@ export interface PhysicsConfig {
 export class PhysicsEngine {
     private simulation: d3.Simulation<SimulationNode, undefined> | null = null
     private config: PhysicsConfig
+    private stabilityCheckInterval: NodeJS.Timeout | null = null
 
     constructor(config: PhysicsConfig) {
         this.config = {
@@ -83,54 +84,60 @@ export class PhysicsEngine {
         if (!this.simulation) return
 
         const { centerX, centerY, radius } = this.config
-        
+
+        // PERFORMANCE FIX: Pre-calculate sector positions (don't recalculate every tick)
+        const colorSectors = new Map([
+            ["#22c55e", 0],           // Green (Electric, Cycling) - Right
+            ["#84cc16", Math.PI/2],   // Light green (Hybrid) - Top
+            ["#f59e0b", Math.PI],     // Orange (Petrol, Diesel) - Left
+            ["#ef4444", 3*Math.PI/2]  // Red (Mid Petrol) - Bottom
+        ])
+
+        const sectorPositions = new Map<string, {x: number, y: number}>()
+        colorSectors.forEach((angle, color) => {
+            const sectorRadius = radius * 0.7
+            sectorPositions.set(color, {
+                x: centerX + sectorRadius * Math.cos(angle),
+                y: centerY + sectorRadius * Math.sin(angle)
+            })
+        })
+
         const colorClusterForce = () => {
             const strength = 0.6
-            
-            // Define sector angles for each color (pie chart layout)
-            const colorSectors = new Map([
-                ["#22c55e", 0],           // Green (Electric, Cycling) - Right
-                ["#84cc16", Math.PI/2],   // Light green (Hybrid) - Top  
-                ["#f59e0b", Math.PI],     // Orange (Petrol, Diesel) - Left
-                ["#ef4444", 3*Math.PI/2]  // Red (Mid Petrol) - Bottom
-            ])
-            
-            // Group nodes by color
+
+            // PERFORMANCE FIX: Group nodes by color only once per tick
             const colorGroups = d3.group(nodes, (d: SimulationNode) => d.fill)
-            
+
             colorGroups.forEach((group, color) => {
                 if (group.length <= 1) return
-                
-                // Get assigned sector angle for this color
-                const sectorAngle = colorSectors.get(color) || 0
-                
-                // Calculate ideal sector position on circle edge
-                const sectorRadius = radius * 0.7
-                const sectorCenterX = centerX + sectorRadius * Math.cos(sectorAngle)
-                const sectorCenterY = centerY + sectorRadius * Math.sin(sectorAngle)
-                
+
+                // Use pre-calculated sector position
+                const sectorPos = sectorPositions.get(color)
+                if (!sectorPos) return
+
                 // Apply sector-based clustering force
                 group.forEach((d: SimulationNode) => {
-                    const dx = sectorCenterX - (d.x || 0)
-                    const dy = sectorCenterY - (d.y || 0)
-                    const distance = Math.sqrt(dx * dx + dy * dy) || 1
-                    const force = strength / Math.max(distance, 10)
-                    
+                    const dx = sectorPos.x - (d.x || 0)
+                    const dy = sectorPos.y - (d.y || 0)
+                    const distSq = dx * dx + dy * dy // Use squared distance to avoid sqrt
+                    const dist = Math.sqrt(distSq) || 1
+                    const force = strength / Math.max(dist, 10)
+
                     d.vx = (d.vx || 0) + dx * force * 0.3
                     d.vy = (d.vy || 0) + dy * force * 0.3
                 })
-                
-                // Additional intra-group cohesion
-                if (group.length > 1) {
+
+                // PERFORMANCE FIX: Only calculate cohesion for groups > 2 nodes
+                if (group.length > 2) {
                     const groupCentroidX = d3.mean(group, (d: SimulationNode) => d.x || 0) || centerX
                     const groupCentroidY = d3.mean(group, (d: SimulationNode) => d.y || 0) || centerY
-                    
+
                     group.forEach((d: SimulationNode) => {
                         const dx = groupCentroidX - (d.x || 0)
                         const dy = groupCentroidY - (d.y || 0)
-                        const distance = Math.sqrt(dx * dx + dy * dy) || 1
-                        const cohesionForce = 0.2 / distance
-                        
+                        const dist = Math.sqrt(dx * dx + dy * dy) || 1
+                        const cohesionForce = 0.2 / dist
+
                         d.vx = (d.vx || 0) + dx * cohesionForce * 0.8
                         d.vy = (d.vy || 0) + dy * cohesionForce * 0.8
                     })
@@ -159,9 +166,37 @@ export class PhysicsEngine {
                     d.y = centerY + dy * scale
                 }
             })
-            
+
             onTick(this.simulation!.nodes())
         })
+
+        // PERFORMANCE FIX: Auto-pause simulation when stable
+        this.startStabilityCheck()
+    }
+
+    private startStabilityCheck() {
+        // Clear any existing interval
+        if (this.stabilityCheckInterval) {
+            clearInterval(this.stabilityCheckInterval)
+        }
+
+        // Check stability every 2 seconds
+        this.stabilityCheckInterval = setInterval(() => {
+            if (!this.simulation) return
+
+            const alpha = this.simulation.alpha()
+
+            // If simulation has cooled down (alpha < 0.01), pause it
+            if (alpha < 0.01) {
+                this.simulation.stop()
+
+                // Clear the interval once stopped
+                if (this.stabilityCheckInterval) {
+                    clearInterval(this.stabilityCheckInterval)
+                    this.stabilityCheckInterval = null
+                }
+            }
+        }, 2000)
     }
 
     updateCollisionBoundaries() {
@@ -178,19 +213,28 @@ export class PhysicsEngine {
     restart() {
         if (this.simulation) {
             this.simulation.alpha(0.3).restart()
-            
+
             // Add temporary boost to forces
             setTimeout(() => {
                 if (this.simulation) {
                     this.simulation.alpha(0.2).restart()
                 }
             }, 50)
+
+            // PERFORMANCE FIX: Restart stability check when simulation restarts
+            this.startStabilityCheck()
         }
     }
 
     stop() {
         if (this.simulation) {
             this.simulation.stop()
+        }
+
+        // Clean up stability check interval
+        if (this.stabilityCheckInterval) {
+            clearInterval(this.stabilityCheckInterval)
+            this.stabilityCheckInterval = null
         }
     }
 

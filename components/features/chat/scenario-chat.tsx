@@ -90,7 +90,6 @@ export default function ScenarioChat({
 • Unintended consequences
 • Historical precedents
 • Scenario simulations
-• Causal graph insights
 
 What would you like to explore?`,
         timestamp: new Date(),
@@ -134,7 +133,7 @@ What would you like to explore?`,
       const switchMessage: Message = {
         id: `mode-switch-${Date.now()}`,
         role: "assistant",
-        content: `Switched to **Explore I: Causal Graph** mode. You can now analyze causal relationships between variables and explore how they influence each other.`,
+        content: `Switched to **Explore I: Variable Analysis** mode. You can now analyze relationships between variables and explore how they influence each other.`,
         timestamp: new Date(),
         variables: scenario.variables,
       };
@@ -181,9 +180,9 @@ What would you like to explore?`,
       // Check for simulator switch commands
       const lowerInput = currentInput.toLowerCase();
       if (lowerInput.includes("switch to explore i") ||
-        lowerInput.includes("switch to causal graph") ||
+        lowerInput.includes("switch to variable analysis") ||
         lowerInput.includes("use explore i") ||
-        lowerInput.includes("show causal graph")) {
+        lowerInput.includes("show variable analysis")) {
 
         if (onChangeSimulator && activeSimulator !== "explore1") {
           onChangeSimulator("explore1");
@@ -192,7 +191,7 @@ What would you like to explore?`,
         const assistantMessage: Message = {
           id: `switch-response-${Date.now()}`,
           role: "assistant",
-          content: `Switching to Explore I: Causal Graph mode. You can now analyze the relationships between variables in the causal graph.`,
+          content: `Switching to Explore I: Variable Analysis mode. You can now analyze the relationships between variables.`,
           timestamp: new Date(),
         }
 
@@ -287,7 +286,7 @@ What would you like to explore?`,
 
       if (result.error) throw new Error(result.error)
 
-      // Handle correlations and graph updates (mainly for causal graph mode)
+      // Handle correlations and graph updates (mainly for variable analysis mode)
       if (result.correlations?.length > 0 && onUpdateGraph && activeSimulator === "explore1") {
         onUpdateGraph(result.correlations)
       }
@@ -346,7 +345,7 @@ What would you like to explore?`,
       return <span dangerouslySetInnerHTML={{ __html: content }} />
     }
 
-    // Handle correlation values in causal graph messages
+    // Handle correlation values in variable analysis messages
     if (message.correlations && message.correlations.length > 0) {
       const parts = content.split(/(\b-?\d*\.?\d+\b)/g)
       return parts.map((part, index) => {

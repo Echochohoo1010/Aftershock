@@ -1,6 +1,5 @@
 "use client"
 
-import CausalGraph from "@/components/causal-graph"
 import EffectsPanel from "./EffectsPanel"
 import { ExploreIContent } from "../content/types"
 
@@ -17,19 +16,14 @@ export default function ExploreITemplate({
 }: ExploreITemplateProps) {
   return (
     <div className="h-full flex flex-col lg:flex-row gap-4">
-      {/* Causal Graph - Left side */}
-      <div className="flex-1 min-h-[400px]">
-        <CausalGraph
-          variables={content.variables}
-          relationships={content.relationships}
-          highlightedNode={highlightedNode}
-          highlightedRelationship={highlightedRelationship}
-        />
+      {/* Variable Relationships - Placeholder for future implementation */}
+      <div className="flex-1 min-h-[400px] flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+        <p className="text-gray-500">Variable relationships visualization - Coming soon</p>
       </div>
-      
+
       {/* Effects Panel - Right side */}
       <div className="w-full lg:w-96 overflow-y-auto max-h-[600px]">
-        <EffectsPanel 
+        <EffectsPanel
           effects={content.effects}
           recommendations={content.recommendations}
           title="Policy Impact Analysis"

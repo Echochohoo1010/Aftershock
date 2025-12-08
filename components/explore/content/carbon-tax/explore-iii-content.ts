@@ -2,7 +2,7 @@ import { ExploreIIIContent } from "../types"
 
 export const carbonTaxExploreIII: ExploreIIIContent = {
   agentTypes: {
-    'Cycling/Walking': { 
+    'Cycling': { 
       color: '#22c55e', 
       label: 'Active Transport',
       description: 'Environmentally conscious individuals who prefer cycling or walking for daily transport'

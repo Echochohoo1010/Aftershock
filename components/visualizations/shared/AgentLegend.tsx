@@ -57,8 +57,11 @@ export default function AgentLegend({
                         {firstRow.map(([type, config]) => (
                             <div key={type} className="flex items-center gap-1.5">
                                 <div
-                                    className="w-2.5 h-2.5 rounded-full border border-border flex-shrink-0"
-                                    style={{ backgroundColor: config.color }}
+                                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                    style={{
+                                        backgroundColor: type === "Cycling" ? "transparent" : config.color,
+                                        border: type === "Cycling" ? `2px solid ${config.color}` : "1px solid var(--border)"
+                                    }}
                                 />
                                 <span className="text-xs whitespace-nowrap">
                                     {config.displayName}
@@ -70,8 +73,11 @@ export default function AgentLegend({
                         {secondRow.map(([type, config]) => (
                             <div key={type} className="flex items-center gap-1.5">
                                 <div
-                                    className="w-2.5 h-2.5 rounded-full border border-border flex-shrink-0"
-                                    style={{ backgroundColor: config.color }}
+                                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                    style={{
+                                        backgroundColor: type === "Cycling" ? "transparent" : config.color,
+                                        border: type === "Cycling" ? `2px solid ${config.color}` : "1px solid var(--border)"
+                                    }}
                                 />
                                 <span className="text-xs whitespace-nowrap">
                                     {config.displayName}

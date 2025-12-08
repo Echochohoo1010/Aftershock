@@ -1,10 +1,10 @@
 import { AgentType } from "../shared/AgentLegend"
 
 export const CARBON_PRICING_AGENT_TYPES: Record<string, AgentType> = {
-    "Cycling/Walking": { 
+    "Cycling": { 
         color: "#22c55e", 
         emissionLevel: 1, 
-        displayName: "Cycling/Walking" 
+        displayName: "Cycling" 
     },
     "BEV-M": { 
         color: "#22c55e", 
@@ -52,7 +52,7 @@ export const mapVehicleType = (vehicleType: string): keyof typeof CARBON_PRICING
         "ICE-S": "ICE-S",
         "DIE-M": "DIE-M",
         "ICE-M": "ICE-M",
-        "Cycling/Walking": "Cycling/Walking"
+        "Cycling": "Cycling"
     }
     return mapping[vehicleType] || "ICE-M"
 }

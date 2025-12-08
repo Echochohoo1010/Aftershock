@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import CausalGraph from "@/components/features/visualization/causal/causal-graph"
 import ChainReactionPanel from "@/components/chain-reaction-panel"
 import ScenarioChat from "@/components/features/chat/scenario-chat"
 import AgentVisualizationSelector from "@/components/visualizations/AgentVisualizationSelector"
@@ -17,7 +16,7 @@ import { Share2, Shapes, FileText, Users } from "lucide-react"
 import { generatePolicyPDF, type PolicyReportData } from "./pdf-report"
 import { CaseId } from "@/components/explore/content/types"
 
-// Default economic policy causal graph
+// Default economic policy variables
 const defaultVariables = [
   "economic_growth",
   "inflation",
@@ -88,7 +87,7 @@ const defaultResponses = [
   "This development indicates the policy is engaging with target systems as intended, though continued monitoring is essential to track secondary and tertiary effects."
 ];
 
-// Pre-filled case studies with custom causal graphs
+// Pre-filled case studies
 const caseStudies = [
   {
     id: "fiscal-stimulus",
@@ -347,7 +346,7 @@ export default function CustomPolicyAnalyst({ onSubmissionChange }: CustomPolicy
               <div className="mb-6 border rounded-lg overflow-hidden">
                 <div className="bg-gray-50 p-3 border-b">
                   <h3 className="font-medium">Select a Pre-filled Case Study</h3>
-                  <p className="text-xs text-gray-500 mt-1">Each case study includes a custom causal graph with relevant variables and relationships</p>
+                  <p className="text-xs text-gray-500 mt-1">Each case study includes relevant variables and relationships</p>
                 </div>
                 <div className="divide-y">
                   {caseStudies.map((study) => (

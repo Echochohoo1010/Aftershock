@@ -10,6 +10,13 @@ export interface SimulationNode extends d3.SimulationNodeDatum {
     y: number
     vx: number
     vy: number
+    // NEW: Geographic fields for network mode
+    lat?: number
+    lng?: number
+    geoX?: number
+    geoY?: number
+    cityName?: string
+    locationType?: 'urban_core' | 'town' | 'rural'
 }
 
 export interface PhysicsConfig {

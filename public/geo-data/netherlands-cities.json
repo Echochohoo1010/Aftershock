@@ -1,0 +1,352 @@
+[
+  {
+    "name": "Amsterdam",
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "population": 872680,
+    "type": "urban_core"
+  },
+  {
+    "name": "Rotterdam",
+    "lat": 51.9244,
+    "lng": 4.4777,
+    "population": 651446,
+    "type": "urban_core"
+  },
+  {
+    "name": "The Hague",
+    "lat": 52.0705,
+    "lng": 4.3007,
+    "population": 545163,
+    "type": "urban_core"
+  },
+  {
+    "name": "Utrecht",
+    "lat": 52.0907,
+    "lng": 5.1214,
+    "population": 357179,
+    "type": "urban_core"
+  },
+  {
+    "name": "Eindhoven",
+    "lat": 51.4416,
+    "lng": 5.4697,
+    "population": 234456,
+    "type": "urban_core"
+  },
+  {
+    "name": "Groningen",
+    "lat": 53.2194,
+    "lng": 6.5665,
+    "population": 233218,
+    "type": "urban_core"
+  },
+  {
+    "name": "Tilburg",
+    "lat": 51.5555,
+    "lng": 5.0913,
+    "population": 219800,
+    "type": "urban_core"
+  },
+  {
+    "name": "Almere",
+    "lat": 52.3508,
+    "lng": 5.2647,
+    "population": 211840,
+    "type": "urban_core"
+  },
+  {
+    "name": "Breda",
+    "lat": 51.5719,
+    "lng": 4.7683,
+    "population": 184126,
+    "type": "town"
+  },
+  {
+    "name": "Nijmegen",
+    "lat": 51.8426,
+    "lng": 5.8528,
+    "population": 177659,
+    "type": "town"
+  },
+  {
+    "name": "Enschede",
+    "lat": 52.2215,
+    "lng": 6.8957,
+    "population": 159734,
+    "type": "town"
+  },
+  {
+    "name": "Apeldoorn",
+    "lat": 52.2112,
+    "lng": 5.9699,
+    "population": 163818,
+    "type": "town"
+  },
+  {
+    "name": "Haarlem",
+    "lat": 52.3874,
+    "lng": 4.6462,
+    "population": 162543,
+    "type": "town"
+  },
+  {
+    "name": "Arnhem",
+    "lat": 51.9851,
+    "lng": 5.8987,
+    "population": 159265,
+    "type": "town"
+  },
+  {
+    "name": "Zaanstad",
+    "lat": 52.4389,
+    "lng": 4.8258,
+    "population": 156711,
+    "type": "town"
+  },
+  {
+    "name": "Amersfoort",
+    "lat": 52.1561,
+    "lng": 5.3878,
+    "population": 156286,
+    "type": "town"
+  },
+  {
+    "name": "s-Hertogenbosch",
+    "lat": 51.6883,
+    "lng": 5.3045,
+    "population": 155113,
+    "type": "town"
+  },
+  {
+    "name": "Hoofddorp",
+    "lat": 52.3027,
+    "lng": 4.6889,
+    "population": 148885,
+    "type": "town"
+  },
+  {
+    "name": "Maastricht",
+    "lat": 50.8514,
+    "lng": 5.6909,
+    "population": 122378,
+    "type": "town"
+  },
+  {
+    "name": "Leiden",
+    "lat": 52.1601,
+    "lng": 4.4970,
+    "population": 125174,
+    "type": "town"
+  },
+  {
+    "name": "Dordrecht",
+    "lat": 51.8133,
+    "lng": 4.6901,
+    "population": 119115,
+    "type": "town"
+  },
+  {
+    "name": "Zoetermeer",
+    "lat": 52.0575,
+    "lng": 4.4937,
+    "population": 125283,
+    "type": "town"
+  },
+  {
+    "name": "Zwolle",
+    "lat": 52.5125,
+    "lng": 6.0944,
+    "population": 128831,
+    "type": "town"
+  },
+  {
+    "name": "Deventer",
+    "lat": 52.2551,
+    "lng": 6.1639,
+    "population": 100718,
+    "type": "town"
+  },
+  {
+    "name": "Delft",
+    "lat": 52.0116,
+    "lng": 4.3571,
+    "population": 103659,
+    "type": "town"
+  },
+  {
+    "name": "Alkmaar",
+    "lat": 52.6321,
+    "lng": 4.7490,
+    "population": 109896,
+    "type": "town"
+  },
+  {
+    "name": "Heerlen",
+    "lat": 50.8878,
+    "lng": 5.9797,
+    "population": 87057,
+    "type": "town"
+  },
+  {
+    "name": "Venlo",
+    "lat": 51.3704,
+    "lng": 6.1685,
+    "population": 101797,
+    "type": "town"
+  },
+  {
+    "name": "Leeuwarden",
+    "lat": 53.2012,
+    "lng": 5.7999,
+    "population": 123928,
+    "type": "town"
+  },
+  {
+    "name": "Hilversum",
+    "lat": 52.2237,
+    "lng": 5.1760,
+    "population": 92407,
+    "type": "town"
+  },
+  {
+    "name": "Ede",
+    "lat": 52.0408,
+    "lng": 5.6614,
+    "population": 117166,
+    "type": "town"
+  },
+  {
+    "name": "Purmerend",
+    "lat": 52.5052,
+    "lng": 4.9586,
+    "population": 81233,
+    "type": "town"
+  },
+  {
+    "name": "Schiedam",
+    "lat": 51.9193,
+    "lng": 4.4003,
+    "population": 78739,
+    "type": "town"
+  },
+  {
+    "name": "Lelystad",
+    "lat": 52.5085,
+    "lng": 5.4747,
+    "population": 78130,
+    "type": "town"
+  },
+  {
+    "name": "Amstelveen",
+    "lat": 52.3009,
+    "lng": 4.8632,
+    "population": 91691,
+    "type": "town"
+  },
+  {
+    "name": "Roosendaal",
+    "lat": 51.5308,
+    "lng": 4.4653,
+    "population": 77032,
+    "type": "town"
+  },
+  {
+    "name": "Hoogeveen",
+    "lat": 52.7227,
+    "lng": 6.4764,
+    "population": 55697,
+    "type": "town"
+  },
+  {
+    "name": "Oss",
+    "lat": 51.7650,
+    "lng": 5.5180,
+    "population": 91931,
+    "type": "town"
+  },
+  {
+    "name": "Spijkenisse",
+    "lat": 51.8447,
+    "lng": 4.3299,
+    "population": 72500,
+    "type": "town"
+  },
+  {
+    "name": "Vlaardingen",
+    "lat": 51.9126,
+    "lng": 4.3421,
+    "population": 73445,
+    "type": "town"
+  },
+  {
+    "name": "Bergen op Zoom",
+    "lat": 51.4953,
+    "lng": 4.2892,
+    "population": 67489,
+    "type": "town"
+  },
+  {
+    "name": "Katwijk",
+    "lat": 52.2050,
+    "lng": 4.4086,
+    "population": 65754,
+    "type": "town"
+  },
+  {
+    "name": "Nieuwegein",
+    "lat": 52.0293,
+    "lng": 5.0809,
+    "population": 63421,
+    "type": "town"
+  },
+  {
+    "name": "Gouda",
+    "lat": 52.0115,
+    "lng": 4.7108,
+    "population": 73443,
+    "type": "town"
+  },
+  {
+    "name": "Kampen",
+    "lat": 52.5551,
+    "lng": 5.9113,
+    "population": 54340,
+    "type": "town"
+  },
+  {
+    "name": "Helmond",
+    "lat": 51.4814,
+    "lng": 5.6559,
+    "population": 92432,
+    "type": "town"
+  },
+  {
+    "name": "Veenendaal",
+    "lat": 52.0283,
+    "lng": 5.5595,
+    "population": 66491,
+    "type": "town"
+  },
+  {
+    "name": "Capelle aan den IJssel",
+    "lat": 51.9294,
+    "lng": 4.5778,
+    "population": 67151,
+    "type": "town"
+  },
+  {
+    "name": "Hardenberg",
+    "lat": 52.5761,
+    "lng": 6.6195,
+    "population": 60940,
+    "type": "town"
+  },
+  {
+    "name": "Alphen aan den Rijn",
+    "lat": 52.1281,
+    "lng": 4.6572,
+    "population": 111889,
+    "type": "town"
+  }
+]

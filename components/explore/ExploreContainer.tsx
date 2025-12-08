@@ -76,7 +76,7 @@ export default function ExploreContainer({
   const getTabDescription = () => {
     switch (activeTab) {
       case "explore1":
-        return "Visualize and modify causal relationships between variables"
+        return "Analyze and explore relationships between variables"
       case "explore2":
         return "Monitor real-time system responses to policy changes"
       case "explore3":
@@ -89,7 +89,7 @@ export default function ExploreContainer({
   const getTabTitle = () => {
     switch (activeTab) {
       case "explore1":
-        return "Causal Graph"
+        return "Variable Analysis"
       case "explore2":
         return "Chain Reactions"
       case "explore3":

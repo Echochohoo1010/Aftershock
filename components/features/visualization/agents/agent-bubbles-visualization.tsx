@@ -9,7 +9,7 @@ import { Play, Pause, RotateCcw, MessageCircle, X, Send } from "lucide-react"
 
 // Agent types with colors and user-friendly display names
 const AGENT_TYPES = {
-    "Cycling/Walking": { color: "#22c55e", emissionLevel: 1, displayName: "Cycling/Walking" },
+    "Cycling": { color: "#22c55e", emissionLevel: 1, displayName: "Cycling" },
     "BEV-M": { color: "#22c55e", emissionLevel: 1, displayName: "Mid-size Electric Cars" },
     "HEV-S": { color: "#84cc16", emissionLevel: 2, displayName: "Hybrid Electric Vehicle" },
     "ICE-S": { color: "#f59e0b", emissionLevel: 3, displayName: "Small Petrol Cars" },
@@ -26,7 +26,7 @@ const mapVehicleType = (vehicleType: string): string => {
         "ICE-S": "ICE-S",           // Internal Combustion Engine - Small
         "ICE-M": "ICE-M",           // Internal Combustion Engine - Mid
         "DIE-M": "DIE-M",           // Diesel - Mid
-        "Cycling/Walking": "Cycling/Walking"
+        "Cycling": "Cycling"
     }
     return mapping[vehicleType] || vehicleType
 }
@@ -101,7 +101,7 @@ function generateDefaultAgents(numAgents: number): Agent[] {
 
         // Distribute vehicle types based on emission transition
         if (i < Math.floor(numAgents * 0.1)) {
-            type = "Cycling/Walking"
+            type = "Cycling"
             adoptionThreshold = 0.1
             influence = 3 + Math.random()
             resistance = 0.1
@@ -163,7 +163,7 @@ function generateDynamicFrames(aiAgents: Agent[], numFrames: number = 24) {
             // Determine current type based on adoption progress and network effects
             if (adoptionProgress > personalThreshold) {
                 if (aiAgent.initialType === "Mid Petrol Cars") {
-                    currentType = Math.random() < 0.4 ? "Hybrid Electric Vehicle" : Math.random() < 0.7 ? "Mid-size Electric Cars" : "Cycling/Walking"
+                    currentType = Math.random() < 0.4 ? "Hybrid Electric Vehicle" : Math.random() < 0.7 ? "Mid-size Electric Cars" : "Cycling"
                 } else if (aiAgent.initialType === "Mid Diesel" && adoptionProgress > 0.6) {
                     currentType = Math.random() < 0.5 ? "Hybrid Electric Vehicle" : "Small Petrol Cars"
                 }
@@ -274,7 +274,7 @@ export default function AgentBubblesVisualization({
 
         // Create type-specific cluster centers (emission level grouping)
         const typePositions = {
-            "Cycling/Walking": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport - Level 1
+            "Cycling": { x: cx - R * 0.6, y: cy - R * 0.6 }, // Clean transport - Level 1
             "BEV-M": { x: cx - R * 0.3, y: cy - R * 0.6 },           // Battery Electric - Level 1
             "HEV-S": { x: cx + R * 0.3, y: cy - R * 0.3 },           // Small Hybrid - Level 2
             "ICE-S": { x: cx + R * 0.6, y: cy + R * 0.3 },           // Small Petrol - Level 3
@@ -297,7 +297,7 @@ export default function AgentBubblesVisualization({
         const nodes: SimulationNode[] = frames[0].agents.map((agent: any) => {
             const vehicleType = mapVehicleType(agent.type)
             const typePos = typePositions[vehicleType as keyof typeof typePositions] || { x: cx, y: cy }
-            const emissionLevel = getEmissionLevel(vehicleType, agent.emissionLevel)
+            const emissionLevel = getEmissionLevel(vehicleType, agent.emission_level)
             const radius = rScale(emissionLevel)
             
             return {
@@ -308,7 +308,7 @@ export default function AgentBubblesVisualization({
                 vy: (Math.random() - 0.5) * 1,
                 r: radius,
                 targetR: radius,
-                fill: AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES["Cycling/Walking"].color,
+                fill: AGENT_TYPES[vehicleType as keyof typeof AGENT_TYPES]?.color || AGENT_TYPES["Cycling"].color,
                 type: vehicleType
             }
         })
@@ -509,7 +509,7 @@ export default function AgentBubblesVisualization({
             }
 
             // Use emission-based sizing from agent data or vehicle type
-            const emissionLevel = getEmissionLevel(vehicleType, agent.emissionLevel)
+            const emissionLevel = getEmissionLevel(vehicleType, agent.emission_level)
             const targetR = rScale(emissionLevel)
             const targetFill = agentConfig.color
 

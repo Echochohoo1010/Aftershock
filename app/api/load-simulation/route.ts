@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
 async function readExistingSimulationXLSX(): Promise<any> {
     // Use the file that gets updated by the simulation
-    const filePath = '/Users/echohuang/Documents/Explanatory policy /netherlands_simulation_100_agents.xlsx'
+    const filePath = path.join(process.cwd(), 'public', 'data', 'netherlands_simulation_100_agents.xlsx')
     
     if (!fs.existsSync(filePath)) {
         console.log('No existing simulation file found at:', filePath)

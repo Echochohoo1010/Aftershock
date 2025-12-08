@@ -71,8 +71,10 @@ import json
 import sys
 
 try:
+    import os
     # Load simulation data
-    df = pd.read_excel('/Users/echohuang/Documents/Explanatory policy /netherlands_simulation_100_agents.xlsx')
+    cwd = os.getcwd()
+    df = pd.read_excel(os.path.join(cwd, 'public', 'data', 'netherlands_simulation_100_agents.xlsx'))
 
     # Group by agent to get initial data and create agent profiles
     agents = []
@@ -130,7 +132,8 @@ try:
     }
 
     # Save to JSON
-    with open('/Users/echohuang/Documents/Explanatory policy /exploratory-policy/public/simulation_data.json', 'w') as f:
+    output_path = os.path.join(cwd, 'public', 'simulation_data.json')
+    with open(output_path, 'w') as f:
         json.dump(simulation_data, f, indent=2)
 
     print(f"SUCCESS: Generated {len(agents)} agents, {len(frames)} frames")

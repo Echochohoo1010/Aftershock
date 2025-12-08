@@ -25,7 +25,7 @@ const playfair = Playfair_Display({
 })
 
 export const metadata = {
-  title: "Ripple",
+  title: "Aftershock",
   description: "Turn complexity into clarity - Interactive policy simulation and analysis",
 }
 

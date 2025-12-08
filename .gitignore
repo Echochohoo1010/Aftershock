@@ -25,3 +25,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# macOS system files
+.DS_Store
+
+# Python virtual environment
+.venv/
+
+# Generated simulation files
+/public/simulation_data.json
+/public/simulation_vehicle_tax.json
+/public/simulation_fuel_tax.json

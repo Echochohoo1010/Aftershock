@@ -28,7 +28,6 @@ export interface PolicyReportData {
         content: string
     }>
     generatedAt: Date
-    causalGraphImage?: string // Base64 encoded image of the causal graph
 }
 
 
@@ -244,9 +243,9 @@ const PolicyReportDocument = ({ data }: { data: PolicyReportData }) => (
                 <Text style={styles.text}>Description: {data.policyDescription}</Text>
             </View>
 
-            {/* Causal Analysis */}
+            {/* Variable Analysis */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Causal Analysis (Explore I)</Text>
+                <Text style={styles.sectionTitle}>Variable Analysis (Explore I)</Text>
                 <Text style={styles.boldText}>Variables Analyzed:</Text>
                 <View style={styles.variableContainer}>
                     {data.variables.map((variable, index) => (
@@ -271,7 +270,7 @@ const PolicyReportDocument = ({ data }: { data: PolicyReportData }) => (
 
                 <Text style={styles.boldText}>Analysis Summary:</Text>
                 <Text style={styles.text}>
-                    The causal graph reveals {data.relationships.filter(r => Math.abs(r.strength) > 0.6).length} strong
+                    The variable analysis reveals {data.relationships.filter(r => Math.abs(r.strength) > 0.6).length} strong
                     relationships out of {data.relationships.length} total connections.
                     {data.relationships.filter(r => r.type === "positive").length >
                         data.relationships.filter(r => r.type === "negative").length ?
@@ -282,21 +281,6 @@ const PolicyReportDocument = ({ data }: { data: PolicyReportData }) => (
         </Page>
 
         <Page size="A4" style={styles.page}>
-            {/* Causal Graph Visualization */}
-            {data.causalGraphImage && (
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Causal Graph Visualization</Text>
-                    <Canvas
-                        style={styles.graphImage}
-                        paint={(painter, availableWidth, availableHeight) => {
-                            // This would render the causal graph image
-                            // Note: react-pdf has limitations with images, you might need to use a different approach
-                            painter.image(data.causalGraphImage!, 0, 0, availableWidth, availableHeight)
-                        }}
-                    />
-                </View>
-            )}
-
             {/* Chain Reaction Analysis */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Chain Reaction Analysis (Explore II)</Text>
