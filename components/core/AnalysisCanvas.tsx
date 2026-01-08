@@ -8,6 +8,9 @@ import { RevenueChart } from "@/components/visualizations/charts/RevenueChart"
 import { PolicyImpactBar } from "@/components/visualizations/charts/PolicyImpactBar"
 import { CompactToggle } from "@/components/ui/CompactToggle"
 import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts'
+import {
   Play, Pause, Zap, Users, Activity, ChevronRight, ChevronLeft,
   BarChart3, DollarSign, Minimize2, Maximize2,
   ExternalLink, ArrowLeft, RotateCcw, HelpCircle
@@ -42,7 +45,7 @@ const BubbleLegend = () => (
            </div>
            <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></div>
-              <span className="text-xs text-gray-600 font-medium">Electric (EV)</span>
+              <span className="text-xs text-gray-600 font-medium">Electric (EV & PHEV)</span>
            </div>
            <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 rounded-full border-2 border-[#0891b2]"></div>
@@ -61,6 +64,7 @@ export default function AnalysisCanvas({
   const [currentFrame, setCurrentFrame] = useState(0)
   const [totalFrames, setTotalFrames] = useState(120)
   const [frames, setFrames] = useState<any[]>([])
+  const [monthlyMetrics, setMonthlyMetrics] = useState<any[]>([])
   const [isRunningSimulation, setIsRunningSimulation] = useState(false)
   const animationRef = useRef<number | null>(null)
   const lastFrameTimeRef = useRef<number>(0)
@@ -149,6 +153,18 @@ export default function AnalysisCanvas({
     }))
   }, [selectedPolicy])
 
+  // Helper function to transform 6 vehicle types to 5 pie segments
+  const transformMarketShares = (market_shares: any) => {
+    if (!market_shares) return [0, 0, 0, 0, 0]
+    return [
+      market_shares['ICE-S'] || 0,                                    // Petrol
+      (market_shares['ICE-M'] || 0) + (market_shares['DIE-M'] || 0), // Diesel
+      market_shares['HEV-S'] || 0,                                    // Hybrid
+      (market_shares['BEV-M'] || 0) + (market_shares['PHEV-M'] || 0),// EV/PHEV
+      0                                                               // Cyclists (not in data)
+    ]
+  }
+
   // NEW: When toggle clicked, update selectedPolicy
   const handlePolicyToggle = (policyType: 'fuel' | 'purchase') => {
     setSelectedPolicy(policyType)
@@ -167,30 +183,48 @@ export default function AnalysisCanvas({
       try {
         // Map policy ID to Python policy type
         const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
-        const filename = `simulation_${policyType}.json`
+        const simulationFilename = `simulation_${policyType}.json`
+        const metricsFilename = `monthly_metrics_${policyType}.json`
 
-        console.log(`Loading simulation data for policy: ${selectedPolicy} (${filename})`)
+        console.log(`Loading data for policy: ${selectedPolicy}`)
 
-        const response = await fetch(`/${filename}`)
-        if (response.ok) {
-          const result = await response.json()
-          if (Array.isArray(result)) {
-            setFrames(result)
-            setTotalFrames(result.length)
+        // Load both simulation frames and monthly metrics in parallel
+        const [simulationResponse, metricsResponse] = await Promise.all([
+          fetch(`/${simulationFilename}`),
+          fetch(`/${metricsFilename}`)
+        ])
+
+        // Process simulation frames
+        if (simulationResponse.ok) {
+          const simulationData = await simulationResponse.json()
+          if (Array.isArray(simulationData)) {
+            setFrames(simulationData)
+            setTotalFrames(simulationData.length)
             setCurrentFrame(0) // Reset to beginning
-            console.log(`Loaded ${result.length} frames for ${policyType} - Reset to frame 0`)
+            console.log(`Loaded ${simulationData.length} frames`)
 
-            // Initialize metrics with first frame data
-            if (result.length > 0 && result[0].totalEmissionsTonnes !== undefined) {
+            // Initialize emissions with first frame data
+            if (simulationData.length > 0 && simulationData[0].totalEmissionsTonnes !== undefined) {
               setMetrics(prev => ({
                 ...prev,
-                totalEmissions: result[0].totalEmissionsTonnes,
-                emissionHistory: [result[0].totalEmissionsTonnes]
+                totalEmissions: simulationData[0].totalEmissionsTonnes,
+                emissionHistory: [simulationData[0].totalEmissionsTonnes]
               }))
             }
           }
         } else {
-          console.warn(`No data found for ${filename}, may need to run simulation first`)
+          console.warn(`No simulation data found for ${simulationFilename}`)
+        }
+
+        // Process monthly metrics
+        if (metricsResponse.ok) {
+          const metricsData = await metricsResponse.json()
+          if (metricsData && metricsData.monthly_data) {
+            setMonthlyMetrics(metricsData.monthly_data)
+            console.log(`Loaded ${metricsData.monthly_data.length} monthly metrics`)
+          }
+        } else {
+          console.warn(`No metrics data found for ${metricsFilename}`)
         }
       } catch (error) {
         console.error('Failed to load simulation data:', error)
@@ -221,15 +255,46 @@ export default function AnalysisCanvas({
       ? ((currentEmissions - baselineEmissions) / baselineEmissions) * 100
       : 0
 
-    // Update metrics state
+    // Get monthly metrics for current frame
+    const currentMetrics = monthlyMetrics[currentFrame]
+
+    // Update metrics state with simulation data AND monthly metrics
     setMetrics(prev => ({
       ...prev,
       totalEmissions: currentEmissions,
       emissionHistory: emissionHistory,
-      emissionsPercentageChange: percentageChange
+      emissionsPercentageChange: percentageChange,
+      // NEW: Connect to monthly metrics
+      costEffectiveness: currentMetrics?.cost_effectiveness_euros_per_tco2 || 0,
+      marketShare: currentMetrics?.market_shares
+        ? transformMarketShares(currentMetrics.market_shares)
+        : prev.marketShare
     }))
 
-  }, [currentFrame, frames])
+  }, [currentFrame, frames, monthlyMetrics])
+
+  // Prepare EV adoption data for line chart (progressive animation)
+  const evAdoptionData = useMemo(() => {
+    if (!monthlyMetrics || monthlyMetrics.length === 0) return []
+    // Only show data up to current frame for progressive animation
+    return monthlyMetrics.slice(0, currentFrame + 1).map((monthData, index) => ({
+      month: index,
+      year: (index / 12).toFixed(1),
+      ev_adoption: monthData.ev_adoption_percent || 0,
+      bev_adoption: monthData.bev_adoption_percent || 0,
+      phev_adoption: monthData.phev_adoption_percent || 0
+    }))
+  }, [monthlyMetrics, currentFrame])
+
+  // Prepare Fleet CO2 trajectory data for line chart
+  const fleetCO2Data = useMemo(() => {
+    if (!metrics.emissionHistory || metrics.emissionHistory.length === 0) return []
+    return metrics.emissionHistory.map((emissions, index) => ({
+      month: index,
+      year: (index / 12).toFixed(1),
+      emissions: emissions
+    }))
+  }, [metrics.emissionHistory])
 
   // PRESERVED: Animation control functions
   const handlePlay = useCallback(() => {
@@ -530,21 +595,21 @@ export default function AnalysisCanvas({
                     active={config.taxPurchase}
                     onClick={() => handlePolicyToggle('purchase')}
                     icon={<BarChart3 size={14} />}
-                    label="Purchase"
+                    label="Purchase tax"
                   />
                   <CompactToggle
                     active={config.taxFuel}
                     onClick={() => handlePolicyToggle('fuel')}
                     icon={<Zap size={14} />}
-                    label="Fuel"
+                    label="Fuel tax"
                   />
                 </div>
 
                 {/* Divider */}
-                <div className="h-5 w-px bg-gray-200"></div>
+                {/* <div className="h-5 w-px bg-gray-200"></div> */}
 
-                {/* Model Group (Empty Placeholders) */}
-                <div className="flex items-center gap-1.5">
+                {/* Model Group (Empty Placeholders) - Hidden for now, may be used in future */}
+                {/* <div className="flex items-center gap-1.5">
                   <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wide">Model</span>
                   <CompactToggle
                     active={config.networkMode}
@@ -558,7 +623,7 @@ export default function AnalysisCanvas({
                     icon={<Users size={14} />}
                     label="Scale"
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -614,49 +679,102 @@ export default function AnalysisCanvas({
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-rose-700"></div>Petrol</div>
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-orange-700"></div>Diesel</div>
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-amber-600"></div>Hybrid</div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-600"></div>EV</div>
+                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-600"></div>EV/PHEV</div>
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-cyan-600"></div>Cycle</div>
               </div>
             </div>
 
             <div className="col-span-1 lg:col-span-3 bg-white p-4 rounded-lg border border-gray-100">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Fleet Composition Evolution (10 Years)</h4>
-              <AreaChart
-                data={[{points: metrics.fleetOverTime[0]}, {points: metrics.fleetOverTime[1]}]}
-                colors={['#059669', '#be123c']}
-                height={250}
-              />
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">EV Adoption Over Time (10 Years)</h4>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={evAdoptionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="month"
+                    label={{ value: 'Month', position: 'insideBottom', offset: -5, style: { fontSize: '12px', fill: '#9ca3af' } }}
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    tickFormatter={(value) => value % 12 === 0 ? `${value / 12}y` : ''}
+                  />
+                  <YAxis
+                    label={{ value: 'EV Adoption (%)', angle: -90, position: 'insideLeft', style: { fontSize: '12px', fill: '#9ca3af' } }}
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    domain={[0, 'auto']}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }}
+                    labelFormatter={(value) => `Month ${value} (Year ${Math.floor(value / 12) + 1})`}
+                    formatter={(value: any) => [`${value.toFixed(2)}%`, 'EV Adoption']}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="ev_adoption"
+                    stroke="#059669"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, fill: '#059669' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
               <div className="flex justify-between text-xs text-gray-400 mt-2">
                 <span>Year 1</span>
                 <span>Year 10</span>
               </div>
             </div>
 
-            <div className="col-span-1 lg:col-span-2">
-              <SimpleLineChart
-                label="Avg. Emissions per Capita (Time Series)"
-                data={metrics.emissionHistory}
-                color="#be123c"
-              />
+            <div className="col-span-1 lg:col-span-2 bg-white p-4 rounded-lg border border-gray-100">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">
+                Fleet CO2 Trajectory (10 Years)
+              </h4>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={fleetCO2Data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="month"
+                    label={{ value: 'Month', position: 'insideBottom', offset: -5, style: { fontSize: '12px', fill: '#9ca3af' } }}
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    tickFormatter={(value) => value % 12 === 0 ? `${value / 12}y` : ''}
+                  />
+                  <YAxis
+                    label={{ value: 'CO2 Emissions (tonnes)', angle: -90, position: 'insideLeft', style: { fontSize: '12px', fill: '#9ca3af' } }}
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }}
+                    labelFormatter={(value) => `Month ${value} (Year ${Math.floor(value / 12) + 1})`}
+                    formatter={(value: any) => [`${value.toFixed(2)} tonnes`, 'Emissions']}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="emissions"
+                    stroke="#be123c"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, fill: '#be123c' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
 
-            <div className="bg-white p-4 rounded-lg border border-gray-100">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">EV Demand vs Capacity</h4>
-              <div className="relative h-40 w-full">
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-                  <polyline
-                    points={metrics.evDemandVsCapacity.capacity.map((d,i) => `${i*11},${100-d*2}`).join(' ')}
-                    fill="none" stroke="#9ca3af" strokeWidth="2" strokeDasharray="4"
-                  />
-                  <polyline
-                    points={metrics.evDemandVsCapacity.demand.map((d,i) => `${i*11},${100-d*2}`).join(' ')}
-                    fill="none" stroke="#059669" strokeWidth="2"
-                  />
-                </svg>
-                <div className="flex gap-4 text-xs mt-2 justify-center">
-                  <span className="flex items-center gap-1 text-emerald-600"><div className="w-4 h-0.5 bg-emerald-600"></div> Demand</span>
-                  <span className="flex items-center gap-1 text-gray-400"><div className="w-4 h-0.5 bg-gray-400 border-t border-dashed"></div> Capacity</span>
+            <div className="bg-white p-4 rounded-lg border border-gray-100 flex flex-col items-center justify-center">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 w-full text-center">
+                Full Documentation
+              </h4>
+              <div className="flex flex-col items-center gap-3 py-6">
+                <div className="p-4 bg-indigo-100 text-indigo-600 rounded-full">
+                  <ExternalLink size={24} />
                 </div>
+                <p className="text-sm text-gray-600 text-center max-w-xs">
+                  Download the comprehensive carbon policy report and technical documentation
+                </p>
+                <a
+                  href="/carbon_policy_report.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm flex items-center gap-2"
+                >
+                  <ExternalLink size={16} />
+                  Download Full Report
+                </a>
               </div>
             </div>
           </div>

@@ -11,24 +11,48 @@ A sophisticated policy simulation and analysis platform that turns complex polic
 
 Aftershock provides an interactive canvas for exploring policy interventions through:
 - **Agent-Based Simulations**: Model real-world scenarios with thousands of autonomous agents
-- **Interactive Visualizations**: Dynamic charts, network graphs, and 3D visualizations
+- **Interactive Visualizations**: Dynamic charts, network graphs, and bubble visualizations
 - **Real-Time Analysis**: Adjust parameters and see immediate policy impacts
 - **Data-Driven Insights**: Export detailed reports and simulation data
+
+## Documentation
+
+**📚 Full Documentation and Theoretical Analysis**
+
+Access comprehensive documentation, theoretical framework, and detailed analysis:
+- [Complete Project Documentation (PDF)](https://drive.google.com/file/d/1F0WemPQNOeLWsN68ZAV4qkjlT8ffFoAT/view?usp=sharing)
+
+The documentation includes:
+- Theoretical foundations and research methodology
+- Agent-based modeling approach and calibration
+- Policy scenario analysis and comparative results
+- Technical implementation details
+- Validation and sensitivity analysis
 
 ## Features
 
 ### Policy Simulations
 - **Carbon Pricing Models**: Analyze carbon tax implementations across different scenarios
-  - Household income distribution analysis
-  - Renewable energy investment impacts
-  - Industrial output effects
-  - Agent-based vehicle fleet modeling
+  - **Purchase Tax Policy**: Netherlands-style vehicle purchase tax (BPM) with feebate system
+  - **Fuel Tax Policy**: British Columbia-style progressive carbon tax on fuel
+  - Agent-based vehicle fleet modeling (6 vehicle types: ICE-S, ICE-M, DIE-M, HEV-S, BEV-M, PHEV-M)
+  - 10-year simulation horizon with 100+ household agents
+  - Real-time policy comparison and cost-effectiveness analysis
+  - Comprehensive monthly metrics tracking (emissions, EV adoption, market shares)
 
 ### Visualization Suite
-- **Interactive Charts**: Time-series analysis, distribution plots, and comparative metrics
-- **Network Visualizations**: Force-directed graphs showing policy ripple effects
-- **Bubble Visualizations**: Multi-dimensional data exploration with physics-based interactions
-- **3D Globe**: Geographic policy impact visualization with interactive markers
+- **Interactive Bubble Canvas**: Real-time agent visualization with physics-based interactions
+  - Color-coded vehicle types (Petrol, Diesel, Hybrid, EV/PHEV, Cyclists)
+  - Dynamic emission level indicators
+  - Smooth 120-frame animation (10-year simulation)
+- **Real-Time Analytics Dashboard**:
+  - Fleet CO2 trajectory tracking
+  - EV adoption curves over time
+  - Cost effectiveness metrics (€/tCO2)
+  - Market share pie charts with 5 vehicle categories
+  - Policy impact bars (vehicle purchase price vs fuel cost)
+- **Interactive Timeline Controls**: Play/pause, scrub timeline, restart simulation
+- **Policy Toggle Interface**: Switch between Purchase Tax and Fuel Tax scenarios in real-time
 
 ### Analysis Tools
 - **Parameter Controls**: Fine-tune policy variables with intuitive sliders and inputs
@@ -91,6 +115,29 @@ npm run dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+### Quick Start Guide
+
+Once the development server is running:
+
+1. **Navigate to the Carbon Pricing Simulation**:
+   - Click "Explore Cases" from the landing page
+   - Select "Carbon Tax Implementation" case
+
+2. **Interact with the Simulation**:
+   - Press the **Play** button to watch the 10-year simulation unfold
+   - Use the **timeline scrubber** to jump to any month (0-120)
+   - Toggle between **Purchase tax** and **Fuel tax** policies in real-time
+   - Click **Restart** to re-run the simulation with Monte Carlo randomization
+
+3. **Analyze Results**:
+   - Watch the bubble visualization show agent vehicle choices
+   - Track **Fleet CO2 Trajectory** in the sidebar
+   - Monitor **Cost Effectiveness** (€/tCO2 avoided)
+   - Click **Expand** to view full analytics dashboard
+
+4. **Access Documentation**:
+   - In full dashboard view, click **Download Full Report** for comprehensive analysis
+
 ### Environment Variables
 
 Create a `.env.local` file in the root directory:
@@ -103,24 +150,42 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
 
 ```
 Aftershock/
-├── app/                          # Next.js app router pages
-│   ├── api/                      # API routes
-│   ├── canvas/                   # Simulation canvas page
-│   ├── explore/                  # Case selection page
-│   └── page.tsx                  # Landing page
-├── components/                   # React components
-│   ├── core/                     # Core UI components
-│   ├── visualizations/           # Visualization components
-│   │   ├── carbon-pricing/       # Carbon pricing specific viz
-│   │   ├── charts/               # Chart components
-│   │   └── shared/               # Shared viz utilities
-│   └── CaseSelectionGallery.tsx  # Case selection UI
-├── lib/                          # Utility libraries
-├── public/                       # Static assets
-│   ├── simulations/              # Python simulation scripts
-│   └── sounds/                   # Audio assets
-├── docs/                         # Documentation
-└── package.json                  # Dependencies and scripts
+├── app/                                    # Next.js app router pages
+│   ├── api/                                # API routes
+│   │   ├── run-simulation/                 # Simulation execution endpoint
+│   │   └── generate-story/                 # AI story generation
+│   ├── canvas/                             # Simulation canvas page
+│   ├── explore/                            # Case selection page
+│   └── page.tsx                            # Landing page
+├── components/                             # React components
+│   ├── core/
+│   │   └── AnalysisCanvas.tsx              # Main simulation canvas (control bar here!)
+│   ├── features/
+│   │   └── visualization/
+│   │       └── agents/
+│   │           └── PureBubbleCanvas.tsx    # Agent bubble visualization
+│   ├── visualizations/                     # Visualization components
+│   │   ├── carbon-pricing/                 # Carbon pricing specific viz
+│   │   ├── charts/                         # Chart components
+│   │   │   ├── SimpleLineChart.tsx         # CO2 trajectory chart
+│   │   │   ├── PolicyImpactBar.tsx         # Tax impact visualization
+│   │   │   └── ...
+│   │   └── shared/                         # Shared viz utilities
+│   ├── ui/
+│   │   └── CompactToggle.tsx               # Policy toggle buttons
+│   └── explore/
+│       └── content/
+│           └── carbon-tax/                 # Carbon pricing case content
+├── lib/                                    # Utility libraries
+├── public/                                 # Static assets
+│   ├── simulations/
+│   │   └── netherlands_carbon_pricing_simulation.py  # Main simulation script
+│   ├── simulation_vehicle_tax.json         # Purchase tax scenario data
+│   ├── simulation_fuel_tax.json            # Fuel tax scenario data
+│   ├── monthly_metrics_vehicle_tax.json    # Purchase tax metrics
+│   ├── monthly_metrics_fuel_tax.json       # Fuel tax metrics
+│   └── carbon_policy_report.pdf            # Full technical documentation
+└── package.json                            # Dependencies and scripts
 ```
 
 ## Development
@@ -134,51 +199,111 @@ Aftershock/
 
 ### Running Simulations
 
-Python simulations are located in `public/simulations/`:
+The carbon pricing simulation is located in `public/simulations/`. You can run it with different policy types:
 
 ```bash
 cd public/simulations
-python netherlands_carbon_pricing_simulation.py
+
+# Run Netherlands-style purchase tax simulation
+python netherlands_carbon_pricing_simulation.py vehicle_tax
+
+# Run British Columbia-style fuel tax simulation
+python netherlands_carbon_pricing_simulation.py fuel_tax
 ```
 
-Simulation outputs are automatically loaded by the frontend visualizations.
+**Simulation Outputs:**
+- `simulation_vehicle_tax.json` - Agent data for purchase tax scenario
+- `simulation_fuel_tax.json` - Agent data for fuel tax scenario
+- `monthly_metrics_vehicle_tax.json` - Comprehensive metrics for purchase tax
+- `monthly_metrics_fuel_tax.json` - Comprehensive metrics for fuel tax
+
+These outputs are automatically loaded by the frontend visualizations and can be toggled in real-time using the control bar.
+
+## Simulation Methodology
+
+### CS166 Carbon Pricing Model
+
+The simulation is based on research from:
+- **Kok (2015)**: Netherlands vehicle taxation policy impact study
+- **Murray & Rivers (2015)**: British Columbia carbon tax analysis
+
+**Key Model Characteristics:**
+- **Time Horizon**: 120 months (10 years) with monthly timesteps
+- **Population**: 100 heterogeneous household agents
+- **Vehicle Types**: 6 archetypes (ICE-S, ICE-M, DIE-M, HEV-S, BEV-M, PHEV-M)
+- **Decision Framework**: Utility-based choice with behavioral realism
+- **Policy Scenarios**:
+  1. **Purchase Tax (Netherlands)**: BPM vehicle purchase tax, feebate system, annual road tax (MRB), company car tax (BIK)
+  2. **Fuel Tax (BC Canada)**: Progressive carbon tax on fuel (€6.97 to €20.89/tonne CO2)
+
+**Behavioral Parameters:**
+- Upfront cost weight: 1.0
+- Annual cost weight: 0.7
+- Fuel cost weight: 0.5
+- Decision noise: €7,000
+- Range anxiety: €3,500 initial, 95% monthly decay
+- Initial car ownership: 45.1%
+
+**Outputs:**
+- Monthly fleet emissions (tonnes CO2e)
+- EV adoption rates (BEV + PHEV)
+- Market share by vehicle type
+- Cost effectiveness (€/tCO2 avoided)
+- Policy costs (subsidies - taxes collected)
 
 ## Key Features in Detail
 
 ### Agent-Based Modeling
-The carbon pricing simulation models thousands of household agents with:
-- Income distribution (log-normal)
-- Driving behavior patterns
-- Vehicle ownership and preferences
-- Policy awareness levels
-- Urban/rural distinctions
-- Company car considerations
+The carbon pricing simulation models 100 heterogeneous household agents with:
+- **Income Distribution**: Log-normal distribution calibrated to real-world data
+- **Driving Behavior**: Annual kilometers driven (normal distribution, mean 13,000 km)
+- **Vehicle Preferences**: Choice among 6 vehicle archetypes with realistic pricing
+- **Policy Awareness**: Beta distribution (2, 3) affecting response to incentives
+- **Company Car Status**: 50% of agents with enhanced policy awareness
+- **Cycling Preference**: Beta distribution influencing car ownership decisions
+- **Utility-Based Decision Making**: Total cost of ownership (upfront, annual, fuel costs)
+- **Range Anxiety**: Decaying over time (95% decay rate per month) for BEV/PHEV
+- **Dynamic Fleet Evolution**: 10-year simulation with monthly vehicle age tracking
 
 ### Interactive Canvas
 The analysis canvas provides:
-- Real-time parameter adjustment
-- Multi-panel visualization layouts
-- Synchronized data updates
-- Export functionality
-- Responsive design for all screen sizes
+- **Real-Time Policy Switching**: Toggle between Purchase Tax and Fuel Tax with live data updates
+- **Synchronized Visualizations**: All charts and metrics update together as simulation progresses
+- **Timeline Controls**:
+  - Play/pause animation (400ms per month)
+  - Scrubber for instant time travel (0-120 months)
+  - Restart button to re-run simulation
+- **Collapsible Dashboard**: Hide/show analytics sidebar and controls for focused viewing
+- **Full Analytics View**: Expandable dashboard with comprehensive charts and documentation access
+- **Responsive Design**: Optimized for desktop viewing with smooth transitions
 
-### Visualization Types
-1. **Time Series**: Track policy impacts over time
-2. **Distribution Charts**: Analyze household and income distributions
-3. **Network Graphs**: Explore policy connections and dependencies
-4. **Bubble Charts**: Multi-dimensional data exploration
-5. **Geographic Maps**: 3D globe with policy markers
+### Visualization Components
+1. **Fleet CO2 Trajectory**: Line chart tracking total emissions over 10 years
+2. **EV Adoption Curve**: Progressive line chart showing BEV/PHEV market penetration
+3. **Market Share Analysis**: Conic gradient pie chart with 5 vehicle categories
+4. **Policy Impact Bars**: Comparative visualization of vehicle price vs fuel cost components
+5. **Cost Effectiveness Metric**: Real-time €/tCO2 calculation
+6. **Agent Bubble Visualization**: Physics-based 2D representation of all 100 agents with color-coded types
 
-## Performance Optimizations
+## Recent Updates
+
+### Latest Improvements
+- **Enhanced Control Bar**: Updated policy labels to "Purchase tax" and "Fuel tax" for clarity
+- **Bubble Visualization Fixes**: Improved animation smoothness and physics interactions
+- **Security Update**: Upgraded to Next.js 15.5.7 to address CVE-2025-66478
+- **Network Visualization**: Added force-directed graph capabilities for exploring policy connections
+- **Comprehensive Metrics**: Added detailed monthly tracking for emissions, cost effectiveness, and market shares
+- **PDF Documentation**: Integrated full technical report accessible from the dashboard
+
+### Performance Optimizations
 
 This project implements several performance enhancements:
 - Dynamic imports for heavy components
 - Memoization of expensive calculations
-- Virtualized lists for large datasets
+- RequestAnimationFrame-based animation loop (400ms per month)
 - Debounced input handlers
 - Optimized re-renders with React.memo
-
-See [PERFORMANCE_OPTIMIZATIONS.md](./PERFORMANCE_OPTIMIZATIONS.md) for details.
+- Progressive data loading for charts
 
 ## Deployment
 

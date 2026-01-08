@@ -2,33 +2,38 @@ import { ExploreIIIContent } from "../types"
 
 export const carbonTaxExploreIII: ExploreIIIContent = {
   agentTypes: {
-    'Cycling': { 
-      color: '#22c55e', 
+    'Cycling': {
+      color: '#22c55e',
       label: 'Active Transport',
       description: 'Environmentally conscious individuals who prefer cycling or walking for daily transport'
     },
-    'BEV-M': { 
-      color: '#3b82f6', 
+    'BEV-M': {
+      color: '#3b82f6',
       label: 'Electric Vehicle (Medium)',
       description: 'Early adopters of electric vehicles, typically urban professionals with moderate to high income'
     },
-    'HEV-S': { 
-      color: '#06b6d4', 
+    'PHEV-M': {
+      color: '#10b981',
+      label: 'Plug-in Hybrid (Medium)',
+      description: 'Transitional technology users adopting plug-in hybrid vehicles as a bridge to full electric'
+    },
+    'HEV-S': {
+      color: '#06b6d4',
       label: 'Hybrid Vehicle (Small)',
       description: 'Pragmatic consumers choosing fuel-efficient hybrid vehicles as a compromise solution'
     },
-    'ICE-S': { 
-      color: '#f59e0b', 
+    'ICE-S': {
+      color: '#f59e0b',
       label: 'Gasoline Car (Small)',
       description: 'Traditional vehicle users with smaller, more efficient gasoline cars'
     },
-    'DIE-M': { 
-      color: '#f97316', 
+    'DIE-M': {
+      color: '#f97316',
       label: 'Diesel Car (Medium)',
       description: 'Long-distance commuters and rural residents who rely on diesel vehicles for efficiency'
     },
-    'ICE-M': { 
-      color: '#ef4444', 
+    'ICE-M': {
+      color: '#ef4444',
       label: 'Gasoline Car (Medium)',
       description: 'Conventional vehicle owners with medium-sized gasoline cars, often for family use'
     }
