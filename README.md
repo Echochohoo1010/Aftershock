@@ -15,12 +15,13 @@ Aftershock provides an interactive canvas for exploring policy interventions thr
 - **Real-Time Analysis**: Adjust parameters and see immediate policy impacts
 - **Data-Driven Insights**: Export detailed reports and simulation data
 
-## Documentation
+---
 
-**📚 Full Documentation and Theoretical Analysis**
+## 🚀 Live Demo & Documentation
 
-Access comprehensive documentation, theoretical framework, and detailed analysis:
-- [Complete Project Documentation (PDF)](https://drive.google.com/file/d/1F0WemPQNOeLWsN68ZAV4qkjlT8ffFoAT/view?usp=sharing)
+**[→ Try the Live Application on Vercel](https://aftershock-ivyb-git-main-echos-projects-5619c209.vercel.app?_vercel_share=stq6OKMZmPchJgnsE3v0x9fE01qQfoFO)**
+
+**[📚 Complete Technical Documentation (PDF)](https://drive.google.com/file/d/1F0WemPQNOeLWsN68ZAV4qkjlT8ffFoAT/view?usp=sharing)**
 
 The documentation includes:
 - Theoretical foundations and research methodology
@@ -28,6 +29,8 @@ The documentation includes:
 - Policy scenario analysis and comparative results
 - Technical implementation details
 - Validation and sensitivity analysis
+
+---
 
 ## Features
 
@@ -307,9 +310,15 @@ This project implements several performance enhancements:
 
 ## Deployment
 
-### Vercel (Recommended)
+### Live Production Deployment
 
-The easiest way to deploy is using [Vercel](https://vercel.com):
+The application is currently deployed on Vercel:
+
+**[→ View Live Demo](https://aftershock-ivyb-git-main-echos-projects-5619c209.vercel.app?_vercel_share=stq6OKMZmPchJgnsE3v0x9fE01qQfoFO)**
+
+### Deploy Your Own (Vercel)
+
+The easiest way to deploy your own instance is using [Vercel](https://vercel.com):
 
 ```bash
 npm install -g vercel
