@@ -1,6 +1,8 @@
 # Aftershock
 
-A sophisticated policy simulation and analysis platform that turns complex policy scenarios into interactive, data-driven insights. Designed for policymakers, researchers, and analysts to explore the ripple effects of policy decisions through agent-based modeling and dynamic visualizations.
+A policy simulation and analysis platform that turns complex policy scenarios into interactive, data-driven insights. Designed for policymakers, researchers, and analysts to explore the ripple effects of policy decisions through agent-based modeling and dynamic visualizations.
+
+> **Note:** This project is a demo of policy simulation capabilities. It is intended for illustrative purposes and does not represent a sophisticated or production-ready modeling environment.
 
 [![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js%2015-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
@@ -19,9 +21,11 @@ Aftershock provides an interactive canvas for exploring policy interventions thr
 
 ## 🚀 Live Demo & Documentation
 
-**[→ Try the Live Application on Vercel](https://aftershock-ivyb-git-main-echos-projects-5619c209.vercel.app?_vercel_share=stq6OKMZmPchJgnsE3v0x9fE01qQfoFO)**
+**[→ Try the Live Application on Vercel](https://aftershock-git-main-echos-projects-5619c209.vercel.app?_vercel_share=aMOKycN0ilX5cECtcv0AxRngdxwSBeMM)**
 
 **[📚 Complete Technical Documentation (PDF)](https://drive.google.com/file/d/1F0WemPQNOeLWsN68ZAV4qkjlT8ffFoAT/view?usp=sharing)**
+
+**[📊 Data Analysis Codebook (Colab)](https://colab.research.google.com/drive/1J-YSfeql1i4J7VdKS3XqJ8GhE9w1XQIy?usp=sharing)**
 
 The documentation includes:
 - Theoretical foundations and research methodology
@@ -314,7 +318,7 @@ This project implements several performance enhancements:
 
 The application is currently deployed on Vercel:
 
-**[→ View Live Demo](https://aftershock-ivyb-git-main-echos-projects-5619c209.vercel.app?_vercel_share=stq6OKMZmPchJgnsE3v0x9fE01qQfoFO)**
+**[→ View Live Demo](https://aftershock-git-main-echos-projects-5619c209.vercel.app?_vercel_share=aMOKycN0ilX5cECtcv0AxRngdxwSBeMM)**
 
 ### Deploy Your Own (Vercel)
 
