@@ -6,28 +6,31 @@ import * as path from 'path'
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json()
-        const policyType = body.policyType || 'vehicle_tax' // Default to vehicle_tax
-
-        console.log(`Starting Python simulation with policy: ${policyType}`)
+        console.log(`Starting Python simulation for BOTH policies (vehicle_tax + fuel_tax)`)
 
         // Path to the Python simulation script in the public folder
         const pythonScriptPath = path.join(process.cwd(), 'public', 'simulations', 'netherlands_carbon_pricing_simulation.py')
 
-        // Run the Python simulation with policy argument
-        const simulationResult = await runPythonSimulation(pythonScriptPath, policyType)
+        // Run the Python simulation (now generates both policies)
+        const simulationResult = await runPythonSimulation(pythonScriptPath)
 
         if (!simulationResult.success) {
             throw new Error(simulationResult.error)
         }
 
-        // Generate JSON data for frontend with policy-specific filename
-        await generateSimulationJSON(policyType)
+        // Verify that both policy data files were generated
+        await verifyPolicyDataFiles()
 
         return NextResponse.json({
             success: true,
-            message: `Simulation completed successfully for ${policyType} policy. Data has been generated.`,
-            policyType: policyType,
+            message: `Simulation completed successfully for BOTH policies. All data files have been generated.`,
+            policies: ['vehicle_tax', 'fuel_tax'],
+            filesGenerated: [
+                'simulation_vehicle_tax.json',
+                'simulation_fuel_tax.json',
+                'monthly_metrics_vehicle_tax.json',
+                'monthly_metrics_fuel_tax.json'
+            ],
             simulationOutput: simulationResult.output
         })
 
@@ -43,9 +46,9 @@ export async function POST(request: NextRequest) {
     }
 }
 
-async function runPythonSimulation(scriptPath: string, policyType: string): Promise<{success: boolean, output?: string, error?: string}> {
+async function runPythonSimulation(scriptPath: string): Promise<{success: boolean, output?: string, error?: string}> {
     return new Promise((resolve) => {
-        console.log('Executing Python script:', scriptPath, 'with policy:', policyType)
+        console.log('Executing Python script:', scriptPath, '(generates both policies)')
 
         // Use virtual environment Python to ensure all packages are available
         const venvPython = path.join(process.cwd(), '.venv', 'bin', 'python')
@@ -53,8 +56,8 @@ async function runPythonSimulation(scriptPath: string, policyType: string): Prom
 
         console.log('Using Python:', pythonCommand)
 
-        // Pass policy type as command-line argument to Python
-        const pythonProcess = spawn(pythonCommand, [scriptPath, policyType], {
+        // Run without policy argument - script now generates both policies
+        const pythonProcess = spawn(pythonCommand, [scriptPath], {
             cwd: path.dirname(scriptPath)
         })
         
@@ -85,52 +88,47 @@ async function runPythonSimulation(scriptPath: string, policyType: string): Prom
             resolve({ success: false, error: error.message })
         })
         
-        // Set timeout (5 minutes)
+        // Set timeout (10 minutes for both policies)
         setTimeout(() => {
             pythonProcess.kill()
-            resolve({ success: false, error: 'Simulation timeout (5 minutes)' })
-        }, 5 * 60 * 1000)
+            resolve({ success: false, error: 'Simulation timeout (10 minutes)' })
+        }, 10 * 60 * 1000)
     })
 }
 
-async function generateSimulationJSON(policyType: string): Promise<void> {
-    console.log(`Loading ${policyType} simulation data from JSON output...`)
+async function verifyPolicyDataFiles(): Promise<void> {
+    console.log(`Verifying that both policy data files were generated...`)
 
     // Wait a moment for the Python script to finish writing files
     await new Promise(resolve => setTimeout(resolve, 2000))
 
-    try {
-        // Policy-specific filename
-        const sourceFilename = `simulation_${policyType}.json`
-        const jsonOutputPath = path.join(process.cwd(), 'public', 'outputs', sourceFilename)
+    const publicDir = path.join(process.cwd(), 'public')
 
-        if (fs.existsSync(jsonOutputPath)) {
-            console.log('Reading simulation data from:', jsonOutputPath)
-            const jsonData = fs.readFileSync(jsonOutputPath, 'utf-8')
-            const simulationFrames = JSON.parse(jsonData)
+    const requiredFiles = [
+        'simulation_vehicle_tax.json',
+        'simulation_fuel_tax.json',
+        'monthly_metrics_vehicle_tax.json',
+        'monthly_metrics_fuel_tax.json'
+    ]
 
-            // Copy to policy-specific public file for frontend access
-            const publicPath = path.join(process.cwd(), 'public', sourceFilename)
-            fs.writeFileSync(publicPath, JSON.stringify(simulationFrames, null, 2))
-            console.log(`Loaded ${simulationFrames.length} frames and copied to ${publicPath}`)
+    const missingFiles: string[] = []
 
+    for (const filename of requiredFiles) {
+        const filePath = path.join(publicDir, filename)
+        if (!fs.existsSync(filePath)) {
+            missingFiles.push(filename)
+            console.warn(`⚠️ Missing file: ${filename}`)
         } else {
-            console.log(`JSON output not found at ${jsonOutputPath}, generating synthetic data as fallback`)
-            const fallbackData = generateSyntheticSimulationData()
-            const publicPath = path.join(process.cwd(), 'public', sourceFilename)
-            fs.writeFileSync(publicPath, JSON.stringify(fallbackData, null, 2))
-            console.log(`Generated fallback simulation data at ${publicPath}`)
+            const stats = fs.statSync(filePath)
+            console.log(`✅ Found file: ${filename} (${(stats.size / 1024).toFixed(1)} KB)`)
         }
-
-    } catch (error) {
-        console.error('Error loading JSON simulation data:', error)
-        // Generate fallback data
-        const fallbackData = generateSyntheticSimulationData()
-        const sourceFilename = `simulation_${policyType}.json`
-        const publicPath = path.join(process.cwd(), 'public', sourceFilename)
-        fs.writeFileSync(publicPath, JSON.stringify(fallbackData, null, 2))
-        console.log(`Generated fallback simulation data due to error at ${publicPath}`)
     }
+
+    if (missingFiles.length > 0) {
+        throw new Error(`Missing ${missingFiles.length} required data files: ${missingFiles.join(', ')}`)
+    }
+
+    console.log(`✅ All ${requiredFiles.length} policy data files verified`)
 }
 
 function convertXLSXToSimulationFrames(xlsxData: any[]): any[] {

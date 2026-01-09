@@ -25,34 +25,34 @@ interface AnalysisCanvasProps {
  * COMPONENT: Bubble Legend
  */
 const BubbleLegend = () => (
-    <div className="bg-white/90 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-4 w-40">
-        <div className="flex items-center gap-2 mb-3">
-            <HelpCircle size={12} className="text-gray-400" />
-            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Agent Type</h3>
-        </div>
-        <div className="space-y-2.5">
-           <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-[#be123c] shadow-sm"></div>
-              <span className="text-xs text-gray-600 font-medium">Petrol</span>
-           </div>
-           <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-[#c2410c] shadow-sm"></div>
-              <span className="text-xs text-gray-600 font-medium">Diesel</span>
-           </div>
-           <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-[#d97706] shadow-sm"></div>
-              <span className="text-xs text-gray-600 font-medium">Hybrid</span>
-           </div>
-           <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></div>
-              <span className="text-xs text-gray-600 font-medium">Electric (EV & PHEV)</span>
-           </div>
-           <div className="flex items-center gap-3">
-              <div className="w-2.5 h-2.5 rounded-full border-2 border-[#0891b2]"></div>
-              <span className="text-xs text-gray-600 font-medium">Cyclist</span>
-           </div>
-        </div>
+  <div className="bg-white/90 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-4 w-40">
+    <div className="flex items-center gap-2 mb-3">
+      <HelpCircle size={12} className="text-gray-400" />
+      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Agent Type</h3>
     </div>
+    <div className="space-y-2.5">
+      <div className="flex items-center gap-3">
+        <div className="w-3 h-3 rounded-full bg-[#be123c] shadow-sm"></div>
+        <span className="text-xs text-gray-600 font-medium">Petrol</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="w-3 h-3 rounded-full bg-[#c2410c] shadow-sm"></div>
+        <span className="text-xs text-gray-600 font-medium">Diesel</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="w-3 h-3 rounded-full bg-[#d97706] shadow-sm"></div>
+        <span className="text-xs text-gray-600 font-medium">Hybrid</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></div>
+        <span className="text-xs text-gray-600 font-medium">Electric (EV & PHEV)</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="w-2.5 h-2.5 rounded-full border-2 border-[#0891b2]"></div>
+        <span className="text-xs text-gray-600 font-medium">Cyclist</span>
+      </div>
+    </div>
+  </div>
 );
 
 export default function AnalysisCanvas({
@@ -63,11 +63,24 @@ export default function AnalysisCanvas({
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentFrame, setCurrentFrame] = useState(0)
   const [totalFrames, setTotalFrames] = useState(120)
-  const [frames, setFrames] = useState<any[]>([])
-  const [monthlyMetrics, setMonthlyMetrics] = useState<any[]>([])
   const [isRunningSimulation, setIsRunningSimulation] = useState(false)
   const animationRef = useRef<number | null>(null)
   const lastFrameTimeRef = useRef<number>(0)
+
+  // UPDATED: Store both policy datasets in state
+  const [policyData, setPolicyData] = useState<{
+    vehicle_tax: {
+      frames: any[]
+      metrics: any[]
+    }
+    fuel_tax: {
+      frames: any[]
+      metrics: any[]
+    }
+  }>({
+    vehicle_tax: { frames: [], metrics: [] },
+    fuel_tax: { frames: [], metrics: [] }
+  })
 
   // Policy choice state (PRESERVED)
   const [selectedPolicy, setSelectedPolicy] = useState('purchase')
@@ -76,6 +89,7 @@ export default function AnalysisCanvas({
   const [showDashboard, setShowDashboard] = useState(true)
   const [showControls, setShowControls] = useState(true)
   const [viewMode, setViewMode] = useState<'simulation' | 'full-dashboard'>('simulation')
+  const [bubbleLoading, setBubbleLoading] = useState(false)  // NEW: Track bubble visualization loading
 
   // NEW: Config state for toggles
   const [config, setConfig] = useState({
@@ -94,13 +108,13 @@ export default function AnalysisCanvas({
     costEffectiveness: 142,
     equityImpact: [20, 35, 45, 50, 60],
     fleetOverTime: [
-       "0,10 10,12 20,15 30,20 40,25 50,28 60,30 70,35 80,40 90,45 100,50",
-       "0,30 10,28 20,25 30,22 40,20 50,18 60,15 70,12 80,10 90,8 100,5",
+      "0,10 10,12 20,15 30,20 40,25 50,28 60,30 70,35 80,40 90,45 100,50",
+      "0,30 10,28 20,25 30,22 40,20 50,18 60,15 70,12 80,10 90,8 100,5",
     ],
     flowsNewCars: [10, 12, 15, 14, 18, 22, 25, 24, 28, 30],
     evDemandVsCapacity: {
-        demand: [5, 8, 12, 15, 20, 28, 35, 42, 50, 55],
-        capacity: [10, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+      demand: [5, 8, 12, 15, 20, 28, 35, 42, 50, 55],
+      capacity: [10, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     },
     revenue: [10, 20, 30, 25, 40, 50, 45, 60, 55, 70],
     subsidies: [5, 8, 15, 20, 25, 30, 40, 45, 50, 55]
@@ -142,7 +156,7 @@ export default function AnalysisCanvas({
     }
   }
 
-  const currentValues = policyValues[selectedPolicy]
+  const currentValues = policyValues[selectedPolicy as 'purchase' | 'fuel']
 
   // NEW: Sync config toggles with selectedPolicy state
   useEffect(() => {
@@ -153,7 +167,7 @@ export default function AnalysisCanvas({
     }))
   }, [selectedPolicy])
 
-  // Helper function to transform 6 vehicle types to 5 pie segments
+  // Helper function to transform 7 vehicle types to 5 pie segments
   const transformMarketShares = (market_shares: any) => {
     if (!market_shares) return [0, 0, 0, 0, 0]
     return [
@@ -161,91 +175,114 @@ export default function AnalysisCanvas({
       (market_shares['ICE-M'] || 0) + (market_shares['DIE-M'] || 0), // Diesel
       market_shares['HEV-S'] || 0,                                    // Hybrid
       (market_shares['BEV-M'] || 0) + (market_shares['PHEV-M'] || 0),// EV/PHEV
-      0                                                               // Cyclists (not in data)
+      market_shares['Cycling'] || 0                                   // Cyclists/Walking
     ]
   }
 
-  // NEW: When toggle clicked, update selectedPolicy
+  // NEW: When toggle clicked, update selectedPolicy and reset to frame 0
   const handlePolicyToggle = (policyType: 'fuel' | 'purchase') => {
     setSelectedPolicy(policyType)
+    setCurrentFrame(0)  // Reset to first frame when switching policies
   }
 
-  // PRESERVED: Load simulation data based on selected policy
+  // UPDATED: Load BOTH policy datasets on mount (no dependency on selectedPolicy)
   useEffect(() => {
-    async function loadSimulationData() {
-      // Stop animation when switching policies
-      setIsPlaying(false)
-      if (animationRef.current) {
-        clearTimeout(animationRef.current)
-        animationRef.current = null
-      }
-
+    async function loadAllSimulationData() {
       try {
-        // Map policy ID to Python policy type
-        const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
-        const simulationFilename = `simulation_${policyType}.json`
-        const metricsFilename = `monthly_metrics_${policyType}.json`
+        console.log('Loading data for BOTH policies...')
 
-        console.log(`Loading data for policy: ${selectedPolicy}`)
-
-        // Load both simulation frames and monthly metrics in parallel
-        const [simulationResponse, metricsResponse] = await Promise.all([
-          fetch(`/${simulationFilename}`),
-          fetch(`/${metricsFilename}`)
+        // Load ALL 4 files in parallel
+        const [
+          vehicleSimResponse,
+          vehicleMetricsResponse,
+          fuelSimResponse,
+          fuelMetricsResponse
+        ] = await Promise.all([
+          fetch('/simulation_vehicle_tax.json'),
+          fetch('/monthly_metrics_vehicle_tax.json'),
+          fetch('/simulation_fuel_tax.json'),
+          fetch('/monthly_metrics_fuel_tax.json')
         ])
 
-        // Process simulation frames
-        if (simulationResponse.ok) {
-          const simulationData = await simulationResponse.json()
-          if (Array.isArray(simulationData)) {
-            setFrames(simulationData)
-            setTotalFrames(simulationData.length)
-            setCurrentFrame(0) // Reset to beginning
-            console.log(`Loaded ${simulationData.length} frames`)
-
-            // Initialize emissions with first frame data
-            if (simulationData.length > 0 && simulationData[0].totalEmissionsTonnes !== undefined) {
-              setMetrics(prev => ({
-                ...prev,
-                totalEmissions: simulationData[0].totalEmissionsTonnes,
-                emissionHistory: [simulationData[0].totalEmissionsTonnes]
-              }))
-            }
+        // Helper to safely extract frames
+        const parseFrames = async (response: Response, name: string) => {
+          if (!response.ok) {
+            console.error(`Failed to fetch ${name}: ${response.status} ${response.statusText}`)
+            return []
           }
-        } else {
-          console.warn(`No simulation data found for ${simulationFilename}`)
+          try {
+            const json = await response.json()
+            if (Array.isArray(json)) return json
+            if (json && Array.isArray(json.frames)) return json.frames
+            console.warn(`Invalid format for ${name}`, json)
+            return []
+          } catch (e) {
+            console.error(`Failed to parse ${name}`, e)
+            return []
+          }
         }
 
-        // Process monthly metrics
-        if (metricsResponse.ok) {
-          const metricsData = await metricsResponse.json()
-          if (metricsData && metricsData.monthly_data) {
-            setMonthlyMetrics(metricsData.monthly_data)
-            console.log(`Loaded ${metricsData.monthly_data.length} monthly metrics`)
+        const vehicleSim = await parseFrames(vehicleSimResponse, 'vehicle_tax')
+        const fuelSim = await parseFrames(fuelSimResponse, 'fuel_tax')
+
+        const vehicleMetricsData = vehicleMetricsResponse.ok ? await vehicleMetricsResponse.json() : null
+        const fuelMetricsData = fuelMetricsResponse.ok ? await fuelMetricsResponse.json() : null
+
+        console.log(`Loaded Data: Vehicle Frames: ${vehicleSim.length}, Fuel Frames: ${fuelSim.length}`)
+
+        // Store both datasets
+        setPolicyData({
+          vehicle_tax: {
+            frames: vehicleSim,
+            metrics: vehicleMetricsData?.monthly_data || []
+          },
+          fuel_tax: {
+            frames: fuelSim,
+            metrics: fuelMetricsData?.monthly_data || []
           }
+        })
+
+        // Set total frames
+        if (vehicleSim.length > 0) {
+          setTotalFrames(vehicleSim.length)
+          console.log(`✅ Loaded both policy datasets (${vehicleSim.length} frames each)`)
         } else {
-          console.warn(`No metrics data found for ${metricsFilename}`)
+          console.warn('⚠️ No frames loaded for vehicle tax policy')
         }
+
+        // Initialize current frame to 0
+        setCurrentFrame(0)
+
       } catch (error) {
         console.error('Failed to load simulation data:', error)
       }
     }
-    loadSimulationData()
-  }, [selectedPolicy])
+    loadAllSimulationData()
+  }, []) // Only run on mount
 
-  // Sync metrics with current frame
+  // UPDATED: Sync metrics with current frame using active policy dataset
   useEffect(() => {
-    if (frames.length === 0 || currentFrame >= frames.length) {
+    // Determine which dataset to use based on selectedPolicy
+    const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
+    const activeData = policyData[policyType]
+
+    if (activeData.frames.length === 0 || currentFrame >= activeData.frames.length) {
       return // No data loaded yet
     }
 
-    const frame = frames[currentFrame]
+    const frame = activeData.frames[currentFrame]
+    const currentMetrics = activeData.metrics[currentFrame]
+
+    // DEBUG: Trace why metrics might not be updating
+    if (currentFrame % 12 === 0) { // Log once per year to avoid spam
+      console.log(`Frame ${currentFrame}: Metrics found?`, !!currentMetrics, 'Shares:', currentMetrics?.market_shares)
+    }
 
     // Get emissions from pre-calculated field (or fallback to 0)
     const currentEmissions = frame.totalEmissionsTonnes ?? 0
 
     // Build emission history from all frames up to current
-    const emissionHistory = frames
+    const emissionHistory = activeData.frames
       .slice(0, currentFrame + 1)
       .map(f => f.totalEmissionsTonnes ?? 0)
 
@@ -255,36 +292,36 @@ export default function AnalysisCanvas({
       ? ((currentEmissions - baselineEmissions) / baselineEmissions) * 100
       : 0
 
-    // Get monthly metrics for current frame
-    const currentMetrics = monthlyMetrics[currentFrame]
-
     // Update metrics state with simulation data AND monthly metrics
     setMetrics(prev => ({
       ...prev,
       totalEmissions: currentEmissions,
       emissionHistory: emissionHistory,
       emissionsPercentageChange: percentageChange,
-      // NEW: Connect to monthly metrics
       costEffectiveness: currentMetrics?.cost_effectiveness_euros_per_tco2 || 0,
       marketShare: currentMetrics?.market_shares
         ? transformMarketShares(currentMetrics.market_shares)
         : prev.marketShare
     }))
 
-  }, [currentFrame, frames, monthlyMetrics])
+  }, [currentFrame, selectedPolicy, policyData]) // Depends on policy selection
 
-  // Prepare EV adoption data for line chart (progressive animation)
+  // UPDATED: Prepare EV adoption data using active policy dataset
   const evAdoptionData = useMemo(() => {
-    if (!monthlyMetrics || monthlyMetrics.length === 0) return []
+    const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
+    const activeMetrics = policyData[policyType].metrics
+
+    if (activeMetrics.length === 0) return []
+
     // Only show data up to current frame for progressive animation
-    return monthlyMetrics.slice(0, currentFrame + 1).map((monthData, index) => ({
+    return activeMetrics.slice(0, currentFrame + 1).map((monthData, index) => ({
       month: index,
       year: (index / 12).toFixed(1),
       ev_adoption: monthData.ev_adoption_percent || 0,
       bev_adoption: monthData.bev_adoption_percent || 0,
       phev_adoption: monthData.phev_adoption_percent || 0
     }))
-  }, [monthlyMetrics, currentFrame])
+  }, [currentFrame, selectedPolicy, policyData])
 
   // Prepare Fleet CO2 trajectory data for line chart
   const fleetCO2Data = useMemo(() => {
@@ -342,12 +379,22 @@ export default function AnalysisCanvas({
         const dataResponse = await fetch(`/${filename}`)
         if (dataResponse.ok) {
           const simulationData = await dataResponse.json()
-          if (Array.isArray(simulationData)) {
-            setFrames(simulationData)
-            setTotalFrames(simulationData.length)
+          const validData = Array.isArray(simulationData) ? simulationData : (simulationData.frames || [])
+
+          if (validData.length > 0) {
+            // Update the specific policy data in state
+            setPolicyData(prev => ({
+              ...prev,
+              [policyType]: {
+                ...prev[policyType],
+                frames: validData
+              }
+            }))
+
+            setTotalFrames(validData.length)
             setCurrentFrame(0)
             setIsPlaying(true) // Auto-start after reset
-            console.log(`Loaded ${simulationData.length} frames after simulation`)
+            console.log(`Loaded ${validData.length} frames after simulation`)
           }
         }
       } else {
@@ -427,7 +474,10 @@ export default function AnalysisCanvas({
           height={typeof window !== 'undefined' ? window.innerHeight : 1080}
           currentFrame={currentFrame}
           onFrameUpdate={(frame) => setCurrentFrame(frame)}
+          onLoadingChange={setBubbleLoading}
           networkMode={config.networkMode}
+          selectedPolicy={selectedPolicy}
+          simulationFrames={policyData[selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'].frames}
         />
       </div>
 
@@ -485,11 +535,10 @@ export default function AnalysisCanvas({
                     <span className="text-2xl font-light text-gray-900">{Math.round(metrics.totalEmissions)} <span className="text-xs text-gray-500">tonnes CO2e</span></span>
                     {/* Percentage change badge */}
                     {metrics.emissionsPercentageChange !== 0 && (
-                      <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                        metrics.emissionsPercentageChange < 0
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
-                      }`}>
+                      <span className={`text-xs font-semibold px-2 py-1 rounded ${metrics.emissionsPercentageChange < 0
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                        }`}>
                         {metrics.emissionsPercentageChange > 0 ? '+' : ''}
                         {Math.round(metrics.emissionsPercentageChange)}%
                       </span>
@@ -501,7 +550,7 @@ export default function AnalysisCanvas({
 
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <BarChart3 size={16} className="text-gray-400"/> Drivers of Cost
+                  <BarChart3 size={16} className="text-gray-400" /> Drivers of Cost
                 </h3>
 
                 <PolicyImpactBar
@@ -509,7 +558,7 @@ export default function AnalysisCanvas({
                   baseVal={currentValues.vehicleBase}
                   taxVal={currentValues.vehicleTax}
                   isTaxed={currentValues.vehicleTax > 0}
-                  formatVal={(v) => `€${(v/1000).toFixed(1)}k`}
+                  formatVal={(v) => `€${(v / 1000).toFixed(1)}k`}
                   taxColor="bg-rose-500"
                   taxTextColor="text-rose-600"
                 />
@@ -590,18 +639,25 @@ export default function AnalysisCanvas({
 
                 {/* Policy Group */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wide">Policy</span>
+                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wide">
+                    Policy
+                    {bubbleLoading && (
+                      <span className="ml-1.5 text-blue-500 animate-pulse">●</span>
+                    )}
+                  </span>
                   <CompactToggle
                     active={config.taxPurchase}
                     onClick={() => handlePolicyToggle('purchase')}
                     icon={<BarChart3 size={14} />}
                     label="Purchase tax"
+                    disabled={bubbleLoading}
                   />
                   <CompactToggle
                     active={config.taxFuel}
                     onClick={() => handlePolicyToggle('fuel')}
                     icon={<Zap size={14} />}
                     label="Fuel tax"
+                    disabled={bubbleLoading}
                   />
                 </div>
 
@@ -627,10 +683,10 @@ export default function AnalysisCanvas({
               </div>
             </div>
           </div>
-        {/* Bubble Legend - Bottom Left */}
-        <div className="absolute bottom-8 left-8 z-40">
-          <BubbleLegend />
-        </div>
+          {/* Bubble Legend - Bottom Left */}
+          <div className="absolute bottom-8 left-8 z-40">
+            <BubbleLegend />
+          </div>
         </>
       ) : (
         /* Full Dashboard View */
@@ -663,11 +719,11 @@ export default function AnalysisCanvas({
               <div className="relative w-40 h-40 rounded-full"
                 style={{
                   background: `conic-gradient(
-                    #be123c 0deg ${metrics.marketShare[0]*3.6}deg,
-                    #c2410c ${metrics.marketShare[0]*3.6}deg ${(metrics.marketShare[0]+metrics.marketShare[1])*3.6}deg,
-                    #d97706 ${(metrics.marketShare[0]+metrics.marketShare[1])*3.6}deg ${(metrics.marketShare[0]+metrics.marketShare[1]+metrics.marketShare[2])*3.6}deg,
-                    #059669 ${(metrics.marketShare[0]+metrics.marketShare[1]+metrics.marketShare[2])*3.6}deg ${(metrics.marketShare[0]+metrics.marketShare[1]+metrics.marketShare[2]+metrics.marketShare[3])*3.6}deg,
-                    #0891b2 ${(metrics.marketShare[0]+metrics.marketShare[1]+metrics.marketShare[2]+metrics.marketShare[3])*3.6}deg 360deg
+                    #be123c 0deg ${metrics.marketShare[0] * 3.6}deg,
+                    #c2410c ${metrics.marketShare[0] * 3.6}deg ${(metrics.marketShare[0] + metrics.marketShare[1]) * 3.6}deg,
+                    #d97706 ${(metrics.marketShare[0] + metrics.marketShare[1]) * 3.6}deg ${(metrics.marketShare[0] + metrics.marketShare[1] + metrics.marketShare[2]) * 3.6}deg,
+                    #059669 ${(metrics.marketShare[0] + metrics.marketShare[1] + metrics.marketShare[2]) * 3.6}deg ${(metrics.marketShare[0] + metrics.marketShare[1] + metrics.marketShare[2] + metrics.marketShare[3]) * 3.6}deg,
+                    #3b82f6 ${(metrics.marketShare[0] + metrics.marketShare[1] + metrics.marketShare[2] + metrics.marketShare[3]) * 3.6}deg 360deg
                   )`
                 }}
               >
@@ -680,7 +736,7 @@ export default function AnalysisCanvas({
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-orange-700"></div>Diesel</div>
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-amber-600"></div>Hybrid</div>
                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-600"></div>EV/PHEV</div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-cyan-600"></div>Cycle</div>
+                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-blue-500"></div>Cycle</div>
               </div>
             </div>
 

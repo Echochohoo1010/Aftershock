@@ -12,7 +12,7 @@
       "BEV-M",
       "PHEV-M"
     ],
-    "generation_timestamp": "2026-01-08T23:13:07.831405"
+    "generation_timestamp": "2026-01-09T01:50:58.495012"
   },
   "final_results": {
     "total_emissions_avoided_tonnes": 1683.97,
@@ -22,12 +22,13 @@
     "final_bev_adoption_percent": 0.0,
     "final_phev_adoption_percent": 22.22,
     "final_market_shares": {
-      "ICE-S": 42.22,
-      "ICE-M": 11.11,
-      "DIE-M": 4.44,
-      "HEV-S": 20.0,
+      "ICE-S": 19.0,
+      "ICE-M": 5.0,
+      "DIE-M": 2.0,
+      "HEV-S": 9.0,
       "BEV-M": 0.0,
-      "PHEV-M": 22.22
+      "PHEV-M": 10.0,
+      "Cycling": 55.0
     },
     "final_fleet_co2_gkm": 108.8
   },
@@ -49,12 +50,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 31.11,
-        "DIE-M": 28.89,
+        "ICE-S": 18.0,
+        "ICE-M": 14.0,
+        "DIE-M": 13.0,
         "HEV-S": 0.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 137.22,
@@ -86,12 +88,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 31.11,
-        "DIE-M": 28.89,
+        "ICE-S": 18.0,
+        "ICE-M": 14.0,
+        "DIE-M": 13.0,
         "HEV-S": 0.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 137.22,
@@ -123,12 +126,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 31.11,
-        "DIE-M": 28.89,
+        "ICE-S": 18.0,
+        "ICE-M": 14.0,
+        "DIE-M": 13.0,
         "HEV-S": 0.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 137.22,
@@ -160,12 +164,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 31.11,
-        "DIE-M": 28.89,
+        "ICE-S": 18.0,
+        "ICE-M": 14.0,
+        "DIE-M": 13.0,
         "HEV-S": 0.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 137.22,
@@ -197,12 +202,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 31.11,
-        "DIE-M": 28.89,
+        "ICE-S": 18.0,
+        "ICE-M": 14.0,
+        "DIE-M": 13.0,
         "HEV-S": 0.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 137.22,
@@ -234,12 +240,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 28.89,
-        "DIE-M": 28.89,
-        "HEV-S": 2.22,
+        "ICE-S": 18.0,
+        "ICE-M": 13.0,
+        "DIE-M": 13.0,
+        "HEV-S": 1.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 135.84,
@@ -271,12 +278,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 28.89,
-        "DIE-M": 24.44,
-        "HEV-S": 6.67,
+        "ICE-S": 18.0,
+        "ICE-M": 13.0,
+        "DIE-M": 11.0,
+        "HEV-S": 3.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 135.18,
@@ -308,12 +316,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 28.89,
-        "DIE-M": 24.44,
-        "HEV-S": 6.67,
+        "ICE-S": 18.0,
+        "ICE-M": 13.0,
+        "DIE-M": 11.0,
+        "HEV-S": 3.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 135.18,
@@ -345,12 +354,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 28.89,
-        "DIE-M": 24.44,
-        "HEV-S": 6.67,
+        "ICE-S": 18.0,
+        "ICE-M": 13.0,
+        "DIE-M": 11.0,
+        "HEV-S": 3.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 135.18,
@@ -382,12 +392,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 8.89,
+        "ICE-S": 18.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 4.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.84,
@@ -419,12 +430,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 11.11,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 5.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.31,
@@ -456,12 +468,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 11.11,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 5.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.31,
@@ -493,12 +506,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 11.11,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 5.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.31,
@@ -530,12 +544,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 11.11,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 5.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.31,
@@ -567,12 +582,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 11.11,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 5.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.31,
@@ -604,12 +620,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 11.11,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 5.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 134.31,
@@ -641,12 +658,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 35.56,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 13.33,
+        "ICE-S": 16.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.78,
@@ -678,12 +696,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 35.56,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 13.33,
+        "ICE-S": 16.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.78,
@@ -715,12 +734,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 35.56,
-        "ICE-M": 28.89,
-        "DIE-M": 22.22,
-        "HEV-S": 13.33,
+        "ICE-S": 16.0,
+        "ICE-M": 13.0,
+        "DIE-M": 10.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.78,
@@ -752,12 +772,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 20.0,
-        "HEV-S": 13.33,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 9.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.98,
@@ -789,12 +810,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 28.89,
-        "DIE-M": 20.0,
-        "HEV-S": 13.33,
+        "ICE-S": 17.0,
+        "ICE-M": 13.0,
+        "DIE-M": 9.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.98,
@@ -826,12 +848,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 26.67,
-        "DIE-M": 20.0,
-        "HEV-S": 13.33,
+        "ICE-S": 18.0,
+        "ICE-M": 12.0,
+        "DIE-M": 9.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.13,
@@ -863,12 +886,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 26.67,
-        "DIE-M": 20.0,
-        "HEV-S": 13.33,
+        "ICE-S": 18.0,
+        "ICE-M": 12.0,
+        "DIE-M": 9.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.13,
@@ -900,12 +924,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 26.67,
-        "DIE-M": 20.0,
-        "HEV-S": 13.33,
+        "ICE-S": 18.0,
+        "ICE-M": 12.0,
+        "DIE-M": 9.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.13,
@@ -937,12 +962,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 26.67,
-        "DIE-M": 17.78,
-        "HEV-S": 13.33,
+        "ICE-S": 19.0,
+        "ICE-M": 12.0,
+        "DIE-M": 8.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.33,
@@ -974,12 +1000,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 26.67,
-        "DIE-M": 17.78,
-        "HEV-S": 13.33,
+        "ICE-S": 19.0,
+        "ICE-M": 12.0,
+        "DIE-M": 8.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.33,
@@ -1011,12 +1038,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 26.67,
-        "DIE-M": 17.78,
-        "HEV-S": 13.33,
+        "ICE-S": 19.0,
+        "ICE-M": 12.0,
+        "DIE-M": 8.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.33,
@@ -1048,12 +1076,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 26.67,
-        "DIE-M": 17.78,
-        "HEV-S": 13.33,
+        "ICE-S": 19.0,
+        "ICE-M": 12.0,
+        "DIE-M": 8.0,
+        "HEV-S": 6.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 133.33,
@@ -1085,12 +1114,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 26.67,
-        "DIE-M": 15.56,
-        "HEV-S": 17.78,
+        "ICE-S": 18.0,
+        "ICE-M": 12.0,
+        "DIE-M": 7.0,
+        "HEV-S": 8.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 132.47,
@@ -1122,12 +1152,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 24.44,
-        "DIE-M": 15.56,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 11.0,
+        "DIE-M": 7.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.09,
@@ -1159,12 +1190,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 24.44,
-        "DIE-M": 15.56,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 11.0,
+        "DIE-M": 7.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.09,
@@ -1196,12 +1228,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1233,12 +1266,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1270,12 +1304,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1307,12 +1342,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1344,12 +1380,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1381,12 +1418,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1418,12 +1456,13 @@
       "phev_adoption_percent": 0.0,
       "ev_count": 0,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 24.44,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 11.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 0.0
+        "PHEV-M": 0.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 131.29,
@@ -1455,12 +1494,13 @@
       "phev_adoption_percent": 2.22,
       "ev_count": 1,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 22.22,
-        "DIE-M": 15.56,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 10.0,
+        "DIE-M": 7.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 2.22
+        "PHEV-M": 1.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 128.42,
@@ -1492,12 +1532,13 @@
       "phev_adoption_percent": 6.67,
       "ev_count": 3,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 20.0,
-        "DIE-M": 15.56,
-        "HEV-S": 20.0,
+        "ICE-S": 17.0,
+        "ICE-M": 9.0,
+        "DIE-M": 7.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 6.67
+        "PHEV-M": 3.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 123.93,
@@ -1529,12 +1570,13 @@
       "phev_adoption_percent": 6.67,
       "ev_count": 3,
       "market_shares": {
-        "ICE-S": 37.78,
-        "ICE-M": 20.0,
-        "DIE-M": 15.56,
-        "HEV-S": 20.0,
+        "ICE-S": 17.0,
+        "ICE-M": 9.0,
+        "DIE-M": 7.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 6.67
+        "PHEV-M": 3.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 123.93,
@@ -1566,12 +1608,13 @@
       "phev_adoption_percent": 6.67,
       "ev_count": 3,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 6.67
+        "PHEV-M": 3.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 124.13,
@@ -1603,12 +1646,13 @@
       "phev_adoption_percent": 6.67,
       "ev_count": 3,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 13.33,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 6.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 6.67
+        "PHEV-M": 3.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 124.13,
@@ -1640,12 +1684,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 122.51,
@@ -1677,12 +1722,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 122.51,
@@ -1714,12 +1760,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 122.51,
@@ -1751,12 +1798,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 122.51,
@@ -1788,12 +1836,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 122.51,
@@ -1825,12 +1874,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 20.0,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 9.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 122.51,
@@ -1862,12 +1912,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 17.78,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 8.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 121.67,
@@ -1899,12 +1950,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 17.78,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 8.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 121.67,
@@ -1936,12 +1988,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 17.78,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 8.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 121.67,
@@ -1973,12 +2026,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 17.78,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 8.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 121.67,
@@ -2010,12 +2064,13 @@
       "phev_adoption_percent": 8.89,
       "ev_count": 4,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 17.78,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 8.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 8.89
+        "PHEV-M": 4.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 121.67,
@@ -2047,12 +2102,13 @@
       "phev_adoption_percent": 11.11,
       "ev_count": 5,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 15.56,
-        "DIE-M": 11.11,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 7.0,
+        "DIE-M": 5.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 11.11
+        "PHEV-M": 5.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 119.0,
@@ -2084,12 +2140,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 15.56,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 7.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 117.38,
@@ -2121,12 +2178,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2158,12 +2216,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2195,12 +2254,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2232,12 +2292,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2269,12 +2330,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2306,12 +2368,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2343,12 +2406,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2380,12 +2444,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2417,12 +2482,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2454,12 +2520,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2491,12 +2558,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2528,12 +2596,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2565,12 +2634,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2602,12 +2672,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2639,12 +2710,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2676,12 +2748,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2713,12 +2786,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2750,12 +2824,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2787,12 +2862,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2824,12 +2900,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2861,12 +2938,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2898,12 +2976,13 @@
       "phev_adoption_percent": 13.33,
       "ev_count": 6,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 8.89,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 4.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 13.33
+        "PHEV-M": 6.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 116.53,
@@ -2935,12 +3014,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -2972,12 +3052,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3009,12 +3090,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3046,12 +3128,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3083,12 +3166,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3120,12 +3204,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3157,12 +3242,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3194,12 +3280,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 13.33,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 6.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.91,
@@ -3231,12 +3318,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 46.67,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 21.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.07,
@@ -3268,12 +3356,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 46.67,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 21.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.07,
@@ -3305,12 +3394,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 46.67,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 21.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.07,
@@ -3342,12 +3432,13 @@
       "phev_adoption_percent": 15.56,
       "ev_count": 7,
       "market_shares": {
-        "ICE-S": 46.67,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 21.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 15.56
+        "PHEV-M": 7.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 114.07,
@@ -3379,12 +3470,13 @@
       "phev_adoption_percent": 17.78,
       "ev_count": 8,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 17.78
+        "PHEV-M": 8.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 112.24,
@@ -3416,12 +3508,13 @@
       "phev_adoption_percent": 17.78,
       "ev_count": 8,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 17.78
+        "PHEV-M": 8.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 112.24,
@@ -3453,12 +3546,13 @@
       "phev_adoption_percent": 17.78,
       "ev_count": 8,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 17.78
+        "PHEV-M": 8.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 112.24,
@@ -3490,12 +3584,13 @@
       "phev_adoption_percent": 17.78,
       "ev_count": 8,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 17.78
+        "PHEV-M": 8.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 112.24,
@@ -3527,12 +3622,13 @@
       "phev_adoption_percent": 17.78,
       "ev_count": 8,
       "market_shares": {
-        "ICE-S": 44.44,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 20.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 17.78
+        "PHEV-M": 8.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 112.24,
@@ -3564,12 +3660,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3601,12 +3698,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3638,12 +3736,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3675,12 +3774,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3712,12 +3812,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3749,12 +3850,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3786,12 +3888,13 @@
       "phev_adoption_percent": 20.0,
       "ev_count": 9,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 20.0
+        "PHEV-M": 9.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 110.42,
@@ -3823,12 +3926,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -3860,12 +3964,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -3897,12 +4002,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -3934,12 +4040,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -3971,12 +4078,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4008,12 +4116,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4045,12 +4154,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4082,12 +4192,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4119,12 +4230,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4156,12 +4268,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4193,12 +4306,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4230,12 +4344,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4267,12 +4382,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4304,12 +4420,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 40.0,
-        "ICE-M": 11.11,
-        "DIE-M": 6.67,
-        "HEV-S": 20.0,
+        "ICE-S": 18.0,
+        "ICE-M": 5.0,
+        "DIE-M": 3.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.6,
@@ -4341,12 +4458,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 4.44,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 2.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.8,
@@ -4378,12 +4496,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 4.44,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 2.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.8,
@@ -4415,12 +4534,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 4.44,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 2.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.8,
@@ -4452,12 +4572,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 4.44,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 2.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.8,
@@ -4489,12 +4610,13 @@
       "phev_adoption_percent": 22.22,
       "ev_count": 10,
       "market_shares": {
-        "ICE-S": 42.22,
-        "ICE-M": 11.11,
-        "DIE-M": 4.44,
-        "HEV-S": 20.0,
+        "ICE-S": 19.0,
+        "ICE-M": 5.0,
+        "DIE-M": 2.0,
+        "HEV-S": 9.0,
         "BEV-M": 0.0,
-        "PHEV-M": 22.22
+        "PHEV-M": 10.0,
+        "Cycling": 55.0
       },
       "total_vehicles": 45,
       "avg_fleet_co2_gkm": 108.8,

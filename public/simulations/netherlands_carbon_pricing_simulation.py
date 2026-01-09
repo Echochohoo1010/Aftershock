@@ -532,17 +532,22 @@ class CS166CarbonPricingSimulation:
         emissions_avoided_tonnes = baseline_annual_emissions_tonnes - total_annual_emissions_tonnes
         self.cumulative_emissions_avoided += emissions_avoided_tonnes
 
-        # 2. Vehicle Market Shares
+        # 2. Vehicle Market Shares (including Cycling)
         type_counts = {vtype: 0 for vtype in self.vehicles}
         for v in vehicles_owned:
             type_counts[v.type] += 1
 
         total_vehicles = len(vehicles_owned)
+        total_agents = len(self.agents)
+        cyclists = total_agents - total_vehicles  # Agents without vehicles
 
-        # Calculate market shares as percentages
+        # Calculate market shares as percentages (of total population, not just vehicle owners)
         market_shares = {}
         for vtype in self.vehicles:
-            market_shares[vtype] = (type_counts[vtype] / total_vehicles * 100) if total_vehicles > 0 else 0
+            market_shares[vtype] = (type_counts[vtype] / total_agents * 100) if total_agents > 0 else 0
+
+        # Add Cycling/Walking as a transport mode
+        market_shares['Cycling'] = (cyclists / total_agents * 100) if total_agents > 0 else 0
 
         # 3. EV Adoption (BEV + PHEV)
         ev_count = type_counts['BEV-M'] + type_counts.get('PHEV-M', 0)
@@ -599,9 +604,9 @@ class CS166CarbonPricingSimulation:
             'phev_adoption_percent': round(phev_share_percent, 2),
             'ev_count': ev_count,
 
-            # Market shares (all vehicle types)
+            # Market shares (all vehicle types + Cycling)
             'market_shares': {
-                vtype: round(market_shares[vtype], 2) for vtype in self.vehicles
+                vtype: round(share, 2) for vtype, share in market_shares.items()
             },
 
             # Fleet characteristics
@@ -816,69 +821,78 @@ class CS166CarbonPricingSimulation:
 
 # Main execution
 if __name__ == "__main__":
-    # Accept policy type from command line
-    policy_type = 'vehicle_tax'  # default
+    # Always generate data for BOTH policies
+    policies = ['vehicle_tax', 'fuel_tax']
 
-    if len(sys.argv) > 1:
-        policy_arg = sys.argv[1].lower()
-        if policy_arg in ['fuel', 'fuel_tax', 'b']:
-            policy_type = 'fuel_tax'
-            print("Running simulation: British Columbia Fuel Carbon Tax")
-        elif policy_arg in ['vehicle', 'vehicle_tax', 'purchase', 'a']:
-            policy_type = 'vehicle_tax'
-            print("Running simulation: Netherlands Vehicle Purchase Tax")
+    print("="*70)
+    print("CS166 CARBON PRICING SIMULATION - DUAL POLICY GENERATION")
+    print("="*70)
+    print("Duration: 120 months (10 years) | Agents: 100")
+    print("Model: CS166 behavioral calibration (Kok 2015, Murray & Rivers 2015)")
+    print(f"\nGenerating data for {len(policies)} policy scenarios...")
+    print("="*70)
+
+    for policy_type in policies:
+        print(f"\n{'='*70}")
+        if policy_type == 'vehicle_tax':
+            print(f"POLICY 1/2: Netherlands Vehicle Purchase Tax")
         else:
-            print(f"Warning: Unknown policy argument '{sys.argv[1]}', defaulting to 'vehicle_tax'")
-            print("Valid options: vehicle_tax, fuel_tax")
-    else:
-        print("No policy specified, defaulting to: Netherlands Vehicle Purchase Tax")
+            print(f"POLICY 2/2: British Columbia Fuel Carbon Tax")
+        print(f"{'='*70}\n")
 
-    print(f"\nInitializing CS166 simulation with policy: {policy_type}")
-    print(f"Duration: 120 months (10 years) | Agents: 100")
-    print(f"Model: CS166 behavioral calibration (Kok 2015, Murray & Rivers 2015)")
+        # Create simulation
+        sim = CS166CarbonPricingSimulation(n_agents=100, time_horizon=120, policy_type=policy_type)
 
-    # Create simulation
-    sim = CS166CarbonPricingSimulation(n_agents=100, time_horizon=120, policy_type=policy_type)
+        # Run simulation
+        results = sim.run_simulation()
 
-    # Run simulation
-    results = sim.run_simulation()
+        # Export to policy-specific JSON file
+        output_filename = f"simulation_{policy_type}.json"
+        output_path = f"../{output_filename}"
+        sim.export_simulation_to_json(output_path=output_path)
 
-    # Export to policy-specific JSON file
-    output_filename = f"simulation_{policy_type}.json"
-    output_path = f"../{output_filename}"
-    sim.export_simulation_to_json(output_path=output_path)
+        # Export comprehensive monthly metrics
+        metrics_filename = f"monthly_metrics_{policy_type}.json"
+        metrics_path = f"../{metrics_filename}"
+        sim.export_monthly_metrics_to_json(output_path=metrics_path)
 
-    # Also save to generic simulation_data.json for backwards compatibility
+        print(f"\n✅ {policy_type} simulation complete!")
+        print(f"📊 Simulation data saved to: {output_filename}")
+        print(f"📈 Metrics data saved to: {metrics_filename}")
+
+        # Print key results
+        if sim.monthly_metrics:
+            final = sim.monthly_metrics[-1]
+            print(f"\n📊 Key Results for {policy_type}:")
+            print(f"   - Final EV Adoption: {final['ev_adoption_percent']:.1f}%")
+            print(f"   - Final Fleet CO2: {final['avg_fleet_co2_gkm']:.1f} g/km")
+            print(f"   - Total Emissions Avoided: {sim.cumulative_emissions_avoided:.1f} tonnes CO2")
+            print(f"   - Cost Effectiveness: €{final['cost_effectiveness_euros_per_tco2']:.0f}/tCO2")
+            print(f"\n   Vehicle Market Shares (Year 10):")
+            for vtype, share in final['market_shares'].items():
+                print(f"     • {vtype}: {share:.1f}%")
+
+    # Also save generic files (use vehicle_tax as default for backwards compatibility)
+    print(f"\n{'='*70}")
+    print("UPDATING GENERIC FILES (backwards compatibility)")
+    print(f"{'='*70}")
     sim.export_simulation_to_json(output_path="../simulation_data.json")
-
-    # NEW: Export comprehensive monthly metrics
-    metrics_filename = f"monthly_metrics_{policy_type}.json"
-    metrics_path = f"../{metrics_filename}"
-    sim.export_monthly_metrics_to_json(output_path=metrics_path)
-
-    # Also save generic metrics file
     sim.export_monthly_metrics_to_json(output_path="../monthly_metrics.json")
+    print("✅ Generic files updated: simulation_data.json, monthly_metrics.json")
 
-    print(f"\n✅ CS166 Simulation complete!")
-    print(f"📊 Policy-specific JSON saved to: {output_filename}")
-    print(f"📊 Generic JSON saved to: simulation_data.json")
-    print(f"📈 Policy-specific metrics saved to: {metrics_filename}")
-    print(f"📈 Generic metrics saved to: monthly_metrics.json")
+    print(f"\n{'='*70}")
+    print("ALL SIMULATIONS COMPLETE!")
+    print(f"{'='*70}")
+    print("\n📁 Generated files:")
+    print("   ├── simulation_vehicle_tax.json")
+    print("   ├── simulation_fuel_tax.json")
+    print("   ├── monthly_metrics_vehicle_tax.json")
+    print("   ├── monthly_metrics_fuel_tax.json")
+    print("   ├── simulation_data.json (generic)")
+    print("   └── monthly_metrics.json (generic)")
     print(f"\n🔬 CS166 Model Characteristics:")
     print(f"   - 6 vehicle types (including PHEV)")
     print(f"   - Range anxiety decay: {sim.range_anxiety_decay}")
     print(f"   - Salience weights: upfront={sim.w_upfront}, annual={sim.w_annual}, fuel={sim.w_fuel}")
     print(f"   - Initial car ownership: 45.1%")
     print(f"   - No revenue recycling for fuel_tax policy")
-
-    # Print key results
-    print(f"\n📊 Key Results:")
-    if sim.monthly_metrics:
-        final = sim.monthly_metrics[-1]
-        print(f"   - Final EV Adoption: {final['ev_adoption_percent']:.1f}%")
-        print(f"   - Final Fleet CO2: {final['avg_fleet_co2_gkm']:.1f} g/km")
-        print(f"   - Total Emissions Avoided: {sim.cumulative_emissions_avoided:.1f} tonnes CO2")
-        print(f"   - Cost Effectiveness: €{final['cost_effectiveness_euros_per_tco2']:.0f}/tCO2")
-        print(f"\n   Vehicle Market Shares (Year 10):")
-        for vtype, share in final['market_shares'].items():
-            print(f"     • {vtype}: {share:.1f}%")

@@ -22,11 +22,12 @@ interface BubbleCircleProps {
     node: SimulationNode
     isHovered: boolean
     updateTrigger: number  // Only changes when data (size/color/type) changes
+    opacity?: number  // NEW: Optional opacity override for loading states
     onMouseEnter: () => void
     onMouseLeave: () => void
 }
 
-const BubbleCircle = memo(({ node, isHovered, updateTrigger, onMouseEnter, onMouseLeave }: BubbleCircleProps) => {
+const BubbleCircle = memo(({ node, isHovered, updateTrigger, opacity = 0.85, onMouseEnter, onMouseLeave }: BubbleCircleProps) => {
     return (
         <circle
             className="agent"
@@ -45,7 +46,7 @@ const BubbleCircle = memo(({ node, isHovered, updateTrigger, onMouseEnter, onMou
                     ? 4
                     : node.type === "Cycling" ? 2 : 1
             }
-            opacity={0.85}
+            opacity={opacity}
             style={{
                 cursor: 'pointer',
                 filter: isHovered ? 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))' : 'none',
@@ -62,7 +63,8 @@ const BubbleCircle = memo(({ node, isHovered, updateTrigger, onMouseEnter, onMou
         prevProps.node.fill === nextProps.node.fill &&
         prevProps.node.type === nextProps.node.type &&
         prevProps.isHovered === nextProps.isHovered &&
-        prevProps.updateTrigger === nextProps.updateTrigger
+        prevProps.updateTrigger === nextProps.updateTrigger &&
+        prevProps.opacity === nextProps.opacity
     )
 })
 
@@ -73,7 +75,10 @@ interface PureBubbleCanvasProps {
     height: number
     currentFrame?: number
     onFrameUpdate?: (frame: number) => void
+    onLoadingChange?: (loading: boolean) => void  // NEW: Notify parent of loading state
     networkMode?: boolean  // NEW: Network visualization mode
+    selectedPolicy?: 'purchase' | 'fuel'  // NEW: Policy selection for data loading
+    simulationFrames: any[] // NEW: Data passed from parent
 }
 
 export default function PureBubbleCanvas({
@@ -81,13 +86,16 @@ export default function PureBubbleCanvas({
     height,
     currentFrame = 0,
     onFrameUpdate,
-    networkMode = false  // NEW
+    onLoadingChange,  // NEW
+    networkMode = false,  // NEW
+    selectedPolicy = 'purchase',  // NEW: Default to purchase tax
+    simulationFrames = [] // NEW
 }: PureBubbleCanvasProps) {
     const svgRef = useRef<SVGSVGElement>(null)
     const physicsEngineRef = useRef<PhysicsEngine | null>(null)
     const nodesRef = useRef<SimulationNode[]>([])
     const audioRef = useRef<HTMLAudioElement | null>(null)
-    const [frames, setFrames] = useState<any[]>([])
+    // removed internal frames state, using simulationFrames prop
     const [loading, setLoading] = useState(true)
     const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
     const [hoveredAgent, setHoveredAgent] = useState<{
@@ -145,44 +153,23 @@ export default function PureBubbleCanvas({
         }
     }, [])
 
-    // Load simulation data on component mount
+    // Sync frames from prop to local logic
     useEffect(() => {
-        async function loadSimulationData() {
-            setLoading(true)
-            try {
-                console.log('Loading simulation data from JSON...')
-                const response = await fetch('/simulation_data.json')
+        // When policy changes or new frames arrive, reset
+        nodesRef.current = []
+        setHoveredAgent(null)
+        setCircleUpdateTrigger(prev => prev + 1)
 
-                if (response.ok) {
-                    const result = await response.json()
+        // Update local state is mostly relevant if we were filtering/processing, 
+        // but here we just use the prop directly in other effects.
+        // We set loading false immediately as data is provided by parent.
+        setLoading(false)
+        onLoadingChange?.(false)
 
-                    // Handle both wrapped format {success: true, frames: [...]} and direct array format [...]
-                    if (Array.isArray(result)) {
-                        console.log('Loaded simulation data:', result.length, 'frames')
-                        setFrames(result)
-                        setCurrentFrameIndex(0)
-                    } else if (result.success && result.frames) {
-                        console.log('Loaded simulation data:', result.frames.length, 'frames,', result.agents.length, 'agents')
-                        setFrames(result.frames)
-                        setCurrentFrameIndex(0)
-                    } else {
-                        console.warn('Invalid simulation data format, using fallback')
-                        setFrames([])
-                    }
-                } else {
-                    console.warn('No simulation data file found')
-                    setFrames([])
-                }
-            } catch (error) {
-                console.error('Failed to load simulation data:', error)
-                setFrames([])
-            } finally {
-                setLoading(false)
-            }
-        }
+        // Reset to frame 0
+        setCurrentFrameIndex(0)
 
-        loadSimulationData()
-    }, [])
+    }, [simulationFrames, selectedPolicy, onLoadingChange])
 
     // NEW: Load network data when network mode is activated
     useEffect(() => {
@@ -283,10 +270,10 @@ export default function PureBubbleCanvas({
 
     // Generate initial nodes ONLY once when frames are loaded
     const generateInitialNodes = useCallback(() => {
-        if (!frames.length) return []
+        if (!simulationFrames.length) return []
 
         // Use first frame to determine agents
-        const frameData = frames[0]
+        const frameData = simulationFrames[0]
         if (!frameData?.agents) return []
 
         // Create type-specific cluster centers (emission level grouping)
@@ -319,40 +306,19 @@ export default function PureBubbleCanvas({
         })
 
         return nodes
-    }, [frames.length, centerX, centerY, radius]) // Only depends on frames.length, not currentFrame
+    }, [simulationFrames, centerX, centerY, radius]) // Only depends on frames.length, not currentFrame
 
     const initializeVisualization = useCallback(() => {
-        if (!svgRef.current || loading || !frames.length) return
-
-        const svg = d3.select(svgRef.current)
-
-        // Select or create the visualization container
-        let container = svg.select<SVGGElement>(".visualization-container")
-
-        // Only create container if it doesn't exist
-        if (container.empty()) {
-            container = svg
-                .append("g")
-                .attr("class", "visualization-container")
-        } else {
-            // Clear existing circles if container exists
-            container.selectAll("circle").remove()
-        }
+        if (!svgRef.current || !simulationFrames.length) return
 
         const nodes = generateInitialNodes()
         if (!nodes.length) return
 
+        // ATOMIC SWAP: Replace old nodes with new ones (happens after loading=false)
         nodesRef.current = nodes
 
-        // Optional: Add boundary circle (invisible, just for reference)
-        container
-            .append("circle")
-            .attr("cx", centerX)
-            .attr("cy", centerY)
-            .attr("r", radius)
-            .attr("fill", "none")
-            .attr("stroke", "transparent")
-            .attr("stroke-width", 1)
+        // Force React re-render with new nodes immediately
+        setCircleUpdateTrigger(prev => prev + 1)
 
         // Initialize PhysicsEngine
         physicsEngineRef.current = new PhysicsEngine(physicsConfig)
@@ -379,7 +345,7 @@ export default function PureBubbleCanvas({
 
         // Removed periodic movement - agents should stay stable and only animate size/color changes
 
-    }, [generateInitialNodes, loading, frames.length])
+    }, [generateInitialNodes, simulationFrames.length, selectedPolicy])
 
     useEffect(() => {
         initializeVisualization()
@@ -402,7 +368,7 @@ export default function PureBubbleCanvas({
             console.log('Entering network mode - enabling city clustering physics')
 
             // Create city position map for gravity centers
-            const cityPositions = new Map<string, {x: number, y: number}>()
+            const cityPositions = new Map<string, { x: number, y: number }>()
             geoData.cities.forEach(city => {
                 const [x, y] = projectCoordinate(geoData.projection!, city.lng, city.lat)
                 cityPositions.set(city.name, { x, y })
@@ -477,9 +443,9 @@ export default function PureBubbleCanvas({
 
     // Update frame function for animation
     const updateFrame = useCallback((frameIndex: number) => {
-        if (!frames[frameIndex] || !physicsEngineRef.current || !nodesRef.current.length) return
+        if (!simulationFrames[frameIndex] || !physicsEngineRef.current || !nodesRef.current.length) return
 
-        const frame = frames[frameIndex]
+        const frame = simulationFrames[frameIndex]
         let hasSizeChanges = false
         let hasAnyChanges = false
 
@@ -546,14 +512,20 @@ export default function PureBubbleCanvas({
 
         setCurrentFrameIndex(frameIndex)
         onFrameUpdate?.(frameIndex)
-    }, [frames, onFrameUpdate])
+    }, [simulationFrames, onFrameUpdate])
 
     // Update frame when currentFrame prop changes
     useEffect(() => {
-        if (currentFrame !== currentFrameIndex && frames.length > 0) {
-            updateFrame(currentFrame)
+        if (currentFrame !== currentFrameIndex) {
+            if (simulationFrames.length > 0) {
+                // Normal case: update frame with animation
+                updateFrame(currentFrame)
+            } else {
+                // Loading case: just sync the index (no animation yet)
+                setCurrentFrameIndex(currentFrame)
+            }
         }
-    }, [currentFrame, currentFrameIndex, frames.length, updateFrame])
+    }, [currentFrame, currentFrameIndex, simulationFrames.length, updateFrame])
 
     // Handle window resize - reinitialize if needed
     useEffect(() => {
@@ -568,13 +540,15 @@ export default function PureBubbleCanvas({
         return () => window.removeEventListener('resize', handleResize)
     }, [physicsConfig])
 
-    if (loading) {
-        return (
-            <div className="w-full h-full flex items-center justify-center bg-white">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-            </div>
-        )
-    }
+    // REMOVED: Don't hide the canvas during loading - keep bubbles visible
+    // Instead, loading state is shown via opacity (bubbles dim to 0.3) and disabled controls
+    // if (loading) {
+    //     return (
+    //         <div className="w-full h-full flex items-center justify-center bg-white">
+    //             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+    //         </div>
+    //     )
+    // }
 
     // NEW: Show loading state for network data
     if (networkMode && isLoadingGeoData) {
@@ -625,7 +599,7 @@ export default function PureBubbleCanvas({
                             updateTrigger={circleUpdateTrigger}
                             isHovered={hoveredAgent?.id === node.id}
                             onMouseEnter={() => {
-                                const frameData = frames[currentFrameIndex]
+                                const frameData = simulationFrames[currentFrameIndex]
                                 const agentData = frameData?.agents.find((a: any) => a.id === node.id)
                                 if (agentData) {
                                     setHoveredAgent({
