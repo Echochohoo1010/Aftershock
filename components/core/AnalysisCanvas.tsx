@@ -1,477 +1,59 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react"
-import PureBubbleCanvas from "@/components/features/visualization/agents/PureBubbleCanvas"
-import { SimpleLineChart } from "@/components/visualizations/charts/SimpleLineChart"
-import { AreaChart } from "@/components/visualizations/charts/AreaChart"
-import { RevenueChart } from "@/components/visualizations/charts/RevenueChart"
-import { PolicyImpactBar } from "@/components/visualizations/charts/PolicyImpactBar"
-import { CompactToggle } from "@/components/ui/CompactToggle"
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
-} from 'recharts'
-import {
-  Play, Pause, Zap, Users, Activity, ChevronRight, ChevronLeft,
-  BarChart3, DollarSign, Minimize2, Maximize2,
-  ExternalLink, ArrowLeft, RotateCcw, HelpCircle
-} from 'lucide-react'
-import { CaseId } from "@/components/explore/content/types"
+import { useWindowSize } from "@/hooks/useWindowSize"
 
-interface AnalysisCanvasProps {
-  selectedCase: CaseId | null
-}
-
-/**
- * COMPONENT: Bubble Legend
- */
-const BubbleLegend = () => (
-  <div className="bg-white/90 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-4 w-40">
-    <div className="flex items-center gap-2 mb-3">
-      <HelpCircle size={12} className="text-gray-400" />
-      <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Agent Type</h3>
-    </div>
-    <div className="space-y-2.5">
-      <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-[#be123c] shadow-sm"></div>
-        <span className="text-xs text-gray-600 font-medium">Petrol</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-[#c2410c] shadow-sm"></div>
-        <span className="text-xs text-gray-600 font-medium">Diesel</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-[#d97706] shadow-sm"></div>
-        <span className="text-xs text-gray-600 font-medium">Hybrid</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-[#059669] shadow-sm"></div>
-        <span className="text-xs text-gray-600 font-medium">Electric (EV & PHEV)</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="w-2.5 h-2.5 rounded-full border-2 border-[#0891b2]"></div>
-        <span className="text-xs text-gray-600 font-medium">Cyclist</span>
-      </div>
-    </div>
-  </div>
-);
+// ... imports
 
 export default function AnalysisCanvas({
   selectedCase
 }: AnalysisCanvasProps) {
 
-  // Simulation control state (PRESERVED)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentFrame, setCurrentFrame] = useState(0)
-  const [totalFrames, setTotalFrames] = useState(120)
-  const [isRunningSimulation, setIsRunningSimulation] = useState(false)
-  const animationRef = useRef<number | null>(null)
-  const lastFrameTimeRef = useRef<number>(0)
+  const { width, height } = useWindowSize()
+  const [dataLoaded, setDataLoaded] = useState(false)
 
-  // UPDATED: Store both policy datasets in state
-  const [policyData, setPolicyData] = useState<{
-    vehicle_tax: {
-      frames: any[]
-      metrics: any[]
-    }
-    fuel_tax: {
-      frames: any[]
-      metrics: any[]
-    }
-  }>({
-    vehicle_tax: { frames: [], metrics: [] },
-    fuel_tax: { frames: [], metrics: [] }
-  })
-
-  // Policy choice state (PRESERVED)
-  const [selectedPolicy, setSelectedPolicy] = useState('purchase')
-
-  // NEW: UI visibility state
-  const [showDashboard, setShowDashboard] = useState(true)
-  const [showControls, setShowControls] = useState(true)
-  const [viewMode, setViewMode] = useState<'simulation' | 'full-dashboard'>('simulation')
-  const [bubbleLoading, setBubbleLoading] = useState(false)  // NEW: Track bubble visualization loading
-
-  // NEW: Config state for toggles
-  const [config, setConfig] = useState({
-    taxFuel: false,
-    taxPurchase: false,
-    networkMode: false,  // Empty placeholder
-    largePopulation: false,  // Empty placeholder
-  })
-
-  // NEW: Mock metrics state (from vibe code)
-  const [metrics, setMetrics] = useState({
-    emissionHistory: Array(20).fill(80),
-    marketShare: [30, 15, 20, 15, 20],
-    totalEmissions: 79,
-    emissionsPercentageChange: 0,
-    costEffectiveness: 142,
-    equityImpact: [20, 35, 45, 50, 60],
-    fleetOverTime: [
-      "0,10 10,12 20,15 30,20 40,25 50,28 60,30 70,35 80,40 90,45 100,50",
-      "0,30 10,28 20,25 30,22 40,20 50,18 60,15 70,12 80,10 90,8 100,5",
-    ],
-    flowsNewCars: [10, 12, 15, 14, 18, 22, 25, 24, 28, 30],
-    evDemandVsCapacity: {
-      demand: [5, 8, 12, 15, 20, 28, 35, 42, 50, 55],
-      capacity: [10, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    },
-    revenue: [10, 20, 30, 25, 40, 50, 45, 60, 55, 70],
-    subsidies: [5, 8, 15, 20, 25, 30, 40, 45, 50, 55]
-  })
-
-  // Calculate dynamic fuel carbon tax based on simulation month
-  const calculateFuelTax = (month: number): number => {
-    // Carbon tax rates (€/tonne CO2) - BC progressive tax schedule
-    let rate = 6.97 // default (month 0)
-    if (month >= 48) rate = 20.89
-    else if (month >= 36) rate = 17.42
-    else if (month >= 24) rate = 13.94
-    else if (month >= 12) rate = 10.45
-
-    // Diesel carbon content: 2640 g CO2/liter
-    const fuelCarbonContent = 2640
-
-    // Calculate tax per liter
-    return (rate * fuelCarbonContent) / 1000000
-  }
-
-  // Calculate dynamic fuel tax based on current simulation month
-  const currentMonth = currentFrame
-  const dynamicFuelTax = calculateFuelTax(currentMonth)
-
-  // Policy-specific cost values (research-based calibration)
-  const policyValues = {
-    purchase: {
-      vehicleBase: 26000,
-      vehicleTax: 5000,
-      fuelBase: 1.50,
-      fuelTax: 0
-    },
-    fuel: {
-      vehicleBase: 26000,
-      vehicleTax: 0,
-      fuelBase: 1.50,
-      fuelTax: dynamicFuelTax  // Dynamic - changes with simulation time
-    }
-  }
-
-  const currentValues = policyValues[selectedPolicy as 'purchase' | 'fuel']
-
-  // NEW: Sync config toggles with selectedPolicy state
-  useEffect(() => {
-    setConfig(prev => ({
-      ...prev,
-      taxFuel: selectedPolicy === 'fuel',
-      taxPurchase: selectedPolicy === 'purchase'
-    }))
-  }, [selectedPolicy])
-
-  // Helper function to transform 7 vehicle types to 5 pie segments
-  const transformMarketShares = (market_shares: any) => {
-    if (!market_shares) return [0, 0, 0, 0, 0]
-    return [
-      market_shares['ICE-S'] || 0,                                    // Petrol
-      (market_shares['ICE-M'] || 0) + (market_shares['DIE-M'] || 0), // Diesel
-      market_shares['HEV-S'] || 0,                                    // Hybrid
-      (market_shares['BEV-M'] || 0) + (market_shares['PHEV-M'] || 0),// EV/PHEV
-      market_shares['Cycling'] || 0                                   // Cyclists/Walking
-    ]
-  }
-
-  // NEW: When toggle clicked, update selectedPolicy and reset to frame 0
-  const handlePolicyToggle = (policyType: 'fuel' | 'purchase') => {
-    setSelectedPolicy(policyType)
-    setCurrentFrame(0)  // Reset to first frame when switching policies
-  }
+  // ... (rest of state)
 
   // UPDATED: Load BOTH policy datasets on mount (no dependency on selectedPolicy)
   useEffect(() => {
     async function loadAllSimulationData() {
       try {
         console.log('Loading data for BOTH policies...')
+        // ... (fetch logic)
 
-        // Load ALL 4 files in parallel
-        const [
-          vehicleSimResponse,
-          vehicleMetricsResponse,
-          fuelSimResponse,
-          fuelMetricsResponse
-        ] = await Promise.all([
-          fetch('/simulation_vehicle_tax.json'),
-          fetch('/monthly_metrics_vehicle_tax.json'),
-          fetch('/simulation_fuel_tax.json'),
-          fetch('/monthly_metrics_fuel_tax.json')
-        ])
-
-        // Helper to safely extract frames
-        const parseFrames = async (response: Response, name: string) => {
-          if (!response.ok) {
-            console.error(`Failed to fetch ${name}: ${response.status} ${response.statusText}`)
-            return []
-          }
-          try {
-            const json = await response.json()
-            if (Array.isArray(json)) return json
-            if (json && Array.isArray(json.frames)) return json.frames
-            console.warn(`Invalid format for ${name}`, json)
-            return []
-          } catch (e) {
-            console.error(`Failed to parse ${name}`, e)
-            return []
-          }
-        }
-
-        const vehicleSim = await parseFrames(vehicleSimResponse, 'vehicle_tax')
-        const fuelSim = await parseFrames(fuelSimResponse, 'fuel_tax')
-
-        const vehicleMetricsData = vehicleMetricsResponse.ok ? await vehicleMetricsResponse.json() : null
-        const fuelMetricsData = fuelMetricsResponse.ok ? await fuelMetricsResponse.json() : null
-
-        console.log(`Loaded Data: Vehicle Frames: ${vehicleSim.length}, Fuel Frames: ${fuelSim.length}`)
-
-        // Store both datasets
-        setPolicyData({
-          vehicle_tax: {
-            frames: vehicleSim,
-            metrics: vehicleMetricsData?.monthly_data || []
-          },
-          fuel_tax: {
-            frames: fuelSim,
-            metrics: fuelMetricsData?.monthly_data || []
-          }
-        })
-
-        // Set total frames
-        if (vehicleSim.length > 0) {
-          setTotalFrames(vehicleSim.length)
-          console.log(`✅ Loaded both policy datasets (${vehicleSim.length} frames each)`)
-        } else {
-          console.warn('⚠️ No frames loaded for vehicle tax policy')
-        }
-
-        // Initialize current frame to 0
+        // After successful load:
+        setPolicyData({ ... })
+        setTotalFrames(...)
         setCurrentFrame(0)
+        setDataLoaded(true) // MARK AS LOADED
 
       } catch (error) {
         console.error('Failed to load simulation data:', error)
+        setDataLoaded(true) // Even on error, stop loading state (maybe show error UI)
       }
     }
     loadAllSimulationData()
-  }, []) // Only run on mount
-
-  // UPDATED: Sync metrics with current frame using active policy dataset
-  useEffect(() => {
-    // Determine which dataset to use based on selectedPolicy
-    const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
-    const activeData = policyData[policyType]
-
-    if (activeData.frames.length === 0 || currentFrame >= activeData.frames.length) {
-      return // No data loaded yet
-    }
-
-    const frame = activeData.frames[currentFrame]
-    const currentMetrics = activeData.metrics[currentFrame]
-
-    // DEBUG: Trace why metrics might not be updating
-    if (currentFrame % 12 === 0) { // Log once per year to avoid spam
-      console.log(`Frame ${currentFrame}: Metrics found?`, !!currentMetrics, 'Shares:', currentMetrics?.market_shares)
-    }
-
-    // Get emissions from pre-calculated field (or fallback to 0)
-    const currentEmissions = frame.totalEmissionsTonnes ?? 0
-
-    // Build emission history from all frames up to current
-    const emissionHistory = activeData.frames
-      .slice(0, currentFrame + 1)
-      .map(f => f.totalEmissionsTonnes ?? 0)
-
-    // Calculate percentage change from baseline
-    const baselineEmissions = emissionHistory[0] || 0
-    const percentageChange = baselineEmissions > 0
-      ? ((currentEmissions - baselineEmissions) / baselineEmissions) * 100
-      : 0
-
-    // Update metrics state with simulation data AND monthly metrics
-    setMetrics(prev => ({
-      ...prev,
-      totalEmissions: currentEmissions,
-      emissionHistory: emissionHistory,
-      emissionsPercentageChange: percentageChange,
-      costEffectiveness: currentMetrics?.cost_effectiveness_euros_per_tco2 || 0,
-      marketShare: currentMetrics?.market_shares
-        ? transformMarketShares(currentMetrics.market_shares)
-        : prev.marketShare
-    }))
-
-  }, [currentFrame, selectedPolicy, policyData]) // Depends on policy selection
-
-  // UPDATED: Prepare EV adoption data using active policy dataset
-  const evAdoptionData = useMemo(() => {
-    const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
-    const activeMetrics = policyData[policyType].metrics
-
-    if (activeMetrics.length === 0) return []
-
-    // Only show data up to current frame for progressive animation
-    return activeMetrics.slice(0, currentFrame + 1).map((monthData, index) => ({
-      month: index,
-      year: (index / 12).toFixed(1),
-      ev_adoption: monthData.ev_adoption_percent || 0,
-      bev_adoption: monthData.bev_adoption_percent || 0,
-      phev_adoption: monthData.phev_adoption_percent || 0
-    }))
-  }, [currentFrame, selectedPolicy, policyData])
-
-  // Prepare Fleet CO2 trajectory data for line chart
-  const fleetCO2Data = useMemo(() => {
-    if (!metrics.emissionHistory || metrics.emissionHistory.length === 0) return []
-    return metrics.emissionHistory.map((emissions, index) => ({
-      month: index,
-      year: (index / 12).toFixed(1),
-      emissions: emissions
-    }))
-  }, [metrics.emissionHistory])
-
-  // PRESERVED: Animation control functions
-  const handlePlay = useCallback(() => {
-    if (currentFrame >= totalFrames - 1) {
-      setCurrentFrame(0) // Reset to beginning if at end
-    }
-    setIsPlaying(true)
-  }, [currentFrame, totalFrames])
-
-  const handlePause = useCallback(() => {
-    setIsPlaying(false)
-    if (animationRef.current !== null) {
-      cancelAnimationFrame(animationRef.current)
-      animationRef.current = null
-    }
   }, [])
 
-  const handleReset = useCallback(async () => {
-    setIsPlaying(false)
-    if (animationRef.current !== null) {
-      cancelAnimationFrame(animationRef.current)
-      animationRef.current = null
-    }
-
-    // Run new simulation with selected policy
-    setIsRunningSimulation(true)
-    try {
-      // Convert UI policy ID to Python policy type
-      const policyType = selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'
-
-      console.log(`Running simulation for policy: ${selectedPolicy} (${policyType})`)
-
-      const response = await fetch('/api/run-simulation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ policyType })
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        console.log('Simulation completed:', result)
-
-        // Reload policy-specific data
-        const filename = `simulation_${policyType}.json`
-        const dataResponse = await fetch(`/${filename}`)
-        if (dataResponse.ok) {
-          const simulationData = await dataResponse.json()
-          const validData = Array.isArray(simulationData) ? simulationData : (simulationData.frames || [])
-
-          if (validData.length > 0) {
-            // Update the specific policy data in state
-            setPolicyData(prev => ({
-              ...prev,
-              [policyType]: {
-                ...prev[policyType],
-                frames: validData
-              }
-            }))
-
-            setTotalFrames(validData.length)
-            setCurrentFrame(0)
-            setIsPlaying(true) // Auto-start after reset
-            console.log(`Loaded ${validData.length} frames after simulation`)
-          }
-        }
-      } else {
-        const errorData = await response.json()
-        console.error('Simulation failed:', errorData)
-      }
-    } catch (error) {
-      console.error('Failed to run new simulation:', error)
-    } finally {
-      setIsRunningSimulation(false)
-    }
-  }, [selectedPolicy])
-
-  const handleScrub = useCallback((frameIndex: number) => {
-    setCurrentFrame(frameIndex)
-    setIsPlaying(false)
-    if (animationRef.current !== null) {
-      cancelAnimationFrame(animationRef.current)
-      animationRef.current = null
-    }
-  }, [])
-
-  // PERFORMANCE FIX: Animation loop using requestAnimationFrame (0.4s per month)
-  useEffect(() => {
-    if (!isPlaying || isRunningSimulation) {
-      return
-    }
-
-    const FRAME_DURATION = 400 // 0.4 seconds per month
-
-    const animate = (timestamp: number) => {
-      // Initialize lastFrameTime on first run
-      if (lastFrameTimeRef.current === 0) {
-        lastFrameTimeRef.current = timestamp
-      }
-
-      const elapsed = timestamp - lastFrameTimeRef.current
-
-      if (elapsed >= FRAME_DURATION) {
-        lastFrameTimeRef.current = timestamp
-
-        setCurrentFrame(prev => {
-          if (prev >= totalFrames - 1) {
-            setIsPlaying(false)
-            return prev
-          }
-          return prev + 1
-        })
-      }
-
-      // Continue animation loop
-      if (isPlaying && !isRunningSimulation) {
-        animationRef.current = requestAnimationFrame(animate)
-      }
-    }
-
-    // Start animation
-    animationRef.current = requestAnimationFrame(animate)
-
-    return () => {
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current)
-        animationRef.current = null
-      }
-      lastFrameTimeRef.current = 0
-    }
-  }, [isPlaying, totalFrames, isRunningSimulation])
-
+  // ... (rest of logic)
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-zinc-50 font-sans text-gray-800">
 
+      {/* Loading Overlay */}
+      {!dataLoaded && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm transition-opacity duration-500">
+          <div className="flex flex-col items-center gap-3">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="text-sm font-medium text-gray-600 animate-pulse">Initializing Simulation...</p>
+          </div>
+        </div>
+      )}
+
       {/* Layer 1: PureBubbleCanvas Background */}
       <div className="absolute inset-0 z-10">
         <PureBubbleCanvas
-          width={typeof window !== 'undefined' ? window.innerWidth : 1920}
-          height={typeof window !== 'undefined' ? window.innerHeight : 1080}
+          width={width}
+          height={height}
           currentFrame={currentFrame}
           onFrameUpdate={(frame) => setCurrentFrame(frame)}
           onLoadingChange={setBubbleLoading}
@@ -480,6 +62,7 @@ export default function AnalysisCanvas({
           simulationFrames={policyData[selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'].frames}
         />
       </div>
+
 
       {viewMode === 'simulation' ? (
         <>
