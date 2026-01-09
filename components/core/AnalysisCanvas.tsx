@@ -174,12 +174,13 @@ export default function AnalysisCanvas({
   // Helper function to transform 7 vehicle types to 5 pie segments
   const transformMarketShares = (market_shares: any) => {
     if (!market_shares) return [0, 0, 0, 0, 0]
+    const getVal = (k: string) => typeof market_shares[k] === 'number' ? market_shares[k] : 0
     return [
-      market_shares['ICE-S'] || 0,                                    // Petrol
-      (market_shares['ICE-M'] || 0) + (market_shares['DIE-M'] || 0), // Diesel
-      market_shares['HEV-S'] || 0,                                    // Hybrid
-      (market_shares['BEV-M'] || 0) + (market_shares['PHEV-M'] || 0),// EV/PHEV
-      market_shares['Cycling'] || 0                                   // Cyclists/Walking
+      getVal('ICE-S'),                                    // Petrol
+      getVal('ICE-M') + getVal('DIE-M'),                 // Diesel
+      getVal('HEV-S'),                                    // Hybrid
+      getVal('BEV-M') + getVal('PHEV-M'),                 // EV/PHEV
+      getVal('Cycling')                                   // Cyclists/Walking
     ]
   }
 
@@ -486,13 +487,14 @@ export default function AnalysisCanvas({
       {/* Layer 1: PureBubbleCanvas Background */}
       <div className="absolute inset-0 z-10">
         <PureBubbleCanvas
+          key={`${selectedPolicy}-${dataLoaded ? 'loaded' : 'loading'}`}
           width={width}
           height={height}
           currentFrame={currentFrame}
           onFrameUpdate={(frame) => setCurrentFrame(frame)}
           onLoadingChange={setBubbleLoading}
           networkMode={config.networkMode}
-          selectedPolicy={selectedPolicy}
+          selectedPolicy={selectedPolicy as 'purchase' | 'fuel'}
           simulationFrames={policyData[selectedPolicy === 'fuel' ? 'fuel_tax' : 'vehicle_tax'].frames}
         />
       </div>
