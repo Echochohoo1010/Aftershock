@@ -23,6 +23,8 @@ Aftershock provides an interactive canvas for exploring policy interventions thr
 
 **[→ Try the Live Application on Vercel](https://aftershock-git-main-echos-projects-5619c209.vercel.app?_vercel_share=aMOKycN0ilX5cECtcv0AxRngdxwSBeMM)**
 
+**[🎥 Application Video Preview](https://drive.google.com/file/d/1aVWIMnYsQQG0XXIArMi7VRsNg3xTSPNu/view?usp=sharing)**
+
 **[📚 Complete Technical Documentation (PDF)](https://drive.google.com/file/d/1F0WemPQNOeLWsN68ZAV4qkjlT8ffFoAT/view?usp=sharing)**
 
 **[📊 Data Analysis Codebook (Colab)](https://colab.research.google.com/drive/1J-YSfeql1i4J7VdKS3XqJ8GhE9w1XQIy?usp=sharing)**
